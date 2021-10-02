@@ -18,9 +18,6 @@ public class UserService implements UserDetailsService {
     @Autowired
     private UserRepository userRepository;
 
-    @Autowired
-    private BCryptPasswordEncoder passwordEncoder;
-
     public List<User> getAllUsers() {
         return userRepository.findAll();
     }
@@ -116,6 +113,26 @@ public class UserService implements UserDetailsService {
 
         // Return the Spring Framework User object, not our custom one!
         return new org.springframework.security.core.userdetails.User(user.getEmail(), user.getPassword(), authorities);
+    }
+
+    public User findByEmail(String email) {
+        return userRepository.findByEmail(email);
+    }
+
+    /**
+     * Encodes user password and saves user details to database
+     * 
+     * @param userDetails to save to database
+     */
+    public User addUser(UserDTO userDetails) {
+        User user = new User();
+        BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
+        String encodedPassword = encoder.encode(userDetails.getPassword());
+        user.setEmail(userDetails.getEmail());
+        user.setName(userDetails.getName());
+        user.setRole(userDetails.getRole());
+        user.setPassword(encodedPassword);
+        return userRepository.save(user);
     }
 
 }
