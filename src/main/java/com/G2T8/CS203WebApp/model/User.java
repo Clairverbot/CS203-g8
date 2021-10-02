@@ -11,6 +11,7 @@ import java.io.Serializable;
 @Data // A shortcut for @ToString, @EqualsAndHashCode, @Getter on all fields, and
       // @Setter on all non-final fields, and @RequiredArgsConstructor(generate
       // constructor with args annotated with @NonNull)
+@NoArgsConstructor
 @Entity
 @Table(name = "User")
 public class User implements Serializable{
