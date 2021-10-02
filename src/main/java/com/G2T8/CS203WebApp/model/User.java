@@ -28,8 +28,8 @@ public class User implements Serializable{
     @Column(name = "email", nullable = false, unique = true, length = 45) @NotNull @Email
     private String email;
 
-    @Column(name = "vaccinationStatus", nullable = false)
-    @NonNull
+    @Column(name = "vaccinationStatus")//, nullable = false)
+    //@NonNull
     private int vaccinationStatus;
 
     @Column(name = "role", nullable = false)
@@ -37,13 +37,13 @@ public class User implements Serializable{
     private String role;
 
     @Column(name = "password", nullable = false)
-    @Size(min = 8, max = 30)
+    //@Size(min = 8, max = 30)
     private String password;
 
     // Foreign key of Team class to identify which team the user is in; 
     @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "teamID")
-    @NonNull
+    //@NonNull
     private Team team;
 
     // Recursive key of User class to identify which user is managing a particular user object;
