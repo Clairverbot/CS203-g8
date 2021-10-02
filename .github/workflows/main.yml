@@ -22,9 +22,9 @@ jobs:
     runs-on: ubuntu-latest
 
     env:
-      DB_DATABASE: test_db
+      DB_DATABASE: G2T8CS203
       DB_USER: root
-      DB_PASSWORD: root
+      DB_PASSWORD: Akshaya10!
 
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
