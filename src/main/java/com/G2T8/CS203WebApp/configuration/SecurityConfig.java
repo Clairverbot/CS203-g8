@@ -14,6 +14,7 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.http.HttpMethod;
 
 @Configuration
 @EnableWebSecurity
@@ -58,9 +59,11 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         // We don't need CSRF for this
         httpSecurity.csrf().disable()
                 // requests to these endpoints do not need authentication
-                .authorizeRequests().antMatchers("/api/v1/authenticate", "/api/v1/register").permitAll().
+                .authorizeRequests().antMatchers("/api/v1/users/login", "/api/v1/users/register").permitAll().
+                // needs to be authorized
+                antMatchers(HttpMethod.GET, "/api/v1/users/dummy").hasRole("ADMIN")
                 // all other requests need to be authenticated
-                anyRequest().authenticated().and().
+                .anyRequest().authenticated().and().
                 // make sure we use stateless session; session won't be used to
                 // store user's state.
                 exceptionHandling().authenticationEntryPoint(jwtAuthenticationEntryPoint).and().sessionManagement()

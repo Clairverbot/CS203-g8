@@ -75,4 +75,14 @@ public class UserController {
 
         return ResponseEntity.ok(userEntity);
     }
+
+    /**
+     * Dummy endpoint to test authorization
+     * 
+     * @return dummy
+     */
+    @RequestMapping(value = "/dummy", method = RequestMethod.GET)
+    public String dummyEndpoint() {
+        return "dummy";
+    }
 }
