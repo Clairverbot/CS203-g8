@@ -2,6 +2,8 @@ package com.G2T8.CS203WebApp.model;
 
 import lombok.*;
 
+import javax.validation.constraints.NotBlank;
+
 /**
  * DTO layer for user details
  * 
@@ -10,8 +12,12 @@ import lombok.*;
  */
 @Data
 public class UserDTO {
+    @NotBlank
     private String email;
+    @NotBlank
     private String name;
+    @NotBlank
     private String password;
+    @NotBlank
     private String role;
 }
