@@ -1,6 +1,7 @@
 package com.G2T8.CS203WebApp.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
@@ -8,9 +9,10 @@ import org.springframework.security.authentication.DisabledException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.security.Principal;
@@ -40,21 +42,22 @@ public class UserController {
         this.userDetailsService = userDetailsService;
     }
 
-    @RequestMapping(value = "/login", method = RequestMethod.POST)
+    @PostMapping("/login")
     public ResponseEntity<?> createAuthenticationToken(@RequestBody JwtRequest authenticationRequest) throws Exception {
 
-        authenticate(authenticationRequest.getUsername(), authenticationRequest.getPassword());
+        authenticate(authenticationRequest.getEmail(), authenticationRequest.getPassword());
 
-        final UserDetails userDetails = userDetailsService.loadUserByUsername(authenticationRequest.getUsername());
+        final UserDetails userDetails = userDetailsService.loadUserByUsername(authenticationRequest.getEmail());
 
         final String token = jwtTokenUtil.generateToken(userDetails);
 
         return ResponseEntity.ok(new JwtResponse(token));
     }
 
-    @RequestMapping(value = "/register", method = RequestMethod.POST)
+    @PostMapping("/register")
     public ResponseEntity<?> saveUser(@RequestBody UserDTO user) throws Exception {
-        return ResponseEntity.ok(userDetailsService.addUser(user));
+        userDetailsService.addUser(user);
+        return new ResponseEntity<>(null, HttpStatus.CREATED);
     }
 
     private void authenticate(String username, String password) throws Exception {
@@ -67,7 +70,7 @@ public class UserController {
         }
     }
 
-    @RequestMapping(value = "/get-profile", method = RequestMethod.GET)
+    @GetMapping("/get-profile")
     public ResponseEntity<?> getUserInfo(Principal user) {
         org.springframework.security.core.userdetails.User userObj = (org.springframework.security.core.userdetails.User) userDetailsService
                 .loadUserByUsername(user.getName());
@@ -81,7 +84,7 @@ public class UserController {
      * 
      * @return dummy
      */
-    @RequestMapping(value = "/dummy", method = RequestMethod.GET)
+    @GetMapping("/dummy")
     public String dummyEndpoint() {
         return "dummy";
     }
