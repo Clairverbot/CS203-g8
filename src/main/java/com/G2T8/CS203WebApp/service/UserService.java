@@ -124,7 +124,7 @@ public class UserService implements UserDetailsService {
      * 
      * @param userDetails to save to database
      */
-    public User addUser(UserDTO userDetails) {
+    public void addUser(UserDTO userDetails) {
         User user = new User();
         BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
         String encodedPassword = encoder.encode(userDetails.getPassword());
@@ -132,7 +132,7 @@ public class UserService implements UserDetailsService {
         user.setName(userDetails.getName());
         user.setRole(userDetails.getRole());
         user.setPassword(encodedPassword);
-        return userRepository.save(user);
+        userRepository.save(user);
     }
 
 }
