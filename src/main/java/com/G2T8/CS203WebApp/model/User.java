@@ -24,6 +24,7 @@ public class User implements Serializable{
     @Column(name = "name", nullable = false) @NonNull
     private String name; 
 
+
     @Column(name = "email", nullable = false, unique = true, length = 45) @NotNull @Email
     private String email;
 
@@ -64,6 +65,10 @@ public class User implements Serializable{
     // user id becomes a foreign key for Officerequest 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<OfficeRequest> officeRequests;
+
+    @Column(name = "firstLogin", nullable = false)
+    private Boolean firstLogin; 
+
 
 
 
