@@ -6,6 +6,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import java.util.*;
 import javax.validation.Valid;
+
+import com.G2T8.CS203WebApp.Exception.UserNotFoundException;
 import com.G2T8.CS203WebApp.model.*;
 import com.G2T8.CS203WebApp.repository.*;
 import com.G2T8.CS203WebApp.service.UserService;
@@ -26,7 +28,7 @@ public class userController{
             return userService.getAllUsers();
         }
         // actually supp to throw user not found exception
-        return null;
+        throw new UserNotFoundException();
         
     }
 
@@ -37,7 +39,7 @@ public class userController{
             return userService.getUserByEmail(email);
         }else{
             // actually supp to throw user not found exception
-            return null; 
+            throw new UserNotFoundException(email);
             
         }
     
@@ -50,7 +52,7 @@ public class userController{
             return userService.getUser(ID);
         } else {
             // actually supp to throw user not found exception
-            return null;
+            throw new UserNotFoundException(ID);
             
         }
     }
@@ -69,7 +71,7 @@ public class userController{
             
         }
         //// actually supp to throw user not found exception
-        return null; //remove this
+        throw new UserNotFoundException(ID);
 
         
     }
@@ -84,7 +86,7 @@ public class userController{
             return new ResponseEntity<>(HttpStatus.OK);
         }
         // // actually supp to throw user not found exception
-        return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        throw new UserNotFoundException(ID);
     }
 
     //change user password
@@ -101,7 +103,7 @@ public class userController{
             return new ResponseEntity<>(HttpStatus.OK);
         }
         // actually supp to throw user not found exception
-        return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        throw new UserNotFoundException(ID);
     }
 
     //change role of user
@@ -116,7 +118,7 @@ public class userController{
         }
         // if result == 20 and user not there
         // actually supp to throw user not found exception
-        return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        throw new UserNotFoundException(ID);
     }
 
     //change managerid of a user
@@ -133,7 +135,7 @@ public class userController{
             return new ResponseEntity<>(HttpStatus.OK);
         }
         // actually supp to throw user not found exception
-        return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        throw new UserNotFoundException(ID);
     }
 
 
