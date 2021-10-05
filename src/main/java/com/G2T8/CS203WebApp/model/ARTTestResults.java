@@ -1,6 +1,5 @@
 package com.G2T8.CS203WebApp.model;
 
-import java.io.Serializable;
 import javax.persistence.*;
 import lombok.*;
 
@@ -13,7 +12,7 @@ public class ARTTestResults {
     private Boolean artResult;
     private LocalDateTime date;
     @ManyToOne
-    @JoinColumn(name='user_id')
+    @JoinColumn(name="user_id")
     private User user;
     
 }
