@@ -21,17 +21,13 @@ jobs:
     # The type of runner that the job will run on
     runs-on: ubuntu-latest
 
-    env:
-      DB_DATABASE: test_db
-      DB_USER: root
-      DB_PASSWORD: root
-
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
       - name: Set up MySQL
-        run: |
-          sudo /etc/init.d/mysql start
-          mysql -e 'CREATE DATABASE ${{ env.DB_DATABASE }};' -u${{ env.DB_USER }} -p${{ env.DB_PASSWORD }}
+        uses: mirromutth/mysql-action@v1.1
+        with:
+          mysql database: 'G2T8CS203'
+          mysql root password: ${{ secrets.DB_PASSWORD }}
       - name: Set up JDK
         uses: actions/setup-java@v1
         with:

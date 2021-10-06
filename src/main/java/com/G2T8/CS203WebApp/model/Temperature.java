@@ -4,6 +4,7 @@ import javax.persistence.*;
 import lombok.*;
 import java.time.LocalDateTime;
 
+@Entity
 public class Temperature {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
