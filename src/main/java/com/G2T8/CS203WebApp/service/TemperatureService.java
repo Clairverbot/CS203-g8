@@ -43,4 +43,11 @@ public class TemperatureService {
         }
     }
 
+    public void addTemperature(TemperatureDTO tempDetails){
+        Temperature temp = new Temperature();
+        temp.setDate(tempDetails.getDate());
+        temp.setTemperature(artDetails.getTemperature());
+        TemperatureRepository.save(temp);
+    }
+
 }

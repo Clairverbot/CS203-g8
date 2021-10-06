@@ -1,6 +1,7 @@
 package com.G2T8.CS203WebApp.service;
 
 import com.G2T8.CS203WebApp.repository.ARTTestResultRepository;
+import com.G2T8.CS203WebApp.repository.UserRepository;
 import java.util.*;
 import com.G2T8.CS203WebApp.model.*;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,6 +14,8 @@ import java.time.LocalDateTime;
 public class ARTTestResultService {
     @Autowired
     private ARTTestResultRepository artTestResultRepository;
+    @Autowired
+    private UserRepository userRepository;
 
     public List<ARTTestResults> getAllResult(){
         try{
@@ -23,7 +26,7 @@ public class ARTTestResultService {
         }
     }
 
-    public List<ARTTestResults> getAllTempbyUserID(Long user_id){
+    public List<ARTTestResults> getARTbyUserID(Long user_id){
         List<ARTTestResults> toReturn;
         try{
             toReturn = artTestResultRepository.findByUserId(user_id);
@@ -34,7 +37,7 @@ public class ARTTestResultService {
         return toReturn; 
     }
 
-    public ARTTestResults getTempbyUserIDAndDate(Long user_id, LocalDateTime date){
+    public ARTTestResults getARTbyUserIdAndDate(Long user_id, LocalDateTime date){
         try{
             return artTestResultRepository.findByUserIdAndDate(user_id,date);
         } catch(Exception E){
@@ -42,5 +45,13 @@ public class ARTTestResultService {
             "Unknown error occurs, please try again!");
         }
     }   
+
+    public void addART(ARTDTO artDetails){
+        ARTTestResults art = new ARTTestResults();
+        art.setWeeksMonday(artDetails.getWeeksMonday());
+        art.setArtResult(artDetails.getArtResult());
+        art.setDate(artDetails.getDate());
+        ARTTestResultRepository.save(art);
+    }
 
 }
