@@ -73,7 +73,7 @@ public class User implements Serializable {
     private List<OfficeRequest> officeRequests;
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<ARTTestResult> artTestResult;
+    private List<ARTTestResults> artTestResult;
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Temperature> temperature;
