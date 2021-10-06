@@ -1,4 +1,4 @@
-package src.main.java.com.G2T8.CS203WebApp.model;
+package com.G2T8.CS203WebApp.model;
 
 import javax.persistence.*;
 import lombok.*;
