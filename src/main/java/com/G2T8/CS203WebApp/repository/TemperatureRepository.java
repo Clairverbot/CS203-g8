@@ -11,6 +11,6 @@ public interface TemperatureRepository extends JpaRepository<Temperature, Long>{
 
     @Query(value = "SELECT * FROM temperature t WHERE t.user_id = user_id and t.date =  date", nativeQuery = true)
     Optional<Temperature> findByUserIdAndDate(@Param("user_id") Long user_id, 
-            @Param("contracteddate") LocalDateTime date);
+            @Param("date") LocalDateTime date);
 }
 
