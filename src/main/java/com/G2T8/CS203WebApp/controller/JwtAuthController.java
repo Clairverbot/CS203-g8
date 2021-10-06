@@ -61,6 +61,12 @@ public class JwtAuthController {
         return new ResponseEntity<>(null, HttpStatus.CREATED);
     }
 
+    @PostMapping("/add-employee")
+    public ResponseEntity<?> addEmployee(@RequestBody @Validated UserDTO user) throws Exception {
+        userDetailsService.createEmployeeAccount(user);
+        return new ResponseEntity<>(null, HttpStatus.CREATED);
+    }
+
     private void authenticate(String username, String password) throws Exception {
         try {
             authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(username, password));

@@ -41,3 +41,6 @@ build/
 
 ### Miscellaneous ###
 timelineforaks.txt
+
+### Environment Variables? ###
+*.properties
