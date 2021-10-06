@@ -1,4 +1,4 @@
-package com.G2T8.CS203WebApp.Exception;
+package com.G2T8.CS203WebApp.exception;
 
 import com.G2T8.CS203WebApp.model.*;
 import com.G2T8.CS203WebApp.repository.*;
@@ -8,7 +8,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ResponseStatus;
 
 @ResponseStatus(HttpStatus.NOT_FOUND) // 404 Error
-public class UserNotFoundException extends RuntimeException{
+public class UserNotFoundException extends RuntimeException {
 
     private static final long serialVersionUID = 1L;
 
@@ -24,6 +24,4 @@ public class UserNotFoundException extends RuntimeException{
         super("No users");
     }
 
-
-    
 }
