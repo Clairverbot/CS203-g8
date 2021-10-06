@@ -1,7 +1,6 @@
 package com.G2T8.CS203WebApp.service;
 
 import com.G2T8.CS203WebApp.repository.ARTTestResultRepository;
-import com.G2T8.CS203WebApp.repository.UserRepository;
 import java.util.*;
 import com.G2T8.CS203WebApp.model.*;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,11 +10,9 @@ import org.springframework.web.server.ResponseStatusException;
 import java.time.LocalDateTime;
 
 @Service
-public class ARTTestResultService {
+public class ARTTestResultService{
     @Autowired
     private ARTTestResultRepository artTestResultRepository;
-    @Autowired
-    private UserRepository userRepository;
 
     public List<ARTTestResults> getAllResult(){
         try{
@@ -46,12 +43,12 @@ public class ARTTestResultService {
         }
     }   
 
-    public void addART(ARTDTO artDetails){
+    public void addART(LocalDateTime weeksMonday, Boolean result, LocalDateTime date){
         ARTTestResults art = new ARTTestResults();
-        art.setWeeksMonday(artDetails.getWeeksMonday());
-        art.setArtResult(artDetails.getArtResult());
-        art.setDate(artDetails.getDate());
-        ARTTestResultRepository.save(art);
+        art.setWeeksMonday(weeksMonday);
+        art.setArtResult(result);
+        art.setDate(date);
+        artTestResultRepository.save(art);
     }
 
 }

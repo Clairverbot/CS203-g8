@@ -4,6 +4,8 @@ import javax.persistence.*;
 import lombok.*;
 import java.time.LocalDateTime;
 
+@Data
+@NoArgsConstructor
 @Entity
 public class Temperature {
     @Id
