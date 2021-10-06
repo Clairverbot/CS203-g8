@@ -1,10 +1,12 @@
-package src.main.java.com.G2T8.CS203WebApp.service;
+package com.G2T8.CS203WebApp.service;
 
 import com.G2T8.CS203WebApp.repository.TemperatureRepository;
 import java.util.*;
 import com.G2T8.CS203WebApp.model.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.http.HttpStatus;
+import org.springframework.web.server.ResponseStatusException;
 import java.time.LocalDateTime;
 
 @Service
@@ -14,7 +16,7 @@ public class TemperatureService {
 
     public List<Temperature> getAllTemp(){
         try{
-            return temperatureRepository.findAll();;
+            return temperatureRepository.findAll();
         } catch(Exception E){
             throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR,
             "Unknown error occurs, please try again!");

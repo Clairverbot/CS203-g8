@@ -1,10 +1,12 @@
-package src.main.java.com.G2T8.CS203WebApp.service;
+package com.G2T8.CS203WebApp.service;
 
 import com.G2T8.CS203WebApp.repository.ARTTestResultRepository;
 import java.util.*;
 import com.G2T8.CS203WebApp.model.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.http.HttpStatus;
+import org.springframework.web.server.ResponseStatusException;
 import java.time.LocalDateTime;
 
 @Service
@@ -12,7 +14,7 @@ public class ARTTestResultService {
     @Autowired
     private ARTTestResultRepository artTestResultRepository;
 
-    public List<ARTTestResult> getAllResult(){
+    public List<ARTTestResults> getAllResult(){
         try{
             return artTestResultRepository.findAll();
         } catch(Exception E){
@@ -21,8 +23,8 @@ public class ARTTestResultService {
         }
     }
 
-    public List<ARTTestResult> getAllTempbyUserID(Long user_id){
-        List<ARTTestResult> toReturn;
+    public List<ARTTestResults> getAllTempbyUserID(Long user_id){
+        List<ARTTestResults> toReturn;
         try{
             toReturn = artTestResultRepository.findByUserId(user_id);
         } catch(Exception E){
@@ -32,7 +34,7 @@ public class ARTTestResultService {
         return toReturn; 
     }
 
-    public ARTTestResult getTempbyUserIDAndDate(Long user_id, LocalDateTime date){
+    public ARTTestResults getTempbyUserIDAndDate(Long user_id, LocalDateTime date){
         try{
             return artTestResultRepository.findByUserIdAndDate(user_id,date);
         } catch(Exception E){
