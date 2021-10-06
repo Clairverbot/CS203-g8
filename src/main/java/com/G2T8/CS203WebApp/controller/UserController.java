@@ -3,90 +3,136 @@ package com.G2T8.CS203WebApp.controller;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.BadCredentialsException;
-import org.springframework.security.authentication.DisabledException;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+import java.util.*;
+import javax.validation.Valid;
 
-import java.security.Principal;
-
-import com.G2T8.CS203WebApp.model.JwtRequest;
-import com.G2T8.CS203WebApp.model.JwtResponse;
-import com.G2T8.CS203WebApp.configuration.JwtTokenUtil;
+import com.G2T8.CS203WebApp.exception.UserNotFoundException;
+import com.G2T8.CS203WebApp.model.*;
+import com.G2T8.CS203WebApp.repository.*;
 import com.G2T8.CS203WebApp.service.UserService;
-import com.G2T8.CS203WebApp.model.User;
-import com.G2T8.CS203WebApp.model.UserDTO;
 
 @RestController
-@CrossOrigin
-@RequestMapping("/api/v1/users")
+@RequestMapping("/api/v1/user")
 public class UserController {
-    private AuthenticationManager authenticationManager;
-
-    private JwtTokenUtil jwtTokenUtil;
-
-    private UserService userDetailsService;
 
     @Autowired
-    public UserController(AuthenticationManager authenticationManager, JwtTokenUtil jwtTokenUtil,
-            UserService userDetailsService) {
-        this.authenticationManager = authenticationManager;
-        this.jwtTokenUtil = jwtTokenUtil;
-        this.userDetailsService = userDetailsService;
+    private UserService userService;
+    @Autowired
+    private UserRepository userRepo;
+
+    // get all users
+    @GetMapping("/findAll")
+    public List<User> findAllUsers() {
+        if (userService.getAllUsers() != null) {
+            return userService.getAllUsers();
+        }
+        // actually supp to throw user not found exception
+        throw new UserNotFoundException();
+
     }
 
-    @PostMapping("/login")
-    public ResponseEntity<?> createAuthenticationToken(@RequestBody JwtRequest authenticationRequest) throws Exception {
+    // get user by Email ( necessary as we are logging in with email)
+    @RequestMapping("/email/{email}")
+    public User findUserByEmail(String email) {
+        if (userService.getUserByEmail(email) != null) {
+            return userService.getUserByEmail(email);
+        } else {
+            // actually supp to throw user not found exception
+            throw new UserNotFoundException(email);
 
-        authenticate(authenticationRequest.getEmail(), authenticationRequest.getPassword());
+        }
 
-        final UserDetails userDetails = userDetailsService.loadUserByUsername(authenticationRequest.getEmail());
-
-        final String token = jwtTokenUtil.generateToken(userDetails);
-
-        return ResponseEntity.ok(new JwtResponse(token));
     }
 
-    @PostMapping("/register")
-    public ResponseEntity<?> saveUser(@RequestBody @Validated UserDTO user) throws Exception {
-        userDetailsService.addUser(user);
-        return new ResponseEntity<>(null, HttpStatus.CREATED);
-    }
+    // get user by ID
+    @RequestMapping("/ID/{ID}")
+    public User findUserByID(Long ID) {
+        if (userService.getUser(ID) != null) {
+            return userService.getUser(ID);
+        } else {
+            // actually supp to throw user not found exception
+            throw new UserNotFoundException(ID);
 
-    private void authenticate(String username, String password) throws Exception {
-        try {
-            authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(username, password));
-        } catch (DisabledException e) {
-            throw new Exception("USER_DISABLED", e);
-        } catch (BadCredentialsException e) {
-            throw new Exception("INVALID_CREDENTIALS", e);
         }
     }
 
-    @GetMapping("/get-profile")
-    public ResponseEntity<?> getUserInfo(Principal user) {
-        org.springframework.security.core.userdetails.User userObj = (org.springframework.security.core.userdetails.User) userDetailsService
-                .loadUserByUsername(user.getName());
-        User userEntity = userDetailsService.findByEmail(userObj.getUsername());
+    // change a persons vaccination status
+    @PutMapping("/updateVaccinationStatus/{ID}/{vaccinationstatus}")
+    public ResponseEntity<String> updateVaccinationStatus(@PathVariable("ID") Long ID,
+            @PathVariable("vaccinationstatus") int vaccinationstatus) {
 
-        return ResponseEntity.ok(userEntity);
+        int result = userService.updateUserVaccinationStatus(ID, vaccinationstatus);
+        if (result != 20) {
+            if (result == 10) {
+                return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+            } else {
+                return new ResponseEntity<>(HttpStatus.OK);
+            }
+
+        }
+        //// actually supp to throw user not found exception
+        throw new UserNotFoundException(ID);
+
     }
 
-    /**
-     * Dummy endpoint to test authorization
-     * 
-     * @return dummy
-     */
-    @GetMapping("/dummy")
-    public String dummyEndpoint() {
-        return "dummy";
+    // change user email
+    @PutMapping("/updateEmail/{ID}/{email}")
+    public ResponseEntity<String> updateEmail(@PathVariable("ID") Long ID, @PathVariable("email") String email) {
+
+        User user = userService.updateUserEmail(ID, email);
+        if (user != null) {
+            return new ResponseEntity<>(HttpStatus.OK);
+        }
+        // // actually supp to throw user not found exception
+        throw new UserNotFoundException(ID);
     }
+
+    // change user password
+
+    // change name of user
+    @PutMapping("/updateName/{ID}/{name}")
+    public ResponseEntity<String> updateName(@PathVariable("ID") Long ID, @PathVariable("name") String name) {
+
+        User user = userService.updateUserEmail(ID, name);
+        if (user != null) {
+            return new ResponseEntity<>(HttpStatus.OK);
+        }
+        // actually supp to throw user not found exception
+        throw new UserNotFoundException(ID);
+    }
+
+    // change role of user
+    @PutMapping("/updateRole/{ID}/{role}")
+    public ResponseEntity<String> updateRole(@PathVariable("ID") Long ID, @PathVariable("role") String role) {
+
+        int result = userService.updateUserRole(ID, role);
+        if (result == 1) {// done ok
+            return new ResponseEntity<>(HttpStatus.OK);
+        } else if (result == 10) {// user input invalid role like officer
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
+        // if result == 20 and user not there
+        // actually supp to throw user not found exception
+        throw new UserNotFoundException(ID);
+    }
+
+    // change managerid of a user
+    @PutMapping("/updateManagerID/{ID}/{managerID}")
+    public ResponseEntity<String> updateManagerID(@PathVariable("ID") Long ID,
+            @PathVariable("managerID") Long managerID) {
+
+        int result = userService.updateUserManagerID(ID, managerID);
+        if (result != 20) {
+            if (result == 10) {
+                // suppposed manager inputted is not a manager
+                return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+            }
+            // if 1 is returned means user and manager exist and manager is manager
+            return new ResponseEntity<>(HttpStatus.OK);
+        }
+        // actually supp to throw user not found exception
+        throw new UserNotFoundException(ID);
+    }
+
 }
