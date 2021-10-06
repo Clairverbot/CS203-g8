@@ -8,21 +8,37 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDateTime;
 
 @Service
-
 public class ARTTestResultService {
     @Autowired
     private ARTTestResultRepository artTestResultRepository;
 
     public List<ARTTestResult> getAllResult(){
-        return artTestResultRepository.findAll();
+        try{
+            return artTestResultRepository.findAll();
+        } catch(Exception E){
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR,
+            "Unknown error occurs, please try again!");
+        }
     }
 
     public List<ARTTestResult> getAllTempbyUserID(Long user_id){
-        return artTestResultRepository.findByUserId(user_id); 
+        List<ARTTestResult> toReturn;
+        try{
+            toReturn = artTestResultRepository.findByUserId(user_id);
+        } catch(Exception E){
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR,
+            "Unknown error occurs, please try again!");
+        }
+        return toReturn; 
     }
 
     public ARTTestResult getTempbyUserIDAndDate(Long user_id, LocalDateTime date){
-        return artTestResultRepository.findByUserIdAndDate(user_id,date);
+        try{
+            return artTestResultRepository.findByUserIdAndDate(user_id,date);
+        } catch(Exception E){
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR,
+            "Unknown error occurs, please try again!");
+        }
     }   
 
 }
