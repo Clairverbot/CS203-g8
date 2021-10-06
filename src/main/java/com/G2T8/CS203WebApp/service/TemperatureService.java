@@ -29,7 +29,7 @@ public class TemperatureService {
             throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR,
             "Unknown error occurs, please try again!");
         }
-        return toReturn 
+        return toReturn;
     }
 
     public Temperature getTempbyUserIDAndDate(Long user_id, LocalDateTime date){
