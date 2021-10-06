@@ -14,7 +14,7 @@ import com.G2T8.CS203WebApp.service.UserService;
 
 @RestController
 @RequestMapping("/api/v1/user")
-public class UserController{
+public class userController{
 
     @Autowired
     private UserService userService;
