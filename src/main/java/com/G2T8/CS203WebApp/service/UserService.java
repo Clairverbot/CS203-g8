@@ -177,6 +177,7 @@ public class UserService implements UserDetailsService {
         user.setName(userDetails.getName());
         user.setRole(userDetails.getRole());
         user.setPassword(encodedPassword);
+        user.setFirstLogin(true);
         userRepository.save(user);
     }
 
