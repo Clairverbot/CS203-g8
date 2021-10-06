@@ -13,4 +13,3 @@ public interface ARTTestResultRepository extends JpaRepository<ARTTestResult, Lo
     Optional<ARTTestResult> findByUserIdAndDate(@Param("user_id") Long user_id, 
             @Param("date") LocalDateTime date);
 }
-}
