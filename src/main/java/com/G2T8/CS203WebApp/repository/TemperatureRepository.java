@@ -6,5 +6,11 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface TemperatureRepository extends JpaRepository<Temperature, Long>{
     
+    @Query(value = "SELECT * FROM temperature t WHERE t.user_id = user_id", nativeQuery= true)
+    List<Optional<Temperature>> findByUserId(@Param("user_id") Long user_id);
+
+    @Query(value = "SELECT * FROM temperature t WHERE t.user_id = user_id and t.date =  date", nativeQuery = true)
+    Optional<Temperature> findByUserIdAndDate(@Param("user_id") Long user_id, 
+            @Param("contracteddate") LocalDateTime date);
 }
 
