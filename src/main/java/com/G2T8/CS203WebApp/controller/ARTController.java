@@ -2,7 +2,7 @@ package com.G2T8.CS203WebApp.controller;
 
 import com.G2T8.CS203WebApp.repository.*;
 import com.G2T8.CS203WebApp.model.*;
-import com.G2T8.CS203WebApp.service.TemperatureService;
+import com.G2T8.CS203WebApp.service.ARTTestResultService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -12,28 +12,28 @@ import java.time.LocalDateTime;
 import java.util.*;
 
 @RestController
-@RequestMapping("/api/v1/temperature")
-public class TemperatureController {
+@RequestMapping("/api/v1/art")
+public class ARTController {
     @Autowired
-    public TemperatureService tempService;
+    public ARTTestResultService artService;
     @Autowired
-    public TemperatureRepository tempRepo;
+    public ARTTestResultRepository artRepo;
 
-    @GetMapping("/allTemp")
-    public List<Temperature> findAllTemp() {
+    @GetMapping("/allArt")
+    public List<ARTTestResults> findAllArt() {
         try{
-            return tempService.getAllTemp();
+            return artService.getAllResult();
         } catch(Exception E){
             throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR,
             "Unknown error occurs, please try again!");
         }
     }
 
-    @RequestMapping("/temp/{id}")
-    public List<Temperature> findTempByUserId(Long userId) {
-        List<Temperature> toReturn;
+    @RequestMapping("/art/{id}")
+    public List<ARTTestResults> findARTByUserId(Long userId) {
+        List<ARTTestResults> toReturn;
         try{
-            toReturn = tempService.getAllTempbyUserID(userId);
+            toReturn = artService.getARTbyUserID(userId);
         } catch(Exception E){
             throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR,
             "Unknown error occurs, please try again!");
@@ -41,20 +41,20 @@ public class TemperatureController {
         return toReturn;
     }
 
-    @RequestMapping("/temp/{id}/{date}")
-    public Temperature findTempByUserIdAndDate(Long userId, LocalDateTime date) {
+    @RequestMapping("/art/{id}/{date}")
+    public ARTTestResults findARTByUserIdAndDate(Long userId, LocalDateTime date) {
         try{
-            return tempService.getTempbyUserIDAndDate(userId,date);
+            return artService.getARTbyUserIdAndDate(userId,date);
         } catch(Exception E){
             throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR,
             "Unknown error occurs, please try again!");
         }
     }
 
-    @PostMapping("/add/{date}/{temperature}")
-    public ResponseEntity<?> addTemperature(LocalDateTime date, double temp){
+    @PostMapping("/addART/{weeksMonday}/{result}/{date}")
+    public ResponseEntity<?> addTemperature(LocalDateTime weeksMonday, boolean result, LocalDateTime date){
         try{
-            tempService.addTemperature(date,temp);
+            artService.addART(weeksMonday,result,date);
             return ResponseEntity.ok(null);
         } catch(Exception E){
             throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR,
