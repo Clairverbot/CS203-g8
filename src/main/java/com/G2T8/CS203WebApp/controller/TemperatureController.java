@@ -34,6 +34,9 @@ public class TemperatureController {
         List<Temperature> toReturn;
         try{
             toReturn = tempService.getAllTempbyUserID(userId);
+        } catch(NullPointerException E){
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND,
+            "User not found!");
         } catch(Exception E){
             throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR,
             "Unknown error occurs, please try again!");
@@ -45,6 +48,9 @@ public class TemperatureController {
     public Temperature findTempByUserIdAndDate(Long userId, LocalDateTime date) {
         try{
             return tempService.getTempbyUserIDAndDate(userId,date);
+        } catch(NullPointerException E){
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND,
+            "User not found!");
         } catch(Exception E){
             throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR,
             "Unknown error occurs, please try again!");

@@ -15,32 +15,23 @@ public class ARTTestResultService{
     private ARTTestResultRepository artTestResultRepository;
 
     public List<ARTTestResults> getAllResult(){
-        try{
-            return artTestResultRepository.findAll();
-        } catch(Exception E){
-            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR,
-            "Unknown error occurs, please try again!");
-        }
+        return artTestResultRepository.findAll();
     }
 
     public List<ARTTestResults> getARTbyUserID(Long user_id){
-        List<ARTTestResults> toReturn;
-        try{
-            toReturn = artTestResultRepository.findByUserId(user_id);
-        } catch(Exception E){
-            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR,
-            "Unknown error occurs, please try again!");
+        List<ARTTestResults> toReturn = artTestResultRepository.findByUserId(user_id);
+        if(toReturn != null){
+            return toReturn;
         }
-        return toReturn; 
+        return null; 
     }
 
     public ARTTestResults getARTbyUserIdAndDate(Long user_id, LocalDateTime date){
-        try{
-            return artTestResultRepository.findByUserIdAndDate(user_id,date);
-        } catch(Exception E){
-            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR,
-            "Unknown error occurs, please try again!");
+        ARTTestResults toReturn = artTestResultRepository.findByUserIdAndDate(user_id,date);
+        if(toReturn != null){
+            return toReturn;
         }
+        return null;
     }   
 
     public void addART(LocalDateTime weeksMonday, Boolean result, LocalDateTime date){
