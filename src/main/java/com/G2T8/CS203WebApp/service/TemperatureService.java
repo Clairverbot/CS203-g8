@@ -15,32 +15,23 @@ public class TemperatureService {
     private TemperatureRepository temperatureRepository;
 
     public List<Temperature> getAllTemp(){
-        try{
-            return temperatureRepository.findAll();
-        } catch(Exception E){
-            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR,
-            "Unknown error occurs, please try again!");
-        }
+        return temperatureRepository.findAll();
     }
 
     public List<Temperature> getAllTempbyUserID(Long user_id){
-        List<Temperature> toReturn;
-        try{
-            toReturn = temperatureRepository.findByUserId(user_id);
-        } catch(Exception E){
-            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR,
-            "Unknown error occurs, please try again!");
+        List<Temperature> toReturn = temperatureRepository.findByUserId(user_id);
+        if(toReturn != null){
+            return toReturn;
         }
-        return toReturn;
+        return null;
     }
 
     public Temperature getTempbyUserIDAndDate(Long user_id, LocalDateTime date){
-        try{
-            return temperatureRepository.findByUserIdAndDate(user_id,date);
-        } catch(Exception E){
-            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR,
-            "Unknown error occurs, please try again!");
+        Temperature toReturn = temperatureRepository.findByUserIdAndDate(user_id,date);
+        if(toReturn != null){
+            return toReturn;
         }
+        return null;
     }
 
     public void addTemperature(LocalDateTime date, double temperature){

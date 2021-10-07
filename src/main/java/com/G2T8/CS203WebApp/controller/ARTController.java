@@ -34,6 +34,9 @@ public class ARTController {
         List<ARTTestResults> toReturn;
         try{
             toReturn = artService.getARTbyUserID(userId);
+        } catch(NullPointerException E){
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND,
+            "User not found!");
         } catch(Exception E){
             throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR,
             "Unknown error occurs, please try again!");
@@ -45,6 +48,9 @@ public class ARTController {
     public ARTTestResults findARTByUserIdAndDate(Long userId, LocalDateTime date) {
         try{
             return artService.getARTbyUserIdAndDate(userId,date);
+        } catch(NullPointerException E){
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND,
+            "User not found!");
         } catch(Exception E){
             throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR,
             "Unknown error occurs, please try again!");
