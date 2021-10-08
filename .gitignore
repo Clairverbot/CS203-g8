@@ -40,7 +40,11 @@ build/
 .env.production.local
 
 ### Miscellaneous ###
+<<<<<<< HEAD
 timelineforaks.txt
 
 ### Environment Variables? ###
 *.properties
+=======
+timelineforaks.txt
+>>>>>>> 394d06762e06801f78016d6b9bfe0c2cd48ae58c
