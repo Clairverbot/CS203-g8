@@ -1,0 +1,114 @@
+###
+GET http://localhost:8080/api/v1/user/findAll
+Accept: application/json
+
+###
+GET http://localhost:8080/api/v1/user/findUserByID/1
+Accept:application/json
+
+###
+GET http://localhost:8080/api/v1/user/findUserByEmail/aks@gmail.com
+Accept: application/json
+
+###
+PUT http://localhost:8080/api/v1/user/updateVaccinationStatus/1 HTTP/1.1
+Content-Type: application/json
+
+{
+    "id": 1,
+    "name": "aks",
+    "email": "aks@gmail.com",
+    "vaccination_status": 0,
+    "role": "Admin",
+    "password": "aks20012000",
+    "teamid": {
+        "name": "devteam",
+        "users": null,
+        "teamID": 1
+    },
+    "manager_user": null,
+    "first_login": true
+}
+
+###
+PUT http://localhost:8080/api/v1/user/updatepassword/1
+Content-Type: application/json
+
+{
+    "name": "aksrocfgkdgjksyo",
+    "email": "aks@gmail.com",
+    "vaccinationStatus": 0,
+    "role": "ROLE_BASIC",
+    "password": "akslovesicecream2001",
+    "teamID": {
+        "name": "devteam",
+        "users": null,
+        "teamID": 1
+    },
+    "firstLogin": false,
+    "id": 2,
+    "employeeUsers": [],
+    "managerUser": null
+}
+
+###
+PUT http://localhost:8080/api/v1/user/updatename/1
+Content-Type: application/json
+
+{
+    "id": 1,
+    "name": "aksrockssss",
+    "email": "aks@gmail.com",
+    "vaccination_status": 0,
+    "role": "Admin",
+    "password": "akslovesicecream",
+    "teamid": {
+        "name": "devteam",
+        "users": null,
+        "teamID": 1
+    },
+    "manager_user": null,
+    "first_login": true
+}
+
+###
+PUT http://localhost:8080/api/v1/user/updaterole/1
+Content-Type: application/json
+
+{
+    "id": 2,
+    "name": "aksrocfgkdgjksyo",
+    "email": "aks@gmail.com",
+    "vaccination_status": 1,
+    "role": "ROLE_BASIC",
+    "password": "akslovesicecream2001",
+    "teamid": {
+        "name": "devteam",
+        "users": null,
+        "teamID": 1
+    },
+    "manager_user": null,
+    "first_login": true
+}
+
+###
+
+PUT http://localhost:8080/api/v1/user/updatemanagerid/1
+Content-Type: application/json
+
+{
+    "id": 1,
+    "name": "aksrocksyo",
+    "email": "aks@gmail.com",
+    "vaccination_status": 0,
+    "role": "ROLE_ADMIN",
+    "password": "akslovesicecream",
+    "teamid": {
+        "name": "devteam",
+        "users": null,
+        "teamID": 1
+    },
+    "manager_id" : null, 
+    "manager_user": null,
+    "first_login": true
+}

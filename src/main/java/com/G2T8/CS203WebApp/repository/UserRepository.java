@@ -12,7 +12,7 @@ import com.G2T8.CS203WebApp.model.*;
 public interface UserRepository extends JpaRepository<User,Long>{
 
 
-    @Query(value = "SELECT u FROM User u WHERE u.email = email", nativeQuery = true)
+    @Query(value = "SELECT * FROM User u WHERE u.email = ?1", nativeQuery = true)
     Optional<User> findByEmail(@Param("email") String email);
 
 

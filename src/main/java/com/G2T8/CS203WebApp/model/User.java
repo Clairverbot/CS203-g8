@@ -6,6 +6,9 @@ import lombok.*;
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import java.io.Serializable;
 
 @Data // A shortcut for @ToString, @EqualsAndHashCode, @Getter on all fields, and
@@ -15,7 +18,7 @@ import java.io.Serializable;
 @Table(name = "User")
 public class User implements Serializable{
 
-    private static final long serialVersionUID = 1L; 
+    //private static final long serialVersionUID = 1L; 
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -25,7 +28,8 @@ public class User implements Serializable{
     private String name; 
 
 
-    @Column(name = "email", nullable = false, unique = true, length = 45) @NotNull @Email
+    
+    @Column(name = "email", nullable = false, length = 45) @Email
     private String email;
 
     @Column(name = "vaccinationStatus", nullable = false)
@@ -47,27 +51,54 @@ public class User implements Serializable{
     private Team team;
 
     // Recursive key of User class to identify which user is managing a particular user object;
-    @OneToMany(mappedBy = "ManagerUser", orphanRemoval = true, cascade = CascadeType.ALL)
-    private Set<User> EmployeeUsers; 
 
+    @OneToMany(mappedBy = "ManagerUser", orphanRemoval = true)
+    private List<User> EmployeeUsers = new ArrayList<>(); 
+
+    
     @ManyToOne
-    @JoinColumn(name = "ManagerUser_Id")
+    @JoinColumn(name = "ManagerUser_id")
     private User ManagerUser;
 
     // user id becomes a foreign key for class/table schedule
-    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL , orphanRemoval = true)
+    @JsonIgnore
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL , orphanRemoval = false)
     private List<Schedule> schedules; 
 
     // user id becomes a foreign key for CovidHistory class/table
-    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<CovidHistory> covidHistories;
+    @JsonIgnore
+    @OneToMany(mappedBy = "user", orphanRemoval = false)
+    private List<CovidHistory> covidHistories = null;
+
 
     // user id becomes a foreign key for Officerequest 
-    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<OfficeRequest> officeRequests;
+    @JsonIgnore
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = false)
+    private List<OfficeRequest> officeRequests = null;
+
+
+    // public void setChildrenOR(List<OfficeRequest> children) {
+    //     this.officeRequests.addAll(children);
+    //     for (OfficeRequest child : children)
+    //         child.setUser(this);
+    // }
 
     @Column(name = "firstLogin", nullable = false)
     private Boolean firstLogin; 
+
+    public User(){
+
+    }
+
+    public User(Long ID, String name, String email, int vaccination_status, String role, String password, Boolean first_login){
+        this.ID= ID;
+        this.name=name;
+        this.email = email;
+        this.vaccinationStatus= vaccination_status;
+        this.role = role;
+        this.password = password;
+        this.firstLogin = firstLogin; 
+    }
 
 
 
