@@ -7,6 +7,10 @@ import lombok.*;
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.Size;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 import java.io.Serializable;
 
 @Data // A shortcut for @ToString, @EqualsAndHashCode, @Getter on all fields, and
@@ -43,6 +47,8 @@ public class User implements Serializable {
     @Column(name = "password", nullable = false)
     // @Size(min = 8, max = 30)
     @NotEmpty
+    @Getter(onMethod = @__(@JsonIgnore))
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private String password;
 
     // Foreign key of Team class to identify which team the user is in;
@@ -73,12 +79,6 @@ public class User implements Serializable {
     private List<OfficeRequest> officeRequests;
 
     @Column(name = "firstLogin", nullable = false)
-    private Boolean firstLogin; 
-
-
-
-
-
-
+    private Boolean firstLogin;
 
 }

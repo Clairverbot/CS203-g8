@@ -147,11 +147,12 @@ public class UserService implements UserDetailsService {
 
         // Add authorization -- currently only takes in one role as per the User entity
         // specifications
-        Collection<SimpleGrantedAuthority> authorities = new ArrayList<>();
-        authorities.add(new SimpleGrantedAuthority(user.getRole()));
+        // Collection<SimpleGrantedAuthority> authorities = new ArrayList<>();
+        // authorities.add(new SimpleGrantedAuthority(user.getRole()));
 
         // Return the Spring Framework User object, not our custom one!
-        return new org.springframework.security.core.userdetails.User(user.getEmail(), user.getPassword(), authorities);
+        //return new org.springframework.security.core.userdetails.User(user.getEmail(), user.getPassword(), authorities);
+        return new CustomUserDetails(user);
     }
 
     public User findByEmail(String email) {

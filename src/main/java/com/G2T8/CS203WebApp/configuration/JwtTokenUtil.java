@@ -14,6 +14,8 @@ import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 
+import com.G2T8.CS203WebApp.model.CustomUserDetails;
+
 @Component
 public class JwtTokenUtil implements Serializable {
 
@@ -37,6 +39,12 @@ public class JwtTokenUtil implements Serializable {
         return getClaimFromToken(token, Claims::getExpiration);
     }
 
+    // retrieve user ID from JWT token
+    public Long getUserIdFromToken(String token) {
+        Function<Claims, Long> userIdResolver = x -> x.get("userId", Long.class);
+        return getClaimFromToken(token, userIdResolver);
+    }
+
     public <T> T getClaimFromToken(String token, Function<Claims, T> claimsResolver) {
         final Claims claims = getAllClaimsFromToken(token);
         return claimsResolver.apply(claims);
@@ -58,6 +66,7 @@ public class JwtTokenUtil implements Serializable {
         Map<String, Object> claims = new HashMap<>();
         // Put roles as the claim
         claims.put("roles", userDetails.getAuthorities());
+        claims.put("userId", ((CustomUserDetails) userDetails).getUser().getID());
         return doGenerateToken(claims, userDetails.getUsername());
     }
 

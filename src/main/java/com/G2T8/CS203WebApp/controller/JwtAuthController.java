@@ -24,6 +24,7 @@ import com.G2T8.CS203WebApp.configuration.JwtTokenUtil;
 import com.G2T8.CS203WebApp.service.UserService;
 import com.G2T8.CS203WebApp.model.User;
 import com.G2T8.CS203WebApp.model.UserDTO;
+import com.G2T8.CS203WebApp.model.CustomUserDetails;
 
 @RestController
 @CrossOrigin
@@ -52,7 +53,9 @@ public class JwtAuthController {
 
         final String token = jwtTokenUtil.generateToken(userDetails);
 
-        return ResponseEntity.ok(new JwtResponse(token));
+        final Boolean firstLogin = ((CustomUserDetails) userDetails).getUser().getFirstLogin();
+
+        return ResponseEntity.ok(new JwtResponse(token, firstLogin));
     }
 
     @PostMapping("/register")
@@ -73,9 +76,12 @@ public class JwtAuthController {
 
     @GetMapping("/get-profile")
     public ResponseEntity<?> getUserInfo(Principal user) {
-        org.springframework.security.core.userdetails.User userObj = (org.springframework.security.core.userdetails.User) userDetailsService
-                .loadUserByUsername(user.getName());
-        User userEntity = userDetailsService.findByEmail(userObj.getUsername());
+        // org.springframework.security.core.userdetails.User userObj =
+        // (org.springframework.security.core.userdetails.User) userDetailsService
+        // .loadUserByUsername(user.getName());
+        // User userEntity = userDetailsService.findByEmail(userObj.getUsername());
+        CustomUserDetails userObj = (CustomUserDetails) userDetailsService.loadUserByUsername(user.getName());
+        User userEntity = userObj.getUser();
 
         return ResponseEntity.ok(userEntity);
     }
