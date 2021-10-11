@@ -1,10 +1,11 @@
 package com.G2T8.CS203WebApp.model;
+
 import java.util.*;
 
 import javax.persistence.*;
-import lombok.*; 
+import lombok.*;
 import javax.validation.constraints.Email;
-import javax.validation.constraints.NotNull;
+import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.Size;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -14,47 +15,50 @@ import java.io.Serializable;
 @Data // A shortcut for @ToString, @EqualsAndHashCode, @Getter on all fields, and
       // @Setter on all non-final fields, and @RequiredArgsConstructor(generate
       // constructor with args annotated with @NonNull)
+@NoArgsConstructor
+@AllArgsConstructor
 @Entity
 @Table(name = "User")
-public class User implements Serializable{
+public class User implements Serializable {
 
     //private static final long serialVersionUID = 1L; 
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long ID; 
+    private Long ID;
 
-    @Column(name = "name", nullable = false) @NonNull
-    private String name; 
+    @Column(name = "name", nullable = false)
+    @NotEmpty
+    private String name;
 
-
-    
-    @Column(name = "email", nullable = false, length = 45) @Email
+    @Column(name = "email", nullable = false, unique = true, length = 45)
+    @NotEmpty
+    @Email
     private String email;
 
-    @Column(name = "vaccinationStatus", nullable = false)
-    @NonNull
+    @Column(name = "vaccinationStatus") // , nullable = false)
+    // @NonNull
     private int vaccinationStatus;
 
     @Column(name = "role", nullable = false)
-    @NonNull
+    @NotEmpty
     private String role;
 
     @Column(name = "password", nullable = false)
-    @Size(min = 8, max = 30)
+    // @Size(min = 8, max = 30)
+    @NotEmpty
     private String password;
 
-    // Foreign key of Team class to identify which team the user is in; 
+    // Foreign key of Team class to identify which team the user is in;
     @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "teamID")
-    @NonNull
+    // @NonNull
     private Team team;
 
     // Recursive key of User class to identify which user is managing a particular user object;
 
     @OneToMany(mappedBy = "ManagerUser", orphanRemoval = true)
-    private List<User> EmployeeUsers = new ArrayList<>(); 
-
+    private List<User> EmployeeUsers; 
     
     @ManyToOne
     @JoinColumn(name = "ManagerUser_id")
@@ -68,13 +72,13 @@ public class User implements Serializable{
     // user id becomes a foreign key for CovidHistory class/table
     @JsonIgnore
     @OneToMany(mappedBy = "user", orphanRemoval = false)
-    private List<CovidHistory> covidHistories = null;
+    private List<CovidHistory> covidHistories;
 
 
     // user id becomes a foreign key for Officerequest 
     @JsonIgnore
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = false)
-    private List<OfficeRequest> officeRequests = null;
+    private List<OfficeRequest> officeRequests;
 
 
     // public void setChildrenOR(List<OfficeRequest> children) {
@@ -85,10 +89,6 @@ public class User implements Serializable{
 
     @Column(name = "firstLogin", nullable = false)
     private Boolean firstLogin; 
-
-    public User(){
-
-    }
 
     public User(Long ID, String name, String email, int vaccination_status, String role, String password, Boolean first_login){
         this.ID= ID;
@@ -107,16 +107,3 @@ public class User implements Serializable{
 
 
 }
-
-
-
-
-    
-
-
-    
-
-
-
-    
-
