@@ -1,10 +1,22 @@
 package com.G2T8.CS203WebApp.service;
 
 import com.G2T8.CS203WebApp.repository.UserRepository;
+
+import java.io.IOException;
 import java.util.*;
+
+import javax.mail.MessagingException;
+
 import com.G2T8.CS203WebApp.model.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -17,6 +29,13 @@ public class UserService implements UserDetailsService {
 
     @Autowired
     private UserRepository userRepository;
+
+    private EmailService emailService;
+
+    @Autowired
+    public void setEmailService(EmailService emailService) {
+        this.emailService = emailService;
+    }
 
     public List<User> getAllUsers() {
         return userRepository.findAll();
@@ -180,6 +199,27 @@ public class UserService implements UserDetailsService {
         user.setPassword(encodedPassword);
         user.setFirstLogin(true);
         userRepository.save(user);
+    }
+
+    /**
+     * Creates an employee account for the user
+     * 
+     * @param userDetails user details of employee account
+     */
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
+    @Transactional(rollbackFor = { MessagingException.class, IOException.class })
+    public void createEmployeeAccount(UserDTO userDetails) throws MessagingException, IOException {
+        Map<String, Object> templateModel = new HashMap<>();
+        templateModel.put("recipientName", userDetails.getName());
+        templateModel.put("email", userDetails.getEmail());
+        templateModel.put("password", userDetails.getPassword());
+
+        addUser(userDetails);
+
+        emailService.sendEmailWithTemplate(userDetails.getEmail(),
+                "[XXX Employee Management System] Your account has been created!", "new-employee-account.html",
+                templateModel);
+
     }
 
 }
