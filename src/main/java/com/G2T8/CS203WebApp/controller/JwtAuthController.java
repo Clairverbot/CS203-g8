@@ -52,12 +52,20 @@ public class JwtAuthController {
 
         final String token = jwtTokenUtil.generateToken(userDetails);
 
-        return ResponseEntity.ok(new JwtResponse(token));
+        final User user = userDetailsService.findByEmail(authenticationRequest.getEmail());
+
+        return ResponseEntity.ok(new JwtResponse(token, user.getFirstLogin()));
     }
 
     @PostMapping("/register")
     public ResponseEntity<?> saveUser(@RequestBody @Validated UserDTO user) throws Exception {
         userDetailsService.addUser(user);
+        return new ResponseEntity<>(null, HttpStatus.CREATED);
+    }
+
+    @PostMapping("/add-employee")
+    public ResponseEntity<?> addEmployee(@RequestBody @Validated UserDTO user) throws Exception {
+        userDetailsService.createEmployeeAccount(user);
         return new ResponseEntity<>(null, HttpStatus.CREATED);
     }
 
