@@ -4,6 +4,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import java.util.*;
 import javax.validation.Valid;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 
 import com.G2T8.CS203WebApp.exception.UserNotFoundException;
 import com.G2T8.CS203WebApp.model.*;
@@ -85,7 +87,7 @@ public class UserController {
 
     // done
     // updates password
-    @RequestMapping(value = {"/updatepassword/{id}", "/updatepassword"}, method = RequestMethod.PUT)
+    @RequestMapping(value = { "/updatepassword/{id}", "/updatepassword" }, method = RequestMethod.PUT)
     public User updatePassword(@PathVariable Long id, @Valid @RequestBody User userLatest) {
         Optional<User> userop = userRepo.findById(id);
         if (userop.isPresent()) {
@@ -164,5 +166,39 @@ public class UserController {
     // }
     // throw new UserNotFoundException(ID);
     // }
+
+    @PostMapping("/reset-password-token")
+    public ResponseEntity<?> getResetPasswordToken(@RequestBody String email) throws Exception {
+        User user = userService.findByEmail(email);
+
+        if (user == null) {
+            throw new UserNotFoundException(email);
+        }
+
+        userService.createPasswordResetTokenForUser(user);
+        return new ResponseEntity<>(null, HttpStatus.CREATED);
+    }
+
+    @PutMapping("/reset-password")
+    public ResponseEntity<?> resetPassword(@RequestBody Map<String, Object> passReset) throws Exception {
+        Optional<User> user = userService.findUserByPasswordResetToken(passReset.get("token").toString());
+        String message = null;
+        if (user.isPresent()) {
+            message = userService.resetPasswordForUser(user.get(), passReset.get("token").toString(),
+                    passReset.get("newPassword").toString());
+        } else {
+            throw new UserNotFoundException();
+        }
+
+        Map<String, String> responseBody = new HashMap<>();
+        responseBody.put("message", message);
+
+        if (message == null) {
+            return new ResponseEntity<>(null, HttpStatus.OK);
+        } else {
+            return new ResponseEntity<>(responseBody, HttpStatus.BAD_REQUEST);
+        }
+
+    }
 
 }
