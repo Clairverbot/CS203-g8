@@ -197,8 +197,8 @@ public class UserService implements UserDetailsService {
     @PreAuthorize("hasRole('ROLE_ADMIN')")
     @Transactional(rollbackFor = { MessagingException.class, IOException.class })
     public void createEmployeeAccount(UserDTO userDetails) throws MessagingException, IOException {
-        userDetails.setPassword(createRandomPassword(10));
-        
+        // userDetails.setPassword(createRandomPassword(10));
+
         Map<String, Object> templateModel = new HashMap<>();
         templateModel.put("recipientName", userDetails.getName());
         templateModel.put("email", userDetails.getEmail());
@@ -212,16 +212,18 @@ public class UserService implements UserDetailsService {
 
     }
 
-    private String createRandomPassword(int stringLength) {
-        int leftLimit = 48; // numeral '0'
-        int rightLimit = 122; // letter 'z'
-        Random random = new Random();
+    // private String createRandomPassword(int stringLength) {
+    // int leftLimit = 48; // numeral '0'
+    // int rightLimit = 122; // letter 'z'
+    // Random random = new Random();
 
-        String generatedString = random.ints(leftLimit, rightLimit + 1)
-                .filter(i -> (i <= 57 || i >= 65) && (i <= 90 || i >= 97)).limit(stringLength)
-                .collect(StringBuilder::new, StringBuilder::appendCodePoint, StringBuilder::append).toString();
+    // String generatedString = random.ints(leftLimit, rightLimit + 1)
+    // .filter(i -> (i <= 57 || i >= 65) && (i <= 90 || i >=
+    // 97)).limit(stringLength)
+    // .collect(StringBuilder::new, StringBuilder::appendCodePoint,
+    // StringBuilder::append).toString();
 
-        return generatedString;
-    }
+    // return generatedString;
+    // }
 
 }
