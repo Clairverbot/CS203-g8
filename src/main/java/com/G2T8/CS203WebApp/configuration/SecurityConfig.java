@@ -57,7 +57,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     @Override
     protected void configure(HttpSecurity httpSecurity) throws Exception {
         // We don't need CSRF for this
-        httpSecurity.csrf().disable()
+        httpSecurity.cors().and().csrf().disable()
                 // requests to these endpoints do not need authentication
                 .authorizeRequests().antMatchers("/api/v1/users/login", "/api/v1/users/register",
                         "/api/v1/user/reset-password", "/api/v1/user/reset-password-token")
@@ -84,7 +84,5 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
          * .addFilterBefore(jwtRequestFilter,
          * UsernamePasswordAuthenticationFilter.class)
          */
-
-        httpSecurity.cors();
     }
 }
