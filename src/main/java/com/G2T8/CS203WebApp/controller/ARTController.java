@@ -57,10 +57,10 @@ public class ARTController {
         }
     }
 
-    @PostMapping("/addART/{weeksMonday}/{result}/{date}")
-    public ResponseEntity<?> addTemperature(LocalDateTime weeksMonday, boolean result, LocalDateTime date){
+    @PostMapping("/addART")
+    public ResponseEntity<?> addResult(ArtDTO artDetails){
         try{
-            artService.addART(weeksMonday,result,date);
+            artService.addART(artDetails);
             return ResponseEntity.ok(null);
         } catch(Exception E){
             throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR,
