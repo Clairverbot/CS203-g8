@@ -51,17 +51,6 @@ public class UserService implements UserDetailsService {
 
     }
 
-    public User getUserByEmail(String email) {
-
-        Optional<User> b = userRepository.findByEmail(email);
-        if (b.isPresent()) {
-            User user = b.get();
-            return user;
-        } else
-            return null;
-
-    }
-
     // should delete as we logging in w email not possible to change
 
     public User updateUserEmail(Long ID, String email) {
@@ -165,6 +154,7 @@ public class UserService implements UserDetailsService {
     }
 
     public User findByEmail(String email) {
+        logger.info(email);
         Optional<User> optional = userRepository.findByEmail(email);
 
         if (optional.isPresent()) {
