@@ -15,6 +15,7 @@ import com.G2T8.CS203WebApp.service.UserService;
 import java.security.Principal;
 
 @RestController
+@CrossOrigin
 @RequestMapping("/api/v1/user")
 public class UserController {
 
@@ -167,6 +168,13 @@ public class UserController {
     // throw new UserNotFoundException(ID);
     // }
 
+    /**
+     * Endpoint for generating a reset password token associated with an email
+     * 
+     * @param email
+     * @return
+     * @throws Exception
+     */
     @PostMapping("/reset-password-token")
     public ResponseEntity<?> getResetPasswordToken(@RequestBody String email) throws Exception {
         User user = userService.findByEmail(email.trim());
@@ -179,6 +187,15 @@ public class UserController {
         return new ResponseEntity<>(null, HttpStatus.CREATED);
     }
 
+    /**
+     * Endpoint for actually resetting the password
+     * 
+     * @param passReset a map object ideally containing token and newPassword.
+     *                  TO-DO: Return an invalid reset password token exception if
+     *                  the fields are not all filled up
+     * @return
+     * @throws Exception
+     */
     @PutMapping("/reset-password")
     public ResponseEntity<?> resetPassword(@RequestBody Map<String, Object> passReset) throws Exception {
         Optional<User> user = userService.findUserByPasswordResetToken(passReset.get("token").toString());

@@ -154,7 +154,7 @@ public class UserService implements UserDetailsService {
     }
 
     public User findByEmail(String email) {
-        logger.info(email);
+        // logger.info(email);
         Optional<User> optional = userRepository.findByEmail(email);
 
         if (optional.isPresent()) {
@@ -219,6 +219,18 @@ public class UserService implements UserDetailsService {
         return generatedString;
     }
 
+    // ----------------------------------------------
+    // RESET PASSWORD FUNCTIONALITY
+    // ----------------------------------------------
+
+    /**
+     * Creates a password reset token for a particular user The token itself is a
+     * UUID string, but the entity contains the user it corresponds to and an expiry
+     * date
+     * 
+     * @param user user entity for whom to create a password reset token for
+     * @throws Exception
+     */
     @Transactional(rollbackFor = { MessagingException.class, IOException.class })
     public void createPasswordResetTokenForUser(User user) throws Exception {
         String resetToken = UUID.randomUUID().toString();
@@ -234,24 +246,50 @@ public class UserService implements UserDetailsService {
 
     }
 
+    /**
+     * Utility function to generate password reset token Deletes all tokens
+     * previously created for that user
+     * 
+     * @param resetToken
+     * @param user
+     * @return
+     */
+    @Transactional
     private PasswordResetToken generatePasswordResetToken(String resetToken, User user) {
         PasswordResetToken token = new PasswordResetToken(resetToken, user);
-
+        passwordResetRepository.deleteByUserAndExpiryDateLessThan(user, token.getExpiryDate());
         return passwordResetRepository.save(token);
     }
 
+    /**
+     * Actually resets the password for the user
+     * 
+     * @param user
+     * @param token
+     * @param password
+     * @return
+     * @throws Exception
+     */
+    @Transactional
     public String resetPasswordForUser(User user, String token, String password) throws Exception {
         String invalidityMessage = validatePasswordResetToken(token);
         if (invalidityMessage == null) {
             BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
             user.setPassword(encoder.encode(password));
             updatepassword(user);
+            passwordResetRepository.deleteByToken(token);
         }
         return invalidityMessage;
     }
 
+    /**
+     * Function to find user corresponding to a password reset token
+     * 
+     * @param token
+     * @return
+     */
     public Optional<User> findUserByPasswordResetToken(final String token) {
-        Optional<PasswordResetToken> opt = passwordResetRepository.findFirstByToken(token);
+        Optional<PasswordResetToken> opt = passwordResetRepository.findByToken(token);
         if (opt.isPresent()) {
             return Optional.ofNullable(opt.get().getUser());
         } else {
@@ -259,8 +297,15 @@ public class UserService implements UserDetailsService {
         }
     }
 
+    /**
+     * Validation of password reset token. Checks whether the token is present in
+     * the database & whether it's expired or not
+     * 
+     * @param token
+     * @return
+     */
     private String validatePasswordResetToken(String token) {
-        Optional<PasswordResetToken> opt = passwordResetRepository.findFirstByToken(token);
+        Optional<PasswordResetToken> opt = passwordResetRepository.findByToken(token);
         if (opt.isPresent()) {
             PasswordResetToken passToken = opt.get();
             logger.info(passToken.getToken());
