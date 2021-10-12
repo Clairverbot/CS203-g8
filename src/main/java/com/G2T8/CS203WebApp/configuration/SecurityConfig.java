@@ -59,7 +59,9 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         // We don't need CSRF for this
         httpSecurity.csrf().disable()
                 // requests to these endpoints do not need authentication
-                .authorizeRequests().antMatchers("/api/v1/users/login", "/api/v1/users/register").permitAll().
+                .authorizeRequests()
+                .antMatchers("/api/v1/users/login", "/api/v1/users/register", "/api/v1/user/reset-password").permitAll()
+                .
                 // needs to be authorized
                 antMatchers(HttpMethod.GET, "/api/v1/users/dummy").hasRole("ADMIN")
                 // all other requests need to be authenticated
