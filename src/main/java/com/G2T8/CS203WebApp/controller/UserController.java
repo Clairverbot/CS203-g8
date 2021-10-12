@@ -85,7 +85,7 @@ public class UserController {
 
     // done
     // updates password
-    @RequestMapping(value = "/updatepassword/{id}", method = RequestMethod.PUT)
+    @RequestMapping(value = {"/updatepassword/{id}", "/updatepassword"}, method = RequestMethod.PUT)
     public User updatePassword(@PathVariable Long id, @Valid @RequestBody User userLatest) {
         Optional<User> userop = userRepo.findById(id);
         if (userop.isPresent()) {
