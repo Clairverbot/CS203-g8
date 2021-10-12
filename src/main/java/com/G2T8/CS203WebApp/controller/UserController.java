@@ -38,8 +38,8 @@ public class UserController {
     // get user by Email ( necessary as we are logging in with email)
     @RequestMapping(value = "/findUserByEmail/{email}", method = RequestMethod.GET)
     public User findUserByEmail(@PathVariable(value = "email") String email) {
-        if (userService.getUserByEmail(email) != null) {
-            return userService.getUserByEmail(email);
+        if (userService.findByEmail(email) != null) {
+            return userService.findByEmail(email);
         } else {
             throw new UserNotFoundException(email);
 
@@ -169,7 +169,7 @@ public class UserController {
 
     @PostMapping("/reset-password-token")
     public ResponseEntity<?> getResetPasswordToken(@RequestBody String email) throws Exception {
-        User user = userService.findByEmail(email);
+        User user = userService.findByEmail(email.trim());
 
         if (user == null) {
             throw new UserNotFoundException(email);
