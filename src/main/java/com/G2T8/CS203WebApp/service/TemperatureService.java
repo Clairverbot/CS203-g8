@@ -1,6 +1,7 @@
 package com.G2T8.CS203WebApp.service;
 
 import com.G2T8.CS203WebApp.repository.TemperatureRepository;
+import com.G2T8.CS203WebApp.repository.UserRepository;
 import java.util.*;
 import com.G2T8.CS203WebApp.model.*;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,6 +14,8 @@ import java.time.LocalDateTime;
 public class TemperatureService {
     @Autowired
     private TemperatureRepository temperatureRepository;
+    @Autowired
+    private UserRepository userRepository;
 
     public List<Temperature> getAllTemp(){
         return temperatureRepository.findAll();
@@ -34,11 +37,15 @@ public class TemperatureService {
         return null;
     }
 
-    public void addTemperature(LocalDateTime date, double temperature){
+    public void addTemperature(TemperatureDTO tempDetails){
+        Optional<User> user = userRepository.findById(tempDetails.getUserId());
         Temperature temp = new Temperature();
-        temp.setDate(date);
-        temp.setTemperature(temperature);
-        temperatureRepository.save(temp);
+        if(user.isPresent()){
+            temp.setDate(tempDetails.getDate());
+            temp.setTemperature(tempDetails.getTemperature());
+            temp.setUser(user.get());
+            temperatureRepository.save(temp);
+        }
     }
 
 }

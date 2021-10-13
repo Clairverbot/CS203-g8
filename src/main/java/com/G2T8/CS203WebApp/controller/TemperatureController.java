@@ -57,10 +57,10 @@ public class TemperatureController {
         }
     }
 
-    @PostMapping("/add/{date}/{temperature}")
-    public ResponseEntity<?> addTemperature(LocalDateTime date, double temp){
+    @PostMapping("/addTemp")
+    public ResponseEntity<?> addTemp(TemperatureDTO tempDetails){
         try{
-            tempService.addTemperature(date,temp);
+            tempService.addTemperature(tempDetails);
             return ResponseEntity.ok(null);
         } catch(Exception E){
             throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR,
