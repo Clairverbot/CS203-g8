@@ -93,6 +93,7 @@ public class User implements Serializable {
     private Boolean firstLogin;
 
     @OneToOne(mappedBy = "user")
+    @JsonIgnore
     private PasswordResetToken passwordResetToken;
 
     // public User(Long ID, String name, String email, int vaccination_status,

@@ -60,7 +60,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         httpSecurity.cors().and().csrf().disable()
                 // requests to these endpoints do not need authentication
                 .authorizeRequests().antMatchers("/api/v1/users/login", "/api/v1/users/register",
-                        "/api/v1/user/reset-password", "/api/v1/user/reset-password-token")
+                        "/api/v1/users/reset-password", "/api/v1/users/reset-password/token")
                 .permitAll().
                 // needs to be authorized
                 antMatchers(HttpMethod.GET, "/api/v1/users/dummy").hasRole("ADMIN")
