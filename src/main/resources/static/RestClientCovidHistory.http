@@ -1,7 +1,7 @@
 ###
 GET http://localhost:8080/api/v1/CovidHistory/findAll
 Accept: application/json
-Authorization: Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJoYWlyYWJiYUBnbWFpbC5jb20iLCJyb2xlcyI6W3siYXV0aG9yaXR5IjoiUk9MRV9BRE1JTiJ9XSwiZXhwIjoxNjM0MzE5NjU2LCJpYXQiOjE2MzQzMDE2NTZ9.dBLkyXjT0KHMo5BjJyNnXN9ywtJL4j19z9AKCFJKiRJ6bUxwJ4sEahMiIGAipQ3yDmktpHzpfTOU8Nls0dDTdA
+Authorization: Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJoYWlyYWJiYUBnbWFpbC5jb20iLCJyb2xlcyI6W3siYXV0aG9yaXR5IjoiUk9MRV9BRE1JTiJ9XSwiZXhwIjoxNjM0MzM5MjkxLCJpYXQiOjE2MzQzMjEyOTF9.kny7q-sSAJS3tla-ozYHenzWHYJ0LxRkqpdFbzZZByynSPa0Z1W9kAclV5k9cTdOgolI-23xZOYESLXdQ2eGIw
 
 ###
 GET http://localhost:8080/api/v1/CovidHistory/findAllHistoryFromOneUser/1
@@ -17,25 +17,25 @@ Authorization: Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJoYWlyYWJiYUBnbWFpbC5jb20iL
 POST http://localhost:8080/api/v1/CovidHistory/createCovidHistory
 Accept:application/json
 Content-Type: application/json
-Authorization: Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJoYWlyYWJiYUBnbWFpbC5jb20iLCJyb2xlcyI6W3siYXV0aG9yaXR5IjoiUk9MRV9BRE1JTiJ9XSwiZXhwIjoxNjM0MzE5NjU2LCJpYXQiOjE2MzQzMDE2NTZ9.dBLkyXjT0KHMo5BjJyNnXN9ywtJL4j19z9AKCFJKiRJ6bUxwJ4sEahMiIGAipQ3yDmktpHzpfTOU8Nls0dDTdA
+Authorization: Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJoYWlyYWJiYUBnbWFpbC5jb20iLCJyb2xlcyI6W3siYXV0aG9yaXR5IjoiUk9MRV9BRE1JTiJ9XSwiZXhwIjoxNjM0MzM5MjkxLCJpYXQiOjE2MzQzMjEyOTF9.kny7q-sSAJS3tla-ozYHenzWHYJ0LxRkqpdFbzZZByynSPa0Z1W9kAclV5k9cTdOgolI-23xZOYESLXdQ2eGIw
 
 {
     "user": {
-        "name": "kususususus",
-        "email": "hairabba@gmail.com",
+        "name": "aksnatu",
+        "email": "akshayanatu@gmail.com",
         "vaccinationStatus": 0,
         "role": "ROLE_ADMIN",
         "team": null,
         "schedules": [],
         "officeRequests": [],
         "firstLogin": true,
-        "id": 1,
+        "id": 2,
         "employeeUsers": [],
         "managerUser": null
 
     },
     "contractedDate": [
-        2030,
+        2050,
         11,
         12,
         11,
@@ -43,7 +43,7 @@ Authorization: Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJoYWlyYWJiYUBnbWFpbC5jb20iL
         1
     ],
     "recoverDate": [
-        2043,
+        2093,
         11,
         11,
         11,

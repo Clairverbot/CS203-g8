@@ -19,3 +19,25 @@ Content-Type: application/json
     "email": "hairabba@gmail.com", 
     "password": "khushichaand"
 }
+
+###
+POST http://localhost:8080/api/v1/users/register
+Accept: application/json
+Content-Type: application/json
+
+{
+    "email": "akshayanatu@gmail.com", 
+    "password": "aksnatu", 
+    "role": "ROLE_ADMIN", 
+    "name": "aksnatu" 
+}
+
+###
+POST http://localhost:8080/api/v1/users/login
+Accept: application/json
+Content-Type: application/json
+
+{
+    "email": "akshayanatu@gmail.com", 
+    "password": "aksnatu"
+}
