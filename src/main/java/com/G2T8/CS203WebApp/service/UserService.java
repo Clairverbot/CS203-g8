@@ -55,6 +55,7 @@ public class UserService implements UserDetailsService {
 
     // should delete as we logging in w email not possible to change
 
+    @Transactional
     public User updateUserEmail(Long ID, String email) {
         Optional<User> b = userRepository.findById(ID);
         if (b.isPresent()) {
@@ -77,6 +78,7 @@ public class UserService implements UserDetailsService {
 
     }
 
+    @Transactional
     public User updateUserName(Long id, String name) {
         User user = getUser(id);
         if (user == null) {
@@ -86,6 +88,7 @@ public class UserService implements UserDetailsService {
         return userRepository.save(user);
     }
 
+    @Transactional
     public User updatePasswordInUserProfile(Long id, String password) {
         User user = getUser(id);
         if (user == null) {
@@ -98,6 +101,7 @@ public class UserService implements UserDetailsService {
 
     }
 
+    @Transactional
     public User updateRole(Long id, String role) {
         User user = getUser(id);
         if (user != null && (role.equals("ROLE_BASIC") || role.equals("ROLE_ADMIN"))) {
@@ -107,6 +111,7 @@ public class UserService implements UserDetailsService {
         throw new UserNotFoundException(id);
     }
 
+    @Transactional
     public User updateManagerId(Long id, User manager) {
         User user = getUser(id);
         if (user == null) {
