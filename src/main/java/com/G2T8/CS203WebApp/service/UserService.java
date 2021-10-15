@@ -8,11 +8,13 @@ import java.util.*;
 
 import javax.mail.MessagingException;
 
+import com.G2T8.CS203WebApp.exception.UserNotFoundException;
 import com.G2T8.CS203WebApp.model.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.access.prepost.PostAuthorize;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -64,26 +66,53 @@ public class UserService implements UserDetailsService {
 
     }
 
-    public User updateUserVaccinationStatus(User user) {
+    @Transactional
+    public User updateUserVaccinationStatus(Long id, int vaccinationStatus) {
+        User user = getUser(id);
+        if (user == null) {
+            throw new UserNotFoundException(id);
+        }
+        user.setVaccinationStatus(vaccinationStatus);
         return userRepository.save(user);
 
     }
 
-    public User updateUserName(User user) {
+    public User updateUserName(Long id, String name) {
+        User user = getUser(id);
+        if (user == null) {
+            throw new UserNotFoundException(id);
+        }
+        user.setName(name);
+        return userRepository.save(user);
+    }
+
+    public User updatePasswordInUserProfile(Long id, String password) {
+        User user = getUser(id);
+        if (user == null) {
+            throw new UserNotFoundException(id);
+        }
+        BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
+        String encodedPassword = encoder.encode(password);
+        user.setPassword(encodedPassword);
         return userRepository.save(user);
 
     }
 
-    public User updatepassword(User user) {
-        return userRepository.save(user);
-
+    public User updateRole(Long id, String role) {
+        User user = getUser(id);
+        if (user != null && (role.equals("ROLE_BASIC") || role.equals("ROLE_ADMIN"))) {
+            user.setRole(role);
+            return userRepository.save(user);
+        }
+        throw new UserNotFoundException(id);
     }
 
-    public User updaterole(User user) {
-        return userRepository.save(user);
-    }
-
-    public User updatemanagerid(User user) {
+    public User updateManagerId(Long id, User manager) {
+        User user = getUser(id);
+        if (user == null) {
+            throw new UserNotFoundException(id);
+        }
+        user.setManagerUser(manager);
         return userRepository.save(user);
     }
 
@@ -276,7 +305,7 @@ public class UserService implements UserDetailsService {
         if (invalidityMessage == null) {
             BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
             user.setPassword(encoder.encode(password));
-            updatepassword(user);
+            userRepository.save(user);
             passwordResetRepository.deleteByToken(token);
         }
         return invalidityMessage;
