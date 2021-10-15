@@ -21,8 +21,6 @@ public class UserController {
 
     @Autowired
     private UserService userService;
-    @Autowired
-    private UserRepository userRepo;
 
     // done
     // get all users
@@ -53,7 +51,7 @@ public class UserController {
     @GetMapping(value = { "/getProfile/{ID}", "/getProfile" })
     public User findUserByID(@PathVariable(value = "ID", required = false) Long ID, Principal principal) {
         if (ID == null) {
-            org.springframework.security.core.userdetails.User userObj = (org.springframework.security.core.userdetails.User) userService
+            org.springframework.security.core.userdetails.UserDetails userObj = (org.springframework.security.core.userdetails.UserDetails) userService
                     .loadUserByUsername(principal.getName());
             User userEntity = userService.findByEmail(userObj.getUsername());
 
@@ -73,69 +71,70 @@ public class UserController {
 
     // done
     // updatesVaccinationStatus
+    // @PutMapping("/updateVaccinationStatus/{id}")
+    // public User updateVaccinationStatus(@PathVariable Long id, @Valid
+    // @RequestBody User userLatest) {
+    // Optional<User> userop = userRepo.findById(id);
+    // if (userop.isPresent()) {
+    // User userReal = userop.get();
+    // userReal = userLatest;
+    // return userRepo.save(userReal);
+
+    // }
+    // throw new UserNotFoundException(id);
+
+    // }
+
     @PutMapping("/updateVaccinationStatus/{id}")
-    public User updateVaccinationStatus(@PathVariable Long id, @Valid @RequestBody User userLatest) {
-        Optional<User> userop = userRepo.findById(id);
-        if (userop.isPresent()) {
-            User userReal = userop.get();
-            userReal = userLatest;
-            return userRepo.save(userReal);
-
-        }
-        throw new UserNotFoundException(id);
-
+    public User updateVaccinationStatus(@PathVariable Long id, @RequestBody int vaccinationStatus) {
+        return userService.updateUserVaccinationStatus(id, vaccinationStatus);
     }
 
     // done
     // updates password
-    @RequestMapping(value = { "/updatepassword/{id}", "/updatepassword" }, method = RequestMethod.PUT)
-    public User updatePassword(@PathVariable Long id, @Valid @RequestBody User userLatest) {
-        Optional<User> userop = userRepo.findById(id);
-        if (userop.isPresent()) {
-            User userReal = userop.get();
-            userReal = userLatest;
-            return userRepo.save(userReal);
-        }
-        throw new UserNotFoundException(id);
-    }
+    // @RequestMapping(value = { "/updatepassword/{id}", "/updatepassword" }, method
+    // = RequestMethod.PUT)
+    // public User updatePassword(@PathVariable Long id, @Valid @RequestBody User
+    // userLatest) {
+    // Optional<User> userop = userRepo.findById(id);
+    // if (userop.isPresent()) {
+    // User userReal = userop.get();
+    // userReal = userLatest;
+    // return userRepo.save(userReal);
+    // }
+    // throw new UserNotFoundException(id);
+    // }
 
     // done
     // updates name
-    @RequestMapping(value = "/updatename/{id}", method = RequestMethod.PUT)
-    public User updateName(@PathVariable Long id, @Valid @RequestBody User userLatest) {
-        Optional<User> userop = userRepo.findById(id);
-        if (userop.isPresent()) {
-            User userReal = userop.get();
-            userReal = userLatest;
-            return userRepo.save(userReal);
-        }
-        throw new UserNotFoundException(id);
+    // @RequestMapping(value = "/updatename/{id}", method = RequestMethod.PUT)
+    // public User updateName(@PathVariable Long id, @Valid @RequestBody User
+    // userLatest) {
+    // Optional<User> userop = userRepo.findById(id);
+    // if (userop.isPresent()) {
+    // User userReal = userop.get();
+    // userReal = userLatest;
+    // return userRepo.save(userReal);
+    // }
+    // throw new UserNotFoundException(id);
+    // }
+
+    @PutMapping("/updateName/{id}")
+    public User updateName(@PathVariable Long id, @RequestBody String name) {
+        return userService.updateUserName(id, name);
     }
 
     // done
     // updates role
-    @RequestMapping(value = "/updaterole/{id}", method = RequestMethod.PUT)
-    public User updateRole(@PathVariable Long id, @Valid @RequestBody User userLatest) {
-        Optional<User> userop = userRepo.findById(id);
-        if (userop.isPresent()
-                && (userLatest.getRole().equals("ROLE_BASIC") || userLatest.getRole().equals("ROLE_ADMIN"))) {
-            User userReal = userop.get();
-            userReal = userLatest;
-            return userRepo.save(userReal);
-        }
-        throw new UserNotFoundException(id);
+    @RequestMapping(value = "/updateRole/{id}", method = RequestMethod.PUT)
+    public User updateRole(@PathVariable Long id, @Valid @RequestBody String role) {
+        return userService.updateRole(id, role);
     }
 
     // updates managerid
-    @RequestMapping(value = "/updatemanagerid/{id}", method = RequestMethod.PUT)
-    public User updateManagerId(@PathVariable Long id, @Valid @RequestBody User userLatest) {
-        Optional<User> userop = userRepo.findById(id);
-        if (userop.isPresent()) {
-            User userReal = userop.get();
-            userReal = userLatest;
-            return userRepo.save(userReal);
-        }
-        throw new UserNotFoundException(id);
+    @RequestMapping(value = "/updateManagerId/{id}", method = RequestMethod.PUT)
+    public User updateManagerId(@PathVariable Long id, @Valid @RequestBody User managerUser) {
+        return userService.updateManagerId(id, managerUser);
     }
 
     // decided not to do this bc ur logging in w the email
