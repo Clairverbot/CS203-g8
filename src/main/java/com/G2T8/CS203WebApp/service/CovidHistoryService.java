@@ -13,10 +13,12 @@ public class CovidHistoryService {
     @Autowired
     private CovidHistoryRepository covidHistoryRepository;
 
+    // ---done-----
     public List<CovidHistory> getAllCovidHistories() {
         return covidHistoryRepository.findAll();
     }
 
+    // ---done-----
     // returns list because one person can contract covid several times
     public List<CovidHistory> getAllCovidHistoryFromOneUser(Long ID) {
 
@@ -46,6 +48,7 @@ public class CovidHistoryService {
 
     }
 
+    // -- done -- 
     // returns a particular covidHistory record of one user
     public CovidHistory getOneCovidHistoryFromOneUser(Long ID, LocalDateTime contracteddate){
         Optional<CovidHistory> temp = covidHistoryRepository.findByUserIdAndContractedDate(ID, contracteddate);
@@ -66,15 +69,8 @@ public class CovidHistoryService {
     }
 
     // after recovery date is known , can use this method to add in recoverDate
-    public CovidHistory addRecoveryDate(Long ID, LocalDateTime contracteddate, LocalDateTime recoverdate){
-
-        Optional <CovidHistory> temp = covidHistoryRepository.findByUserIdAndContractedDate(ID, contracteddate); 
-        if (temp.isPresent()) {
-            CovidHistory toReturn = temp.get();
-            return toReturn;
-        }
-        return null; 
-
+    public CovidHistory addRecoveryDate(CovidHistory covidHistory){
+        return covidHistoryRepository.save(covidHistory); 
     }
     
 }

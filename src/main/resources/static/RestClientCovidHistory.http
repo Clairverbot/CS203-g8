@@ -1,0 +1,93 @@
+###
+GET http://localhost:8080/api/v1/CovidHistory/findAll
+Accept: application/json
+Authorization: Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJoYWlyYWJiYUBnbWFpbC5jb20iLCJyb2xlcyI6W3siYXV0aG9yaXR5IjoiUk9MRV9BRE1JTiJ9XSwiZXhwIjoxNjM0MzE5NjU2LCJpYXQiOjE2MzQzMDE2NTZ9.dBLkyXjT0KHMo5BjJyNnXN9ywtJL4j19z9AKCFJKiRJ6bUxwJ4sEahMiIGAipQ3yDmktpHzpfTOU8Nls0dDTdA
+
+###
+GET http://localhost:8080/api/v1/CovidHistory/findAllHistoryFromOneUser/1
+Accept: application/json
+Authorization: Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJoYWlyYWJiYUBnbWFpbC5jb20iLCJyb2xlcyI6W3siYXV0aG9yaXR5IjoiUk9MRV9BRE1JTiJ9XSwiZXhwIjoxNjM0MzE5NjU2LCJpYXQiOjE2MzQzMDE2NTZ9.dBLkyXjT0KHMo5BjJyNnXN9ywtJL4j19z9AKCFJKiRJ6bUxwJ4sEahMiIGAipQ3yDmktpHzpfTOU8Nls0dDTdA
+
+###
+GET http://localhost:8080/api/v1/CovidHistory/findOneCovidHistoryFromOneUser/1/2030-11-12:11:12:01
+Accept: application/json
+Authorization: Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJoYWlyYWJiYUBnbWFpbC5jb20iLCJyb2xlcyI6W3siYXV0aG9yaXR5IjoiUk9MRV9BRE1JTiJ9XSwiZXhwIjoxNjM0MzE5NjU2LCJpYXQiOjE2MzQzMDE2NTZ9.dBLkyXjT0KHMo5BjJyNnXN9ywtJL4j19z9AKCFJKiRJ6bUxwJ4sEahMiIGAipQ3yDmktpHzpfTOU8Nls0dDTdA
+
+###
+POST http://localhost:8080/api/v1/CovidHistory/createCovidHistory
+Accept:application/json
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJoYWlyYWJiYUBnbWFpbC5jb20iLCJyb2xlcyI6W3siYXV0aG9yaXR5IjoiUk9MRV9BRE1JTiJ9XSwiZXhwIjoxNjM0MzE5NjU2LCJpYXQiOjE2MzQzMDE2NTZ9.dBLkyXjT0KHMo5BjJyNnXN9ywtJL4j19z9AKCFJKiRJ6bUxwJ4sEahMiIGAipQ3yDmktpHzpfTOU8Nls0dDTdA
+
+{
+    "user": {
+        "name": "kususususus",
+        "email": "hairabba@gmail.com",
+        "vaccinationStatus": 0,
+        "role": "ROLE_ADMIN",
+        "team": null,
+        "schedules": [],
+        "officeRequests": [],
+        "firstLogin": true,
+        "id": 1,
+        "employeeUsers": [],
+        "managerUser": null
+
+    },
+    "contractedDate": [
+        2030,
+        11,
+        12,
+        11,
+        12,
+        1
+    ],
+    "recoverDate": [
+        2043,
+        11,
+        11,
+        11,
+        12,
+        1
+    ]
+}
+
+###
+PUT http://localhost:8080/api/v1/CovidHistory/addRecoveryDate/1/2030-11-12:11:12:01
+Accept:application/json
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJoYWlyYWJiYUBnbWFpbC5jb20iLCJyb2xlcyI6W3siYXV0aG9yaXR5IjoiUk9MRV9BRE1JTiJ9XSwiZXhwIjoxNjM0MzE5NjU2LCJpYXQiOjE2MzQzMDE2NTZ9.dBLkyXjT0KHMo5BjJyNnXN9ywtJL4j19z9AKCFJKiRJ6bUxwJ4sEahMiIGAipQ3yDmktpHzpfTOU8Nls0dDTdA
+
+{
+    "user": {
+        "name": "kususususus",
+        "email": "hairabba@gmail.com",
+        "vaccinationStatus": 0,
+        "role": "ROLE_ADMIN",
+        "team": null,
+        "schedules": [],
+        "officeRequests": [],
+        "firstLogin": true,
+        "id": 1,
+        "employeeUsers": [],
+        "managerUser": null
+
+    },
+    "contractedDate": [
+        2030,
+        11,
+        12,
+        11,
+        12,
+        01
+    ],
+    "covidHistoryid": 1,
+    "recoverDate": [
+        2031,
+        11,
+        11,
+        11,
+        12,
+        1
+    ]
+}

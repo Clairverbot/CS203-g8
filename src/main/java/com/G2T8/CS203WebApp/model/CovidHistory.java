@@ -17,12 +17,15 @@ public class CovidHistory {
 
     // primary key 
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @NonNull
     @Column(name = "covidHistoryid")
-    private long CovidHistoryid;
+    private Long CovidHistoryid;
 
     // each row can be uniquely discovered by userid 
     // hence created a findByUserId in CovidHistoryRepo
     @ManyToOne
+    @NonNull
     @JoinColumn(name = "userid", referencedColumnName = "ID")
     private User user;
 
@@ -30,8 +33,22 @@ public class CovidHistory {
     @NonNull
     private LocalDateTime contractedDate;
 
+    
     @Column(name = "recoverDate")
+    @NonNull
     private LocalDateTime RecoverDate;
+
+    public CovidHistory(){
+
+    }
+
+//     public CovidHistory(Long CovidHistoryid,LocalDateTime contractedDate, LocalDateTime RecoverDate){
+
+//           this.CovidHistoryid = CovidHistoryid;
+//           this.contractedDate = contractedDate;
+//           this.RecoverDate = RecoverDate; 
+
+//     }
 
 
     /*

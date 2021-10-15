@@ -11,12 +11,14 @@ import java.time.LocalDateTime;
 @Repository
 public interface CovidHistoryRepository extends JpaRepository<CovidHistory, Long>{
 
-    @Query(value = "SELECT c FROM covid_history c WHERE c.userid = user_id", nativeQuery= true)
-    List<Optional<CovidHistory>> findByUserId(@Param("user_id") Long user_id);
+    @Query(value = "SELECT * FROM covid_history c WHERE c.userid = userid", nativeQuery= true)
+    List<Optional<CovidHistory>> findByUserId(@Param("userid") Long userid);
 
-    @Query(value = "SELECT c FROM covid_history c WHERE c.userid = user_id and c.contracted_date = contracteddate", nativeQuery = true)
-    Optional<CovidHistory> findByUserIdAndContractedDate(@Param("user_id") Long user_id, 
-            @Param("contracteddate") LocalDateTime contracteddate);
+    @Query(value = "SELECT * FROM covid_history c WHERE c.userid = userid and c.contractedDate = contractedDate", nativeQuery = true)
+    Optional<CovidHistory> findByUserIdAndContractedDate(@Param("userid") Long userid, 
+            @Param("contractedDate") LocalDateTime contractedDate);
+
+    //CovidHistory findByuseridAndcontractedDate(Long userid, Long contractedDate);
 
 
 }

@@ -45,7 +45,7 @@ public class User implements Serializable {
     private String role;
 
     @Column(name = "password", nullable = false)
-    // @Size(min = 8, max = 30)
+    //@Size(min = 1, max = 30)
     @NotEmpty
     @Getter(onMethod = @__(@JsonIgnore))
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
@@ -71,6 +71,7 @@ public class User implements Serializable {
     private List<Schedule> schedules;
 
     // user id becomes a foreign key for CovidHistory class/table
+    @JsonIgnore
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<CovidHistory> covidHistories;
 
