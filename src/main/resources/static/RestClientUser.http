@@ -21,25 +21,25 @@ Content-Type: application/json
 }
 
 ###
-GET http://localhost:8080/api/v1/user/findAll
+GET http://localhost:8080/api/v1/users/all
 Accept: application/json
 # insert your token gotten from the first function after Bearer
 Authorization: Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJ0ZXN0QGdtYWlsLmNvbSIsInJvbGVzIjpbeyJhdXRob3JpdHkiOiJST0xFX0FETUlOIn1dLCJleHAiOjE2MzQyODUwNjcsImlhdCI6MTYzNDI2NzA2N30.6uIu8bilvIOCFFNhMlJqkokOAGVLdW9F929uCiXw0UVK2kW0ED0MUHQ5uLWaR5p_Hl4Js1SopLZt2TIfmjSrqA
 
 ###
-GET http://localhost:8080/api/v1/user/findUserByID/1
+GET http://localhost:8080/api/v1/users/1
 Accept:application/json
 # insert your token gotten from the first function after Bearer
 Authorization: Bearer <token>
 
 ###
-GET http://localhost:8080/api/v1/user/findUserByEmail/aks@gmail.com
+GET http://localhost:8080/api/v1/users/akshaya@gmail.com
 Accept: application/json
 # insert your token gotten from the first function after Bearer
 Authorization: Bearer <token>
 
 ###
-PUT http://localhost:8080/api/v1/user/updateVaccinationStatus/1 HTTP/1.1
+PUT http://localhost:8080/api/v1/users/1/vaccination-status HTTP/1.1
 Content-Type: application/json
 # insert your token gotten from the first function after Bearer
 Authorization: Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJ0ZXN0QGdtYWlsLmNvbSIsInJvbGVzIjpbeyJhdXRob3JpdHkiOiJST0xFX0FETUlOIn1dLCJleHAiOjE2MzQyODUwNjcsImlhdCI6MTYzNDI2NzA2N30.6uIu8bilvIOCFFNhMlJqkokOAGVLdW9F929uCiXw0UVK2kW0ED0MUHQ5uLWaR5p_Hl4Js1SopLZt2TIfmjSrqA
@@ -86,7 +86,7 @@ Authorization: Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJ0ZXN0QGdtYWlsLmNvbSIsInJvb
 # }
 
 ###
-PUT http://localhost:8080/api/v1/user/updateName/1
+PUT http://localhost:8080/api/v1/users/1/name
 Content-Type: application/json
 # insert your token gotten from the first function after Bearer
 Authorization: Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJ0ZXN0QGdtYWlsLmNvbSIsInJvbGVzIjpbeyJhdXRob3JpdHkiOiJST0xFX0FETUlOIn1dLCJleHAiOjE2MzQyODUwNjcsImlhdCI6MTYzNDI2NzA2N30.6uIu8bilvIOCFFNhMlJqkokOAGVLdW9F929uCiXw0UVK2kW0ED0MUHQ5uLWaR5p_Hl4Js1SopLZt2TIfmjSrqA
@@ -94,7 +94,7 @@ Authorization: Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJ0ZXN0QGdtYWlsLmNvbSIsInJvb
 New User
 
 ###
-PUT http://localhost:8080/api/v1/user/updateRole/1
+PUT http://localhost:8080/api/v1/users/1/role
 Content-Type: application/json
 # insert your token gotten from the first function after Bearer
 Authorization: Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJ0ZXN0QGdtYWlsLmNvbSIsInJvbGVzIjpbeyJhdXRob3JpdHkiOiJST0xFX0FETUlOIn1dLCJleHAiOjE2MzQyODUwNjcsImlhdCI6MTYzNDI2NzA2N30.6uIu8bilvIOCFFNhMlJqkokOAGVLdW9F929uCiXw0UVK2kW0ED0MUHQ5uLWaR5p_Hl4Js1SopLZt2TIfmjSrqA

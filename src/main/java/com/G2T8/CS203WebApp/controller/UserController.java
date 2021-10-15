@@ -15,15 +15,18 @@ import java.security.Principal;
 
 @RestController
 @CrossOrigin
-@RequestMapping("/api/v1/user")
+@RequestMapping("/api/v1/users")
 public class UserController {
+    private UserService userService;
 
     @Autowired
-    private UserService userService;
+    public UserController(UserService userService) {
+        this.userService = userService;
+    }
 
     // done
     // get all users
-    @GetMapping("/findAll")
+    @GetMapping("/all")
     public List<User> findAllUsers() {
         if (userService.getAllUsers() != null) {
             return userService.getAllUsers();
@@ -34,7 +37,7 @@ public class UserController {
 
     // done
     // get user by Email ( necessary as we are logging in with email)
-    @RequestMapping(value = "/findUserByEmail/{email}", method = RequestMethod.GET)
+    @RequestMapping(value = "/email/{email}", method = RequestMethod.GET)
     public User findUserByEmail(@PathVariable(value = "email") String email) {
         if (userService.findByEmail(email) != null) {
             return userService.findByEmail(email);
@@ -47,25 +50,32 @@ public class UserController {
 
     // done
     // get user by ID
-    @GetMapping(value = { "/getProfile/{ID}", "/getProfile" })
-    public User findUserByID(@PathVariable(value = "ID", required = false) Long ID, Principal principal) {
-        if (ID == null) {
-            org.springframework.security.core.userdetails.UserDetails userObj = (org.springframework.security.core.userdetails.UserDetails) userService
-                    .loadUserByUsername(principal.getName());
-            User userEntity = userService.findByEmail(userObj.getUsername());
-
-            if (userEntity == null) {
-                throw new UserNotFoundException();
-            }
-            return userEntity;
-
+    @GetMapping(value = "/{ID}")
+    public User findUserByID(@PathVariable(value = "ID") Long ID) {
+        User user = userService.getUser(ID);
+        if (user != null) {
+            return user;
         } else {
-            if (userService.getUser(ID) != null) {
-                return userService.getUser(ID);
-            } else {
-                throw new UserNotFoundException(ID);
-            }
+            throw new UserNotFoundException(ID);
         }
+    }
+
+    /**
+     * Get current logged-in user's information
+     * 
+     * @param principal Spring security principal object of current logged-in user
+     * @return user enntity
+     */
+    @GetMapping("/current")
+    public User getCurrentUser(Principal principal) {
+        org.springframework.security.core.userdetails.UserDetails userObj = (org.springframework.security.core.userdetails.UserDetails) userService
+                .loadUserByUsername(principal.getName());
+        User userEntity = userService.findByEmail(userObj.getUsername());
+
+        if (userEntity == null) {
+            throw new UserNotFoundException();
+        }
+        return userEntity;
     }
 
     // done
@@ -84,7 +94,7 @@ public class UserController {
 
     // }
 
-    @PutMapping("/updateVaccinationStatus/{id}")
+    @PutMapping("/{id}/vaccination-status")
     public User updateVaccinationStatus(@PathVariable Long id, @RequestBody int vaccinationStatus) {
         return userService.updateUserVaccinationStatus(id, vaccinationStatus);
     }
@@ -118,20 +128,20 @@ public class UserController {
     // throw new UserNotFoundException(id);
     // }
 
-    @PutMapping("/updateName/{id}")
+    @PutMapping("/{id}/name")
     public User updateName(@PathVariable Long id, @RequestBody String name) {
         return userService.updateUserName(id, name);
     }
 
     // done
     // updates role
-    @RequestMapping(value = "/updateRole/{id}", method = RequestMethod.PUT)
+    @RequestMapping(value = "/{id}/role", method = RequestMethod.PUT)
     public User updateRole(@PathVariable Long id, @Valid @RequestBody String role) {
         return userService.updateRole(id, role);
     }
 
     // updates managerid
-    @RequestMapping(value = "/updateManagerId/{id}", method = RequestMethod.PUT)
+    @RequestMapping(value = "/{id}/manager", method = RequestMethod.PUT)
     public User updateManagerId(@PathVariable Long id, @Valid @RequestBody User managerUser) {
         return userService.updateManagerId(id, managerUser);
     }
@@ -173,7 +183,7 @@ public class UserController {
      * @return
      * @throws Exception
      */
-    @PostMapping("/reset-password-token")
+    @PostMapping("/reset-password/token")
     public ResponseEntity<?> getResetPasswordToken(@RequestBody String email) throws Exception {
         User user = userService.findByEmail(email.trim());
 
