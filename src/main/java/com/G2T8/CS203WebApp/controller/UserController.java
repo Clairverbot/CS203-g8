@@ -9,7 +9,6 @@ import org.springframework.http.ResponseEntity;
 
 import com.G2T8.CS203WebApp.exception.UserNotFoundException;
 import com.G2T8.CS203WebApp.model.*;
-import com.G2T8.CS203WebApp.repository.*;
 import com.G2T8.CS203WebApp.service.UserService;
 
 import java.security.Principal;
