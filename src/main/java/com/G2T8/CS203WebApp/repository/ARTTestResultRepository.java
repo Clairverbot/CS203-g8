@@ -11,10 +11,10 @@ import java.time.LocalDateTime;
 @Repository
 public interface ARTTestResultRepository extends JpaRepository<ARTTestResults, Long>{
     
-    @Query(value = "SELECT * FROM arttestresult a WHERE a.user_id = user_id", nativeQuery= true)
+    @Query(value = "SELECT * FROM arttest_results a WHERE a.user_id = :user_id", nativeQuery= true)
     List<ARTTestResults> findByUserId(@Param("user_id") Long user_id);
 
-    @Query(value = "SELECT * FROM arttestresut a WHERE a.user_id = user_id and a.date =  date", nativeQuery = true)
+    @Query(value = "SELECT * FROM arttest_results a WHERE a.user_id = :user_id and a.date = :date", nativeQuery = true)
     ARTTestResults findByUserIdAndDate(@Param("user_id") Long user_id, 
             @Param("date") LocalDateTime date);
 }

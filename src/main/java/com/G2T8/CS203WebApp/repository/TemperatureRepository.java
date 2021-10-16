@@ -11,10 +11,10 @@ import java.time.LocalDateTime;
 @Repository
 public interface TemperatureRepository extends JpaRepository<Temperature, Long>{
     
-    @Query(value = "SELECT * FROM temperature t WHERE t.user_id = user_id", nativeQuery= true)
+    @Query(value = "SELECT * FROM temperature t WHERE t.user_id = :user_id", nativeQuery= true)
     List<Temperature> findByUserId(@Param("user_id") Long user_id);
 
-    @Query(value = "SELECT * FROM temperature t WHERE t.user_id = user_id and t.date =  date", nativeQuery = true)
+    @Query(value = "SELECT * FROM temperature t WHERE t.user_id = :user_id and t.date = :date", nativeQuery = true)
     Temperature findByUserIdAndDate(@Param("user_id") Long user_id, 
             @Param("date") LocalDateTime date);
 }
