@@ -89,7 +89,7 @@ public class User implements Serializable {
     // child.setUser(this);
     // }
 
-    @Column(name = "firstLogin", nullable = false)
+    @Column(name = "firstLogin", nullable = false, columnDefinition = "boolean default true")
     private Boolean firstLogin;
 
     @OneToOne(mappedBy = "user")
