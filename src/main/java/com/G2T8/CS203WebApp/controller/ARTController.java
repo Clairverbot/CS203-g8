@@ -8,6 +8,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
+import org.springframework.format.annotation.*;
 import java.time.LocalDateTime;
 import java.util.*;
 
@@ -18,6 +19,8 @@ public class ARTController {
     public ARTTestResultService artService;
     @Autowired
     public ARTTestResultRepository artRepo;
+    @Autowired
+    public UserRepository userRepo;
 
     @GetMapping("/allArt")
     public List<ARTTestResults> findAllArt() {
@@ -29,14 +32,15 @@ public class ARTController {
         }
     }
 
-    @RequestMapping("/art/{id}")
-    public List<ARTTestResults> findARTByUserId(Long userId) {
+    @GetMapping("/art/{userId}")
+    public List<ARTTestResults> findARTByUserId(@PathVariable Long userId) {
+        Optional<User> user = userRepo.findById(userId);
+        if(!user.isPresent()){
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "User doesn't exist");
+        }
         List<ARTTestResults> toReturn;
         try{
             toReturn = artService.getARTbyUserID(userId);
-        } catch(NullPointerException E){
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND,
-            "User not found!");
         } catch(Exception E){
             throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR,
             "Unknown error occurs, please try again!");
@@ -44,13 +48,15 @@ public class ARTController {
         return toReturn;
     }
 
-    @RequestMapping("/art/{id}/{date}")
-    public ARTTestResults findARTByUserIdAndDate(Long userId, LocalDateTime date) {
+    @RequestMapping("/art/{userId}/{date}")
+    public ARTTestResults findARTByUserIdAndDate(@PathVariable Long userId, @RequestParam("localDateTime") 
+    @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)LocalDateTime date) {
+        Optional<User> user = userRepo.findById(userId);
+        if(!user.isPresent()){
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "User doesn't exist");
+        }
         try{
             return artService.getARTbyUserIdAndDate(userId,date);
-        } catch(NullPointerException E){
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND,
-            "User not found!");
         } catch(Exception E){
             throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR,
             "Unknown error occurs, please try again!");
@@ -58,10 +64,14 @@ public class ARTController {
     }
 
     @PostMapping("/addART")
-    public ResponseEntity<?> addResult(ARTTestResults art){
+    public ResponseEntity<?> addResult(@RequestBody ARTTestResults art){
+        Optional<User> user = userRepo.findById(art.getUser().getID());
+        if(!user.isPresent()){
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "User doesn't exist");
+        }
         try{
             artService.addART(art);
-            return ResponseEntity.ok(null);
+            return new ResponseEntity(HttpStatus.CREATED);
         } catch(Exception E){
             throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR,
             "Unknown error occurs, please try again!");

@@ -38,7 +38,7 @@ public class ARTTestResultService{
     }   
 
     public void addART(ARTTestResults art){
-       ARTTestResultRepository.save(art);
+        artTestResultRepository.save(art);
     }
 
 }

@@ -3,7 +3,7 @@ package com.G2T8.CS203WebApp.model;
 import javax.persistence.*;
 import lombok.*;
 import java.time.LocalDateTime;
-import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.*;
 
 @Data
 @NoArgsConstructor
@@ -14,8 +14,8 @@ public class Temperature {
     private Long tempId;
     private LocalDateTime date;
     private double temperature;
-    @JsonIgnore
     @ManyToOne
     @JoinColumn(name="user_id")
+    @JsonBackReference
     private User user;
 }
