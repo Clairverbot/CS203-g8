@@ -29,7 +29,7 @@ public class TemperatureController {
         }
     }
 
-    @RequestMapping("/temp/{id}")
+    @GetMapping("/temp/{id}")
     public List<Temperature> findTempByUserId(Long userId) {
         List<Temperature> toReturn;
         try{
@@ -58,9 +58,9 @@ public class TemperatureController {
     }
 
     @PostMapping("/addTemp")
-    public ResponseEntity<?> addTemp(TemperatureDTO tempDetails){
+    public ResponseEntity<?> addTemp(Temperature temperature){
         try{
-            tempService.addTemperature(tempDetails);
+            tempService.addTemperature(temperature);
             return ResponseEntity.ok(null);
         } catch(Exception E){
             throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR,

@@ -58,9 +58,9 @@ public class ARTController {
     }
 
     @PostMapping("/addART")
-    public ResponseEntity<?> addResult(ArtDTO artDetails){
+    public ResponseEntity<?> addResult(ARTTestResults art){
         try{
-            artService.addART(artDetails);
+            artService.addART(art);
             return ResponseEntity.ok(null);
         } catch(Exception E){
             throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR,
