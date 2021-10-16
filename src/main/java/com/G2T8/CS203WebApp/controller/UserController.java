@@ -10,6 +10,7 @@ import org.springframework.http.ResponseEntity;
 import com.G2T8.CS203WebApp.exception.UserNotFoundException;
 import com.G2T8.CS203WebApp.model.*;
 import com.G2T8.CS203WebApp.service.UserService;
+import org.springframework.security.core.userdetails.UserDetails;
 
 import java.security.Principal;
 
@@ -24,40 +25,35 @@ public class UserController {
         this.userService = userService;
     }
 
-    // done
     // get all users
-    @GetMapping("/all")
+    @GetMapping("/")
     public List<User> findAllUsers() {
-        if (userService.getAllUsers() != null) {
-            return userService.getAllUsers();
+        List<User> users = userService.getAllUsers();
+        if (users == null) {
+            throw new UserNotFoundException();
         }
-        throw new UserNotFoundException();
-
+        return users;
     }
 
-    // done
     // get user by Email ( necessary as we are logging in with email)
-    @RequestMapping(value = "/email/{email}", method = RequestMethod.GET)
-    public User findUserByEmail(@PathVariable(value = "email") String email) {
-        if (userService.findByEmail(email) != null) {
-            return userService.findByEmail(email);
-        } else {
+    @GetMapping(value = "/email/{email}")
+    public User findUserByEmail(@RequestParam String email) {
+        User user = userService.findByEmail(email);
+        if (user == null) {
             throw new UserNotFoundException(email);
 
         }
-
+        return user;
     }
 
-    // done
     // get user by ID
-    @GetMapping(value = "/{ID}")
-    public User findUserByID(@PathVariable(value = "ID") Long ID) {
-        User user = userService.getUser(ID);
-        if (user != null) {
-            return user;
-        } else {
-            throw new UserNotFoundException(ID);
+    @GetMapping(value = "/{id}")
+    public User findUserByID(@PathVariable(value = "id") Long id) {
+        User user = userService.getUser(id);
+        if (user == null) {
+            throw new UserNotFoundException(id);
         }
+        return user;
     }
 
     /**
@@ -68,8 +64,7 @@ public class UserController {
      */
     @GetMapping("/current")
     public User getCurrentUser(Principal principal) {
-        org.springframework.security.core.userdetails.UserDetails userObj = (org.springframework.security.core.userdetails.UserDetails) userService
-                .loadUserByUsername(principal.getName());
+        UserDetails userObj = (UserDetails) userService.loadUserByUsername(principal.getName());
         User userEntity = userService.findByEmail(userObj.getUsername());
 
         if (userEntity == null) {
@@ -78,103 +73,25 @@ public class UserController {
         return userEntity;
     }
 
-    // done
-    // updatesVaccinationStatus
-    // @PutMapping("/updateVaccinationStatus/{id}")
-    // public User updateVaccinationStatus(@PathVariable Long id, @Valid
-    // @RequestBody User userLatest) {
-    // Optional<User> userop = userRepo.findById(id);
-    // if (userop.isPresent()) {
-    // User userReal = userop.get();
-    // userReal = userLatest;
-    // return userRepo.save(userReal);
-
-    // }
-    // throw new UserNotFoundException(id);
-
-    // }
-
     @PutMapping("/{id}/vaccination-status")
     public User updateVaccinationStatus(@PathVariable Long id, @RequestBody int vaccinationStatus) {
         return userService.updateUserVaccinationStatus(id, vaccinationStatus);
     }
-
-    // done
-    // updates password
-    // @RequestMapping(value = { "/updatepassword/{id}", "/updatepassword" }, method
-    // = RequestMethod.PUT)
-    // public User updatePassword(@PathVariable Long id, @Valid @RequestBody User
-    // userLatest) {
-    // Optional<User> userop = userRepo.findById(id);
-    // if (userop.isPresent()) {
-    // User userReal = userop.get();
-    // userReal = userLatest;
-    // return userRepo.save(userReal);
-    // }
-    // throw new UserNotFoundException(id);
-    // }
-
-    // done
-    // updates name
-    // @RequestMapping(value = "/updatename/{id}", method = RequestMethod.PUT)
-    // public User updateName(@PathVariable Long id, @Valid @RequestBody User
-    // userLatest) {
-    // Optional<User> userop = userRepo.findById(id);
-    // if (userop.isPresent()) {
-    // User userReal = userop.get();
-    // userReal = userLatest;
-    // return userRepo.save(userReal);
-    // }
-    // throw new UserNotFoundException(id);
-    // }
 
     @PutMapping("/{id}/name")
     public User updateName(@PathVariable Long id, @RequestBody String name) {
         return userService.updateUserName(id, name);
     }
 
-    // done
-    // updates role
-    @RequestMapping(value = "/{id}/role", method = RequestMethod.PUT)
+    @PutMapping(value = "/{id}/role")
     public User updateRole(@PathVariable Long id, @Valid @RequestBody String role) {
         return userService.updateRole(id, role);
     }
 
-    // updates managerid
-    @RequestMapping(value = "/{id}/manager", method = RequestMethod.PUT)
+    @PutMapping(value = "/{id}/manager")
     public User updateManagerId(@PathVariable Long id, @Valid @RequestBody User managerUser) {
         return userService.updateManagerId(id, managerUser);
     }
-
-    // decided not to do this bc ur logging in w the email
-    // // change user email
-    // @PutMapping("/updateEmail/{ID}/{email}")
-    // public ResponseEntity<String> updateEmail(@PathVariable("ID") Long ID,
-    // @PathVariable("email") String email) {
-
-    // User user = userService.updateUserEmail(ID, email);
-    // if (user != null) {
-    // return new ResponseEntity<>(HttpStatus.OK);
-    // }
-    // throw new UserNotFoundException(ID);
-    // }
-
-    // //change managerid of a user
-    // @PutMapping("/updateManagerID/{ID}/{managerID}")
-    // public ResponseEntity<String> updateManagerID(@PathVariable("ID") Long ID,
-    // @PathVariable("managerID") Long managerID) {
-
-    // int result = userService.updateUserManagerID(ID, managerID);
-    // if (result != 20) {
-    // if(result == 10){
-    // // suppposed manager inputted is not a manager
-    // return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-    // }
-    // // if 1 is returned means user and manager exist and manager is manager
-    // return new ResponseEntity<>(HttpStatus.OK);
-    // }
-    // throw new UserNotFoundException(ID);
-    // }
 
     /**
      * Endpoint for generating a reset password token associated with an email
