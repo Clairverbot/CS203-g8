@@ -37,15 +37,8 @@ public class TemperatureService {
         return null;
     }
 
-    public void addTemperature(TemperatureDTO tempDetails){
-        Optional<User> user = userRepository.findById(tempDetails.getUserId());
-        Temperature temp = new Temperature();
-        if(user.isPresent()){
-            temp.setDate(tempDetails.getDate());
-            temp.setTemperature(tempDetails.getTemperature());
-            temp.setUser(user.get());
-            temperatureRepository.save(temp);
-        }
+    public void addTemperature(Temperature temperature){
+        temperatureRepository.save(temperature);
     }
 
 }

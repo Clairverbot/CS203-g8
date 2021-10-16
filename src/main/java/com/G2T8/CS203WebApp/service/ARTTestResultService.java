@@ -37,16 +37,8 @@ public class ARTTestResultService{
         return null;
     }   
 
-    public void addART(ArtDTO artDetails){
-        Optional<User> user = userRepository.findById(artDetails.getUserId());
-        ARTTestResults art = new ARTTestResults();
-        if(user.isPresent()){
-            art.setWeeksMonday(artDetails.getWeeksMonday());
-            art.setArtResult(artDetails.getResult());
-            art.setDate(artDetails.getDate());
-            art.setUser(user.get());
-            artTestResultRepository.save(art);
-        }
+    public void addART(ARTTestResults art){
+       ARTTestResultRepository.save(art);
     }
 
 }

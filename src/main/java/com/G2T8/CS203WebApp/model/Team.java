@@ -8,7 +8,7 @@ import lombok.*;
 import java.util.*;
 
 
-
+@NoArgsConstructor
 @Data // A shortcut for @ToString, @EqualsAndHashCode, @Getter on all fields, and
       // @Setter on all non-final fields, and @RequiredArgsConstructor(generate
       // constructor with args annotated with @NonNull)
