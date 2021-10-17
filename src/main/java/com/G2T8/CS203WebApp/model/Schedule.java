@@ -8,6 +8,8 @@ import javax.validation.constraints.Email;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 @Data // A shortcut for @ToString, @EqualsAndHashCode, @Getter on all fields, and
       // @Setter on all non-final fields, and @RequiredArgsConstructor(generate
       // constructor with args annotated with @NonNull)
@@ -32,9 +34,20 @@ public class Schedule {
     private int mode;
 
     // userid is a foreign key for the class/table Schedule
+    @JsonIgnore
     @ManyToOne
     @JoinColumn(name = "userID")
-    private User user; 
+    private User user;
+    
+    public Schedule(){
+
+    }
+
+    public Schedule(LocalDateTime startDateTime, LocalDateTime endDateTime){
+        this.startDateTime = startDateTime;
+        this.endDateTime = endDateTime;
+
+    }
 
 
 

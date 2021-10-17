@@ -10,5 +10,10 @@ import java.time.LocalDateTime;
 
 public interface OfficeRequestRepository extends JpaRepository<OfficeRequest, Long> {
 
-    
+    @Query(value = "SELECT o FROM officerequest o WHERE o.userid = user_id", nativeQuery = true)
+    List<Optional<OfficeRequest>> findByUserId(@Param("user_id") Long user_id);
+
+    @Query(value = "SELECT o FROM officerequest o WHERE o.userid = user_id and o.startDateTime = startDateTime", nativeQuery = true)
+    Optional<OfficeRequest> findByUserIdAndStartDateTime(@Param("user_id") Long user_id,
+            @Param("startDateTime") LocalDateTime startDateTimeOffice);
 }

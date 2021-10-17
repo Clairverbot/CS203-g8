@@ -2,6 +2,8 @@ package com.G2T8.CS203WebApp.model;
 
 import javax.persistence.*;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import org.springframework.beans.factory.annotation.Autowired;
 
 import lombok.*;
@@ -28,8 +30,18 @@ public class Team {
     private String name;
 
     @Transient
-    @OneToMany(mappedBy = "team", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "team")
     private Set<User> users; 
+
+    public Team(){
+
+    }
+
+    public Team(String name){
+        this.name = name; 
+    }
+
+
 
 
 
