@@ -22,7 +22,7 @@ public class TemperatureController {
     @Autowired
     public UserRepository userRepo;
 
-    @GetMapping("/allTemp")
+    @GetMapping("/")
     public List<Temperature> findAllTemp() {
         try{
             return tempService.getAllTemp();
@@ -32,7 +32,7 @@ public class TemperatureController {
         }
     }
 
-    @GetMapping("/temp/{userId}")
+    @GetMapping("/{userId}")
     public List<Temperature> findTempByUserId(@PathVariable Long userId) {
         Optional<User> user = userRepo.findById(userId);
         if(!user.isPresent()){
@@ -48,7 +48,7 @@ public class TemperatureController {
         return toReturn;
     }
 
-    @GetMapping("/temp/{userId}/{date}")
+    @GetMapping("/{userId}/{date}")
     public Temperature findTempByUserIdAndDate(@PathVariable Long userId, @RequestParam("localDateTime") 
     @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime date) {
         Optional<User> user = userRepo.findById(userId);
@@ -63,7 +63,7 @@ public class TemperatureController {
         }
     }
 
-    @PostMapping("/addTemp")
+    @PostMapping("/")
     public ResponseEntity<?> addTemp(@RequestBody Temperature temperature){
         Optional<User> user = userRepo.findById(temperature.getUser().getID());
         if(!user.isPresent() || user == null){
