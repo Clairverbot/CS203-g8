@@ -1,138 +1,146 @@
 package com.G2T8.CS203WebApp.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import java.util.*;
 import javax.validation.Valid;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 
 import com.G2T8.CS203WebApp.exception.UserNotFoundException;
 import com.G2T8.CS203WebApp.model.*;
-import com.G2T8.CS203WebApp.repository.*;
 import com.G2T8.CS203WebApp.service.UserService;
+import org.springframework.security.core.userdetails.UserDetails;
+
+import java.security.Principal;
 
 @RestController
-@RequestMapping("/api/v1/user")
+@CrossOrigin
+@RequestMapping("/api/v1/users")
 public class UserController {
+    private UserService userService;
 
     @Autowired
-    private UserService userService;
-    @Autowired
-    private UserRepository userRepo;
+    public UserController(UserService userService) {
+        this.userService = userService;
+    }
 
     // get all users
-    @GetMapping("/findAll")
+    @GetMapping("/")
     public List<User> findAllUsers() {
-        if (userService.getAllUsers() != null) {
-            return userService.getAllUsers();
+        List<User> users = userService.getAllUsers();
+        if (users == null) {
+            throw new UserNotFoundException();
         }
-        // actually supp to throw user not found exception
-        throw new UserNotFoundException();
-
+        return users;
     }
 
     // get user by Email ( necessary as we are logging in with email)
-    @RequestMapping("/email/{email}")
-    public User findUserByEmail(String email) {
-        if (userService.getUserByEmail(email) != null) {
-            return userService.getUserByEmail(email);
-        } else {
-            // actually supp to throw user not found exception
+    @GetMapping(value = "/email/{email}")
+    public User findUserByEmail(@RequestParam String email) {
+        User user = userService.findByEmail(email);
+        if (user == null) {
             throw new UserNotFoundException(email);
 
         }
-
+        return user;
     }
 
     // get user by ID
-    @RequestMapping("/ID/{ID}")
-    public User findUserByID(Long ID) {
-        if (userService.getUser(ID) != null) {
-            return userService.getUser(ID);
+    @GetMapping(value = "/{id}")
+    public User findUserByID(@PathVariable(value = "id") Long id) {
+        User user = userService.getUser(id);
+        if (user == null) {
+            throw new UserNotFoundException(id);
+        }
+        return user;
+    }
+
+    /**
+     * Get current logged-in user's information
+     * 
+     * @param principal Spring security principal object of current logged-in user
+     * @return user enntity
+     */
+    @GetMapping("/current")
+    public User getCurrentUser(Principal principal) {
+        UserDetails userObj = (UserDetails) userService.loadUserByUsername(principal.getName());
+        User userEntity = userService.findByEmail(userObj.getUsername());
+
+        if (userEntity == null) {
+            throw new UserNotFoundException();
+        }
+        return userEntity;
+    }
+
+    @PutMapping("/{id}/vaccination-status")
+    public User updateVaccinationStatus(@PathVariable Long id, @RequestBody int vaccinationStatus) {
+        return userService.updateUserVaccinationStatus(id, vaccinationStatus);
+    }
+
+    @PutMapping("/{id}/name")
+    public User updateName(@PathVariable Long id, @RequestBody String name) {
+        return userService.updateUserName(id, name);
+    }
+
+    @PutMapping(value = "/{id}/role")
+    public User updateRole(@PathVariable Long id, @Valid @RequestBody String role) {
+        return userService.updateRole(id, role);
+    }
+
+    @PutMapping(value = "/{id}/manager")
+    public User updateManagerId(@PathVariable Long id, @Valid @RequestBody User managerUser) {
+        return userService.updateManagerId(id, managerUser);
+    }
+
+    /**
+     * Endpoint for generating a reset password token associated with an email
+     * 
+     * @param email
+     * @return
+     * @throws Exception
+     */
+    @PostMapping("/reset-password/token")
+    public ResponseEntity<?> getResetPasswordToken(@RequestBody String email) throws Exception {
+        User user = userService.findByEmail(email.trim());
+
+        if (user == null) {
+            throw new UserNotFoundException(email);
+        }
+
+        userService.createPasswordResetTokenForUser(user);
+        return new ResponseEntity<>(null, HttpStatus.CREATED);
+    }
+
+    /**
+     * Endpoint for actually resetting the password
+     * 
+     * @param passReset a map object ideally containing token and newPassword.
+     *                  TO-DO: Return an invalid reset password token exception if
+     *                  the fields are not all filled up
+     * @return
+     * @throws Exception
+     */
+    @PutMapping("/reset-password")
+    public ResponseEntity<?> resetPassword(@RequestBody Map<String, Object> passReset) throws Exception {
+        Optional<User> user = userService.findUserByPasswordResetToken(passReset.get("token").toString());
+        String message = null;
+        if (user.isPresent()) {
+            message = userService.resetPasswordForUser(user.get(), passReset.get("token").toString(),
+                    passReset.get("newPassword").toString());
         } else {
-            // actually supp to throw user not found exception
-            throw new UserNotFoundException(ID);
-
+            throw new UserNotFoundException();
         }
-    }
 
-    // change a persons vaccination status
-    @PutMapping("/updateVaccinationStatus/{ID}/{vaccinationstatus}")
-    public ResponseEntity<String> updateVaccinationStatus(@PathVariable("ID") Long ID,
-            @PathVariable("vaccinationstatus") int vaccinationstatus) {
+        Map<String, String> responseBody = new HashMap<>();
+        responseBody.put("message", message);
 
-        int result = userService.updateUserVaccinationStatus(ID, vaccinationstatus);
-        if (result != 20) {
-            if (result == 10) {
-                return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-            } else {
-                return new ResponseEntity<>(HttpStatus.OK);
-            }
-
+        if (message == null) {
+            return new ResponseEntity<>(null, HttpStatus.OK);
+        } else {
+            return new ResponseEntity<>(responseBody, HttpStatus.BAD_REQUEST);
         }
-        //// actually supp to throw user not found exception
-        throw new UserNotFoundException(ID);
 
-    }
-
-    // change user email
-    @PutMapping("/updateEmail/{ID}/{email}")
-    public ResponseEntity<String> updateEmail(@PathVariable("ID") Long ID, @PathVariable("email") String email) {
-
-        User user = userService.updateUserEmail(ID, email);
-        if (user != null) {
-            return new ResponseEntity<>(HttpStatus.OK);
-        }
-        // // actually supp to throw user not found exception
-        throw new UserNotFoundException(ID);
-    }
-
-    // change user password
-
-    // change name of user
-    @PutMapping("/updateName/{ID}/{name}")
-    public ResponseEntity<String> updateName(@PathVariable("ID") Long ID, @PathVariable("name") String name) {
-
-        User user = userService.updateUserEmail(ID, name);
-        if (user != null) {
-            return new ResponseEntity<>(HttpStatus.OK);
-        }
-        // actually supp to throw user not found exception
-        throw new UserNotFoundException(ID);
-    }
-
-    // change role of user
-    @PutMapping("/updateRole/{ID}/{role}")
-    public ResponseEntity<String> updateRole(@PathVariable("ID") Long ID, @PathVariable("role") String role) {
-
-        int result = userService.updateUserRole(ID, role);
-        if (result == 1) {// done ok
-            return new ResponseEntity<>(HttpStatus.OK);
-        } else if (result == 10) {// user input invalid role like officer
-            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-        }
-        // if result == 20 and user not there
-        // actually supp to throw user not found exception
-        throw new UserNotFoundException(ID);
-    }
-
-    // change managerid of a user
-    @PutMapping("/updateManagerID/{ID}/{managerID}")
-    public ResponseEntity<String> updateManagerID(@PathVariable("ID") Long ID,
-            @PathVariable("managerID") Long managerID) {
-
-        int result = userService.updateUserManagerID(ID, managerID);
-        if (result != 20) {
-            if (result == 10) {
-                // suppposed manager inputted is not a manager
-                return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-            }
-            // if 1 is returned means user and manager exist and manager is manager
-            return new ResponseEntity<>(HttpStatus.OK);
-        }
-        // actually supp to throw user not found exception
-        throw new UserNotFoundException(ID);
     }
 
 }

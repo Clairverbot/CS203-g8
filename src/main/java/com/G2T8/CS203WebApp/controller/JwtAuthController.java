@@ -64,7 +64,7 @@ public class JwtAuthController {
         return new ResponseEntity<>(null, HttpStatus.CREATED);
     }
 
-    @PostMapping("/add-employee")
+    @PostMapping("/employee")
     public ResponseEntity<?> addEmployee(@RequestBody @Validated UserDTO user) throws Exception {
         userDetailsService.createEmployeeAccount(user);
         return new ResponseEntity<>(null, HttpStatus.CREATED);
@@ -78,27 +78,5 @@ public class JwtAuthController {
         } catch (BadCredentialsException e) {
             throw new Exception("INVALID_CREDENTIALS", e);
         }
-    }
-
-    @GetMapping("/get-profile")
-    public ResponseEntity<?> getUserInfo(Principal user) {
-        // org.springframework.security.core.userdetails.User userObj =
-        // (org.springframework.security.core.userdetails.User) userDetailsService
-        // .loadUserByUsername(user.getName());
-        // User userEntity = userDetailsService.findByEmail(userObj.getUsername());
-        CustomUserDetails userObj = (CustomUserDetails) userDetailsService.loadUserByUsername(user.getName());
-        User userEntity = userObj.getUser();
-
-        return ResponseEntity.ok(userEntity);
-    }
-
-    /**
-     * Dummy endpoint to test authorization
-     * 
-     * @return dummy
-     */
-    @GetMapping("/dummy")
-    public String dummyEndpoint() {
-        return "dummy";
     }
 }

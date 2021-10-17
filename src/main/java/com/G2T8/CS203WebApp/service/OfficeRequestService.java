@@ -21,14 +21,15 @@ public class OfficeRequestService {
     // returns list because one person can go to office several times
     public List<OfficeRequest> getAllOfficeRequestFromOneUser(Long ID) {
 
-        // getting the office request of each user by custom query findByUserId in OfficeRequestRepo
+        // getting the office request of each user by custom query findByUserId in
+        // OfficeRequestRepo
         // do not use findById bc that uses OfficeRequestId which does dont point to
         // which user it is referring to
 
         List<Optional<OfficeRequest>> origList = officeRequestRepository.findByUserId(ID);
         List<OfficeRequest> toReturn = new ArrayList<>();
 
-        if(origList != null){
+        if (origList != null) {
             for (int i = 0; i <= origList.size() - 1; i++) {
                 if (origList.get(i).isPresent()) {
                     Optional<OfficeRequest> opOfficeReq = origList.get(i);
@@ -40,17 +41,17 @@ public class OfficeRequestService {
             }
             return toReturn;
         }
-        return null; 
+        return null;
     }
 
     // returns a particular OfficeRequest record of one user
-    public OfficeRequest getOneOfficeRequestFromOneUser(Long ID, LocalDateTime startDateTime){
+    public OfficeRequest getOneOfficeRequestFromOneUser(Long ID, LocalDateTime startDateTime) {
         Optional<OfficeRequest> temp = officeRequestRepository.findByUserIdAndStartDateTime(ID, startDateTime);
         if (temp.isPresent()) {
             OfficeRequest toReturn = temp.get();
             return toReturn;
         }
-        return null; 
+        return null;
 
     }
 
@@ -67,15 +68,13 @@ public class OfficeRequestService {
     public OfficeRequest addOfficeRequest(OfficeRequest officeRequest) {
         // check if there is an existing instance w same user id and startdatetime
         Long ID = officeRequest.getID();
-        LocalDateTime startDateTime = officeRequest.getStartDateTime();
+        LocalDateTime startDateTime = officeRequest.getStartDateTimeOffice();
         Optional<OfficeRequest> b = officeRequestRepository.findByUserIdAndStartDateTime(ID, startDateTime);
         if (b.isPresent()) {
             // duplicate entry
             return null;
-        } else             
+        } else
             return officeRequestRepository.save(officeRequest);
     }
 
-
-    
 }

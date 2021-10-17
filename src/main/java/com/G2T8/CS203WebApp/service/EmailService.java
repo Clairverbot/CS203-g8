@@ -20,8 +20,6 @@ import org.springframework.stereotype.Service;
 import org.thymeleaf.context.Context;
 import org.thymeleaf.spring5.SpringTemplateEngine;
 
-import com.G2T8.CS203WebApp.model.Email;
-
 @Service
 public class EmailService {
     private JavaMailSender emailSender;

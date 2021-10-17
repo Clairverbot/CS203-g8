@@ -4,13 +4,13 @@
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
   </head>
   <body>
-    <p>Dear, <span th:text="${recipientName}">recipientName</span></p>
+    <p>Dear <span th:text="${recipientName}">recipientName,</span></p>
     <br />
     <p>You have been invited to XXX Employee Management Platform</p>
     <br />
     <b>Use the following credentials:</b>
     <p>Email: <span th:text="${email}">email</span></p>
-    <p>Password: <span th:text="${password}">password</span></p>
-    <a href="http://localhost:3000">Click here to access the platform!</a>
+    <p>Password token: <span th:text="${passtoken}">password</span></p>
+    <a th:href="@{http://localhost:3000/reset-password(resettoken=${passtoken})}">Click here to access the platform!</a>
   </body>
 </html>
