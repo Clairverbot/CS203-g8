@@ -22,7 +22,7 @@ public class ARTController {
     @Autowired
     public UserRepository userRepo;
 
-    @GetMapping("/allArt")
+    @GetMapping("/")
     public List<ARTTestResults> findAllArt() {
         try{
             return artService.getAllResult();
@@ -32,7 +32,7 @@ public class ARTController {
         }
     }
 
-    @GetMapping("/art/{userId}")
+    @RequestMapping("/{userId}")
     public List<ARTTestResults> findARTByUserId(@PathVariable Long userId) {
         Optional<User> user = userRepo.findById(userId);
         if(!user.isPresent()){
@@ -48,7 +48,7 @@ public class ARTController {
         return toReturn;
     }
 
-    @RequestMapping("/art/{userId}/{date}")
+    @GetMapping("/{userId}/{date}")
     public ARTTestResults findARTByUserIdAndDate(@PathVariable Long userId, @RequestParam("localDateTime") 
     @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)LocalDateTime date) {
         Optional<User> user = userRepo.findById(userId);
@@ -63,7 +63,7 @@ public class ARTController {
         }
     }
 
-    @PostMapping("/addART")
+    @PostMapping("/")
     public ResponseEntity<?> addResult(@RequestBody ARTTestResults art){
         Optional<User> user = userRepo.findById(art.getUser().getID());
         if(!user.isPresent()){
