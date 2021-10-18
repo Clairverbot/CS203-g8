@@ -9,6 +9,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.format.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
+import com.G2T8.CS203WebApp.exception.UserNotFoundException;
 import java.time.LocalDateTime;
 import java.util.*;
 
@@ -19,8 +20,6 @@ public class TemperatureController {
     public TemperatureService tempService;
     @Autowired
     public TemperatureRepository tempRepo;
-    @Autowired
-    public UserRepository userRepo;
 
     @GetMapping("/")
     public List<Temperature> findAllTemp() {
@@ -34,13 +33,11 @@ public class TemperatureController {
 
     @GetMapping("/{userId}")
     public List<Temperature> findTempByUserId(@PathVariable Long userId) {
-        Optional<User> user = userRepo.findById(userId);
-        if(!user.isPresent()){
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "User doesn't exist");
-        }
         List<Temperature> toReturn;
         try{
             toReturn = tempService.getAllTempbyUserID(userId);
+        } catch(UserNotFoundException E){
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND,"User doesn't exist");
         } catch(Exception E){
             throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR,
             "Unknown error occurs, please try again!");
@@ -51,12 +48,10 @@ public class TemperatureController {
     @GetMapping("/{userId}/{date}")
     public Temperature findTempByUserIdAndDate(@PathVariable Long userId, @RequestParam("localDateTime") 
     @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime date) {
-        Optional<User> user = userRepo.findById(userId);
-        if(!user.isPresent()){
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "User doesn't exist");
-        }
         try{
             return tempService.getTempbyUserIDAndDate(userId,date);
+        } catch(UserNotFoundException E){
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND,"User doesn't exist");
         } catch(Exception E){
             throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR,
             "Unknown error occurs, please try again!");
@@ -65,13 +60,11 @@ public class TemperatureController {
 
     @PostMapping("/")
     public ResponseEntity<?> addTemp(@RequestBody Temperature temperature){
-        Optional<User> user = userRepo.findById(temperature.getUser().getID());
-        if(!user.isPresent() || user == null){
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "User doesn't exist");
-        }
         try{
             tempService.addTemperature(temperature);
             return new ResponseEntity(HttpStatus.CREATED);
+        } catch(UserNotFoundException E){
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND,"User doesn't exist");
         } catch(Exception E){
             throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR,
             "Unknown error occurs, please try again!");
