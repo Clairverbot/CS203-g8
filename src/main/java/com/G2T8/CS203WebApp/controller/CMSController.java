@@ -23,25 +23,20 @@ public class CMSController {
         try {
             Document d = Jsoup.connect("https://www.mom.gov.sg/covid-19/requirements-for-safe-management-measures")
                     .timeout(6000).get();
-            overallPoints.add("one");
             Element block = d.select("body").select("#mainform").select("#MainContent").first();
             Elements round2 = block.getElementsByClass("content-wrapper").first().getElementsByClass("container").first().getElementsByClass("page-content")
                     .select("#pagecontent_0_documentcontent_0_DivCode").select("ol").first().getElementsByTag("li");
-             
-            overallPoints.add("four");
-            overallPoints.add("two");
             
             // loop for point 5 for example
             for (Element bigelm : round2) {
                 String pointBlockAndChildren = bigelm.text();
+                String cleanup = pointBlockAndChildren.replace("a","").replace("b","").replace("c","").replace("i","").replace("ii","").replace("iii","").replace("iv","");
                 overallPoints.add(pointBlockAndChildren);
-                overallPoints.add("three");
             }
 
         } catch (Exception e) {
 
         }
-        overallPoints.add("tst");
         return overallPoints; 
 
     }
