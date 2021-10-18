@@ -1,14 +1,14 @@
-# ###
-# POST http://localhost:8080/api/v1/users/register
-# Accept: application/json
-# Content-Type: application/json
+###
+POST http://localhost:8080/api/v1/users/register
+Accept: application/json
+Content-Type: application/json
 
-# {
-#     "email": "test@gmail.com",
-#     "name": "Test User",
-#     "password": "password",
-#     "role": "ROLE_ADMIN"
-# }
+{
+    "email": "test@gmail.com",
+    "name": "Test User",
+    "password": "password",
+    "role": "ROLE_ADMIN"
+}
 
 ### RUN THIS FIRST ###
 POST http://localhost:8080/api/v1/users/login
@@ -124,3 +124,10 @@ ROLE_BASIC
 #     "manager_user": null,
 #     "first_login": true
 # }
+
+###
+
+GET http://localhost:8080/api/v1/CMS/news
+Content-Type: application/json
+# insert your token gotten from the first function after Bearer
+Authorization: Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJ0ZXN0QGdtYWlsLmNvbSIsInJvbGVzIjpbeyJhdXRob3JpdHkiOiJST0xFX0FETUlOIn1dLCJleHAiOjE2MzQ1OTMzNjIsImlhdCI6MTYzNDU3NTM2Mn0.HVgOMXXfXkHZQfd_RWYENltkEIDdsS-HGzY1H-cmVU17q190rIXlV-j-zItqRVEGh7gq9q-7Wmh-ydpdnfepHg
