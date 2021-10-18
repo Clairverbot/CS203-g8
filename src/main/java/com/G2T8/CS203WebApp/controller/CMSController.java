@@ -30,7 +30,7 @@ public class CMSController {
             // loop for point 5 for example
             for (Element bigelm : round2) {
                 String pointBlockAndChildren = bigelm.text();
-                String cleanup = pointBlockAndChildren.replace("a","").replace("b","").replace("c","").replace("i","").replace("ii","").replace("iii","").replace("iv","");
+                String cleanup = pointBlockAndChildren.replace("a.","").replace("b.","").replace("c.","").replace("i.","").replace("ii.","").replace("iii.","").replace("iv","");
                 overallPoints.add(pointBlockAndChildren);
             }
 
