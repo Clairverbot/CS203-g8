@@ -6,23 +6,19 @@ import javax.persistence.*;
 import lombok.*;
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotEmpty;
-import javax.validation.constraints.Size;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import java.io.Serializable;
 
-@Data // A shortcut for @ToString, @EqualsAndHashCode, @Getter on all fields, and
-      // @Setter on all non-final fields, and @RequiredArgsConstructor(generate
-      // constructor with args annotated with @NonNull)
+@Data
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
 @Table(name = "User")
 public class User implements Serializable {
 
-    // private static final long serialVersionUID = 1L;
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -37,8 +33,7 @@ public class User implements Serializable {
     @Email
     private String email;
 
-    @Column(name = "vaccinationStatus") // , nullable = false)
-    // @NonNull
+    @Column(name = "vaccinationStatus")
     private int vaccinationStatus;
 
     @Column(name = "role", nullable = false)
@@ -83,29 +78,11 @@ public class User implements Serializable {
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = false)
     private List<OfficeRequest> officeRequests;
 
-    // public void setChildrenOR(List<OfficeRequest> children) {
-    // this.officeRequests.addAll(children);
-    // for (OfficeRequest child : children)
-    // child.setUser(this);
-    // }
-
     @Column(name = "firstLogin", nullable = false, columnDefinition = "boolean default true")
     private Boolean firstLogin;
 
     @OneToOne(mappedBy = "user")
     @JsonIgnore
     private PasswordResetToken passwordResetToken;
-
-    // public User(Long ID, String name, String email, int vaccination_status,
-    // String role, String password,
-    // Boolean first_login) {
-    // this.ID = ID;
-    // this.name = name;
-    // this.email = email;
-    // this.vaccinationStatus = vaccination_status;
-    // this.role = role;
-    // this.password = password;
-    // this.firstLogin = firstLogin;
-    // }
 
 }

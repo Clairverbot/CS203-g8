@@ -14,9 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.security.access.prepost.PostAuthorize;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -36,6 +34,8 @@ public class UserService implements UserDetailsService {
 
     Logger logger = LoggerFactory.getLogger(UserService.class);
 
+    
+
     @Autowired
     public void setEmailService(EmailService emailService) {
         this.emailService = emailService;
@@ -50,20 +50,6 @@ public class UserService implements UserDetailsService {
         return userRepository.findById(ID).map(user -> {
             return user;
         }).orElse(null);
-
-    }
-
-    // should delete as we logging in w email not possible to change
-
-    @Transactional
-    public User updateUserEmail(Long ID, String email) {
-        Optional<User> b = userRepository.findById(ID);
-        if (b.isPresent()) {
-            User user = b.get();
-            user.setEmail(email);
-            return userRepository.save(user);
-        } else
-            return null;
 
     }
 
@@ -121,50 +107,6 @@ public class UserService implements UserDetailsService {
         return userRepository.save(user);
     }
 
-    // public User updateUserTeamID(Long ID, Long TeamID) {
-    // Optional<User> b = userRepository.findById(ID);
-    // if (b.isPresent()) {
-    // User user = b.get();
-    // user.setteam(TeamID);
-    // return userRepository.save(user);
-    // } else
-    // return null;
-
-    // }
-
-    public int updateUserRole(Long ID, String role) {
-
-        if (role.equals("ROLE_ADMIN") || role.equals("ROLE_BASIC")) {
-            Optional<User> b = userRepository.findById(ID);
-            if (b.isPresent()) {
-                User user = b.get();
-                user.setRole(role);
-                userRepository.save(user);
-                return 1; // done perfect
-            } else {
-                return 20; // user not found
-            }
-        }
-        return 10; // user input wrong role
-    }
-
-    public int updateUserManagerID(Long ID, Long managerID) {
-        Optional<User> b = userRepository.findById(ID);
-        Optional<User> managerop = userRepository.findById(managerID);
-        if (b.isPresent() && managerop.isPresent()) {
-            User user = b.get();
-            User manager = managerop.get();
-            if (manager.getRole().equals("ROLE_ADMIN")) {
-                user.setManagerUser(manager);
-                userRepository.save(user);
-                return 1;// done perfect
-            } else {
-                return 10; // bad request bc the supposed inputted manager isnt a manager
-            }
-        } else
-            return 20;// user or manager not found
-    }
-
     @Override
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
         // In our case, username will be email
@@ -188,7 +130,6 @@ public class UserService implements UserDetailsService {
     }
 
     public User findByEmail(String email) {
-        // logger.info(email);
         Optional<User> optional = userRepository.findByEmail(email);
 
         if (optional.isPresent()) {
@@ -246,11 +187,9 @@ public class UserService implements UserDetailsService {
         int rightLimit = 122; // letter 'z'
         Random random = new Random();
 
-        String generatedString = random.ints(leftLimit, rightLimit + 1)
+        return random.ints(leftLimit, rightLimit + 1)
                 .filter(i -> (i <= 57 || i >= 65) && (i <= 90 || i >= 97)).limit(stringLength)
                 .collect(StringBuilder::new, StringBuilder::appendCodePoint, StringBuilder::append).toString();
-
-        return generatedString;
     }
 
     // ----------------------------------------------
