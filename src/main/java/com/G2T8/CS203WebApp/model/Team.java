@@ -33,6 +33,9 @@ public class Team {
     @OneToMany(mappedBy = "team")
     private Set<User> users; 
 
+    @OneToMany(mappedBy = "team", cascade = CascadeType.ALL, orphanRemoval = false)
+    private List<Schedule> schedules;
+
     public Team(){
 
     }
