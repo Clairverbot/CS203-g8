@@ -7,23 +7,33 @@ import com.G2T8.CS203WebApp.model.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.http.HttpStatus;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.web.server.ResponseStatusException;
 import com.G2T8.CS203WebApp.exception.UserNotFoundException;
 
 import java.time.DayOfWeek;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.time.temporal.TemporalAdjusters;
+
+import org.slf4j.*;
 
 @Service
 public class ARTTestResultService {
 
     private ARTTestResultRepository artTestResultRepository;
     private UserService userService;
+    private EmailService emailService;
+
+    Logger logger = LoggerFactory.getLogger(ARTTestResultService.class);
 
     @Autowired
-    public ARTTestResultService(ARTTestResultRepository artTestResultRepository, UserService userService) {
+    public ARTTestResultService(ARTTestResultRepository artTestResultRepository, UserService userService,
+            EmailService emailService) {
         this.artTestResultRepository = artTestResultRepository;
         this.userService = userService;
+        this.emailService = emailService;
     }
 
     public List<ARTTestResults> getAllResult() {
@@ -67,8 +77,35 @@ public class ARTTestResultService {
         art.setUser(userEntity);
         art.setArtResult(artResult);
         art.setDate(date);
-        art.setWeeksMonday(date.with(TemporalAdjusters.previous(DayOfWeek.MONDAY)));
+        art.setWeeksMonday(date.toLocalDate().with(TemporalAdjusters.previous(DayOfWeek.MONDAY)));
         return artTestResultRepository.save(art);
+    }
+
+    public List<ARTTestResults> getARTbyUserAndWeek(User user, LocalDateTime date) {
+        LocalDate monday = date.toLocalDate().with(TemporalAdjusters.previous(DayOfWeek.MONDAY));
+        return artTestResultRepository.findByUserAndWeeksMonday(user, monday);
+    }
+
+    @Scheduled(cron = "0 0 0 * * FRI")
+    public void notifyUsersNotYetArtTwice() {
+        List<User> users = userService.getAllUsers();
+        LocalDateTime now = LocalDateTime.now();
+
+        for (User user : users) {
+            List<ARTTestResults> thisWeekART = getARTbyUserAndWeek(user, now);
+            if (thisWeekART.size() < 2) {
+                try {
+                    Map<String, Object> templateModel = new HashMap<>();
+                    templateModel.put("recipientName", user.getName());
+                    emailService.sendEmailWithTemplate(user.getEmail(),
+                            "[XXX Employee Management System] Submit your ART result!", "art-notification.html",
+                            templateModel);
+                } catch (Exception e) {
+                    logger.error("Email failed to be sent", e);
+                    continue;
+                }
+            }
+        }
     }
 
 }
