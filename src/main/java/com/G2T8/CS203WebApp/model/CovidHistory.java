@@ -23,7 +23,7 @@ public class CovidHistory {
     // each row can be uniquely discovered by userid 
     // hence created a findByUserId in CovidHistoryRepo
     @ManyToOne
-    @JoinColumn(name = "userid", referencedColumnName = "ID")
+    @JoinColumn(name = "userid", referencedColumnName = "id")
     private User user;
 
     @Column(name = "contractedDate")

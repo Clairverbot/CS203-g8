@@ -13,45 +13,62 @@ import java.time.LocalDateTime;
 
 @Service
 public class TemperatureService {
-    @Autowired
-    private TemperatureRepository temperatureRepository;
-    @Autowired
-    private UserRepository userRepo;
 
-    public List<Temperature> getAllTemp(){
+    private TemperatureRepository temperatureRepository;
+    private UserService userService;
+
+    @Autowired
+    public TemperatureService(TemperatureRepository temperatureRepository, UserService userService) {
+        this.temperatureRepository = temperatureRepository;
+        this.userService = userService;
+    }
+
+    public List<Temperature> getAllTemp() {
         return temperatureRepository.findAll();
     }
 
-    public List<Temperature> getAllTempbyUserID(Long user_id){
-        Optional<User> user = userRepo.findById(user_id);
-        if(!user.isPresent()){
-            throw new UserNotFoundException(user_id);
+    public List<Temperature> getAllTempbyUserID(Long userId) {
+        User user = userService.getUser(userId);
+        if (user == null) {
+            throw new UserNotFoundException(userId);
         }
-        List<Temperature> toReturn = temperatureRepository.findByUserId(user_id);
-        if(toReturn != null){
+        List<Temperature> toReturn = temperatureRepository.findByUser(user);
+
+        if (toReturn != null) {
+            return toReturn;
+        }
+
+        return null;
+    }
+
+    public Temperature getTempbyUserIDAndDate(Long userId, LocalDateTime date) {
+        User user = userService.getUser(userId);
+        if (user != null) {
+            throw new UserNotFoundException(userId);
+        }
+        Temperature toReturn = temperatureRepository.findByUserIdAndDate(userId, date);
+        if (toReturn != null) {
             return toReturn;
         }
         return null;
     }
 
-    public Temperature getTempbyUserIDAndDate(Long user_id, LocalDateTime date){
-        Optional<User> user = userRepo.findById(user_id);
-        if(!user.isPresent()){
-            throw new UserNotFoundException(user_id);
-        }
-        Temperature toReturn = temperatureRepository.findByUserIdAndDate(user_id,date);
-        if(toReturn != null){
-            return toReturn;
-        }
-        return null;
-    }
+    public Temperature addTemperature(String email, double temperature) {
 
-    public void addTemperature(Temperature temperature){
-        Optional<User> user = userRepo.findById(temperature.getUser().getID());
-        if(!user.isPresent()){
-            throw new UserNotFoundException();
+        CustomUserDetails userObj = (CustomUserDetails) userService.loadUserByUsername(email);
+        User userEntity = userObj.getUser();
+
+        if (userEntity == null) {
+            throw new UserNotFoundException(email);
         }
-        temperatureRepository.save(temperature);
+
+        Temperature newTemperature = new Temperature();
+
+        newTemperature.setDate(LocalDateTime.now());
+        newTemperature.setUser(userEntity);
+        newTemperature.setTemperature(temperature);
+
+        return temperatureRepository.save(newTemperature);
     }
 
 }

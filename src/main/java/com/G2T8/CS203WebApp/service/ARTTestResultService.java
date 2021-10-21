@@ -9,49 +9,66 @@ import org.springframework.stereotype.Service;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.server.ResponseStatusException;
 import com.G2T8.CS203WebApp.exception.UserNotFoundException;
+
+import java.time.DayOfWeek;
 import java.time.LocalDateTime;
+import java.time.temporal.TemporalAdjusters;
 
 @Service
-public class ARTTestResultService{
-    @Autowired
-    private ARTTestResultRepository artTestResultRepository;
-    @Autowired
-    private UserRepository userRepo;
+public class ARTTestResultService {
 
-    public List<ARTTestResults> getAllResult(){
+    private ARTTestResultRepository artTestResultRepository;
+    private UserService userService;
+
+    @Autowired
+    public ARTTestResultService(ARTTestResultRepository artTestResultRepository, UserService userService) {
+        this.artTestResultRepository = artTestResultRepository;
+        this.userService = userService;
+    }
+
+    public List<ARTTestResults> getAllResult() {
         return artTestResultRepository.findAll();
     }
 
-    public List<ARTTestResults> getARTbyUserID(Long user_id){
-        Optional<User> user = userRepo.findById(user_id);
-        if(!user.isPresent()){
-            throw new UserNotFoundException(user_id);
+    public List<ARTTestResults> getARTbyUserID(Long userId) {
+        User user = userService.getUser(userId);
+        if (user == null) {
+            throw new UserNotFoundException(userId);
         }
-        List<ARTTestResults> toReturn = artTestResultRepository.findByUserId(user_id);
-        if(toReturn != null){
-            return toReturn;
-        }
-        return null; 
-    }
-
-    public ARTTestResults getARTbyUserIdAndDate(Long user_id, LocalDateTime date){
-        Optional<User> user = userRepo.findById(user_id);
-        if(!user.isPresent()){
-            throw new UserNotFoundException(user_id);
-        }
-        ARTTestResults toReturn = artTestResultRepository.findByUserIdAndDate(user_id,date);
-        if(toReturn != null){
+        List<ARTTestResults> toReturn = artTestResultRepository.findByUserId(userId);
+        if (toReturn != null) {
             return toReturn;
         }
         return null;
-    }   
+    }
 
-    public void addART(ARTTestResults art){
-        Optional<User> user = userRepo.findById(art.getUser().getID());
-        if(!user.isPresent()){
+    public ARTTestResults getARTbyUserIdAndDate(Long userId, LocalDateTime date) {
+        User user = userService.getUser(userId);
+        if (user == null) {
+            throw new UserNotFoundException(userId);
+        }
+        ARTTestResults toReturn = artTestResultRepository.findByUserIdAndDate(userId, date);
+        if (toReturn != null) {
+            return toReturn;
+        }
+        return null;
+    }
+
+    public ARTTestResults addART(String email, Boolean artResult) {
+        CustomUserDetails userObj = (CustomUserDetails) userService.loadUserByUsername(email);
+        User userEntity = userObj.getUser();
+
+        if (userEntity == null) {
             throw new UserNotFoundException();
         }
-        artTestResultRepository.save(art);
+
+        ARTTestResults art = new ARTTestResults();
+        LocalDateTime date = LocalDateTime.now();
+        art.setUser(userEntity);
+        art.setArtResult(artResult);
+        art.setDate(date);
+        art.setWeeksMonday(date.with(TemporalAdjusters.previous(DayOfWeek.MONDAY)));
+        return artTestResultRepository.save(art);
     }
 
 }

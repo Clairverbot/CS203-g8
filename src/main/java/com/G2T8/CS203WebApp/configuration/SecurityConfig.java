@@ -7,6 +7,7 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.annotation.web.builders.WebSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.config.http.SessionCreationPolicy;
@@ -53,13 +54,23 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     public AuthenticationManager authenticationManagerBean() throws Exception {
         return super.authenticationManagerBean();
     }
-
+    @Override
+    public void configure(final WebSecurity webSecurity) {
+        webSecurity.ignoring().antMatchers(
+                "/v1/api-docs/**",
+                "/swagger-ui/**",
+                "/swagger-resources/**",
+                "/webjars/**",
+                "/swagger-ui.html");
+    }
     @Override
     protected void configure(HttpSecurity httpSecurity) throws Exception {
         // We don't need CSRF for this
-        httpSecurity.csrf().disable()
+        httpSecurity.cors().and().csrf().disable()
                 // requests to these endpoints do not need authentication
-                .authorizeRequests().antMatchers("/api/v1/users/login", "/api/v1/users/register").permitAll().
+                .authorizeRequests().antMatchers("/api/v1/users/login", "/api/v1/users/register",
+                        "/api/v1/users/reset-password", "/api/v1/users/reset-password/token")
+                .permitAll().
                 // needs to be authorized
                 antMatchers(HttpMethod.GET, "/api/v1/users/dummy").hasRole("ADMIN")
                 // all other requests need to be authenticated
@@ -82,7 +93,5 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
          * .addFilterBefore(jwtRequestFilter,
          * UsernamePasswordAuthenticationFilter.class)
          */
-
-        httpSecurity.cors();
     }
 }

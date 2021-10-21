@@ -2,11 +2,12 @@ package com.G2T8.CS203WebApp.model;
 
 import javax.persistence.*;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import org.springframework.beans.factory.annotation.Autowired;
 
 import lombok.*;
 import java.util.*;
-
 
 @NoArgsConstructor
 @Data // A shortcut for @ToString, @EqualsAndHashCode, @Getter on all fields, and
@@ -17,7 +18,7 @@ import java.util.*;
 public class Team {
 
     // @Autowired
-    // private User user; 
+    // private User user;
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -28,12 +29,11 @@ public class Team {
     private String name;
 
     @Transient
-    @OneToMany(mappedBy = "team", cascade = CascadeType.ALL, orphanRemoval = true)
-    private Set<User> users; 
+    @OneToMany(mappedBy = "team")
+    private Set<User> users;
 
+    public Team(String name) {
+        this.name = name;
+    }
 
-
-
-
-    
 }
