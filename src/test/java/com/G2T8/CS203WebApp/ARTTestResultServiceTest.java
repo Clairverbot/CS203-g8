@@ -7,15 +7,17 @@ import static org.mockito.Mockito.mockStatic;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import java.time.DayOfWeek;
 import java.time.LocalDateTime;
+import java.time.temporal.TemporalAdjusters;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.G2T8.CS203WebApp.model.ARTTestResults;
 import com.G2T8.CS203WebApp.model.CustomUserDetails;
-import com.G2T8.CS203WebApp.model.Temperature;
 import com.G2T8.CS203WebApp.model.User;
-import com.G2T8.CS203WebApp.repository.TemperatureRepository;
-import com.G2T8.CS203WebApp.service.TemperatureService;
+import com.G2T8.CS203WebApp.repository.ARTTestResultRepository;
+import com.G2T8.CS203WebApp.service.ARTTestResultService;
 import com.G2T8.CS203WebApp.service.UserService;
 
 import org.junit.jupiter.api.AfterEach;
@@ -29,14 +31,14 @@ import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 @ExtendWith(MockitoExtension.class)
-public class TemperatureServiceTest {
+public class ARTTestResultServiceTest {
     @Mock
-    private TemperatureRepository temperatures;
+    private ARTTestResultRepository artResults;
     @Mock
     private UserService userService;
 
     @InjectMocks
-    private TemperatureService temperatureService;
+    private ARTTestResultService artTestResultService;
 
     private static User adminUser;
     private static User basicUser;
@@ -60,7 +62,6 @@ public class TemperatureServiceTest {
         basicUser.setEmail("test_basic@gmail.com");
         basicUser.setPassword("password");
         basicUser.setFirstLogin(false);
-
     }
 
     /**
@@ -68,59 +69,33 @@ public class TemperatureServiceTest {
      */
     @AfterEach
     void tearDown() {
-        temperatures.deleteAll();
+        artResults.deleteAll();
     }
 
     @Test
-    public void getAllTemp_ReturnAllTemperatureLog() {
-        // arrange
-        Temperature temperature1 = new Temperature();
-        temperature1.setDate(LocalDateTime.now());
-        temperature1.setTemperature(36.0);
-        temperature1.setUser(adminUser);
-
-        Temperature temperature2 = new Temperature();
-        temperature2.setDate(LocalDateTime.now());
-        temperature2.setTemperature(36.0);
-        temperature2.setUser(basicUser);
-
-        List<Temperature> listTemp = new ArrayList<Temperature>();
-
-        listTemp.add(temperature1);
-        listTemp.add(temperature2);
-
-        when(temperatures.findAll()).thenReturn(listTemp);
-
-        // act
-        List<Temperature> allTemps = temperatureService.getAllTemp();
-
-        // assert
-        assertNotNull(allTemps);
-        assertEquals(listTemp, allTemps);
-        verify(temperatures).findAll();
-    }
-
-    @Test
-    public void addTemperature_NewTemperature_ReturnTempLog() {
+    public void addART_NewArtResult_ReturnArtResult() {
         try (MockedStatic<LocalDateTime> mocked = mockStatic(LocalDateTime.class, Mockito.CALLS_REAL_METHODS)) {
             // arrange
             mocked.when(LocalDateTime::now).thenReturn(defaultLocalDateTime);
 
-            Temperature newTemperature = new Temperature();
-            newTemperature.setDate(LocalDateTime.now());
-            newTemperature.setTemperature(36.0);
-            newTemperature.setUser(adminUser);
+            ARTTestResults newARTResult = new ARTTestResults();
+            LocalDateTime current = LocalDateTime.now();
+            newARTResult.setUser(adminUser);
+            newARTResult.setArtResult(false);
+            newARTResult.setDate(current);
+            newARTResult.setWeeksMonday(current.toLocalDate().with(TemporalAdjusters.previous(DayOfWeek.MONDAY)));
 
             when(userService.loadUserByUsername(any(String.class))).thenReturn(new CustomUserDetails(adminUser));
-            when(temperatures.save(any(Temperature.class))).thenReturn(newTemperature);
+            when(artResults.save(any(ARTTestResults.class))).thenReturn(newARTResult);
 
             // act
-            Temperature temperature = temperatureService.addTemperature(adminUser.getEmail(), 36.0);
+            ARTTestResults artTestResult = artTestResultService.addART(adminUser.getEmail(), false);
 
             // assert
-            assertNotNull(temperature);
+            assertNotNull(artTestResult);
             verify(userService).loadUserByUsername(adminUser.getEmail());
-            verify(temperatures).save(newTemperature);
+            verify(artResults).save(newARTResult);
+
         }
     }
 }
