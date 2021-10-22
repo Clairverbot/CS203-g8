@@ -17,11 +17,11 @@ public class OfficeRequest {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long ID;
+    private Long id;
 
     @Column(name = "Approved", nullable = false)
     @NonNull
-    private boolean Approved;
+    private boolean approved;
 
     @Column(name = "startDateTime")
     @NonNull

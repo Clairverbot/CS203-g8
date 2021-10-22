@@ -15,7 +15,7 @@ import java.util.*;
 public class Team {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long TeamID;
+    private Long teamId;
 
     @Column(name = "name", nullable = false)
     @NonNull

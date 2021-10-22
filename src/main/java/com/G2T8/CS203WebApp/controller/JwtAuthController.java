@@ -10,19 +10,16 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.security.Principal;
 
 import com.G2T8.CS203WebApp.model.JwtRequest;
 import com.G2T8.CS203WebApp.model.JwtResponse;
 import com.G2T8.CS203WebApp.configuration.JwtTokenUtil;
 import com.G2T8.CS203WebApp.service.UserService;
-import com.G2T8.CS203WebApp.model.User;
 import com.G2T8.CS203WebApp.model.UserDTO;
 import com.G2T8.CS203WebApp.model.CustomUserDetails;
 
@@ -61,12 +58,6 @@ public class JwtAuthController {
     @PostMapping("/register")
     public ResponseEntity<?> saveUser(@RequestBody @Validated UserDTO user) throws Exception {
         userDetailsService.addUser(user);
-        return new ResponseEntity<>(null, HttpStatus.CREATED);
-    }
-
-    @PostMapping("/employee")
-    public ResponseEntity<?> addEmployee(@RequestBody @Validated UserDTO user) throws Exception {
-        userDetailsService.createEmployeeAccount(user);
         return new ResponseEntity<>(null, HttpStatus.CREATED);
     }
 

@@ -41,7 +41,6 @@ public class User implements Serializable {
     private String role;
 
     @Column(name = "password", nullable = false)
-    // @Size(min = 8, max = 30)
     @NotEmpty
     @Getter(onMethod = @__(@JsonIgnore))
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
@@ -56,12 +55,12 @@ public class User implements Serializable {
     // Recursive key of User class to identify which user is managing a particular
     // user object;
 
-    @OneToMany(mappedBy = "ManagerUser", orphanRemoval = true)
-    private List<User> EmployeeUsers;
+    @OneToMany(mappedBy = "managerUser", orphanRemoval = true)
+    private List<User> employeeUsers;
 
     @ManyToOne
-    @JoinColumn(name = "ManagerUser_id")
-    private User ManagerUser;
+    @JoinColumn(name = "managerUser_id")
+    private User managerUser;
 
     // user id becomes a foreign key for class/table schedule
     @JsonIgnore

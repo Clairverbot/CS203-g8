@@ -11,6 +11,7 @@ import com.G2T8.CS203WebApp.exception.UserNotFoundException;
 import com.G2T8.CS203WebApp.model.*;
 import com.G2T8.CS203WebApp.service.UserService;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.validation.annotation.Validated;
 
 import java.security.Principal;
 
@@ -37,18 +38,22 @@ public class UserController {
 
     // get user by Email ( necessary as we are logging in with email)
     @GetMapping(value = "/email/{email}")
-    public User findUserByEmail(@RequestParam String email) {
+    public User findUserByEmail(@PathVariable String email) {
         User user = userService.findByEmail(email);
         if (user == null) {
             throw new UserNotFoundException(email);
-
         }
         return user;
     }
 
-    // get user by ID
+    /**
+     * Get user by id
+     * 
+     * @param id user id
+     * @return user enntity
+     */
     @GetMapping(value = "/{id}")
-    public User findUserByID(@PathVariable(value = "id") Long id) {
+    public User findUserById(@PathVariable Long id) {
         User user = userService.getUser(id);
         if (user == null) {
             throw new UserNotFoundException(id);
@@ -71,6 +76,12 @@ public class UserController {
             throw new UserNotFoundException();
         }
         return userEntity;
+    }
+
+    @PostMapping("/employee")
+    public ResponseEntity<?> addEmployee(@RequestBody @Validated UserDTO user) throws Exception {
+        userService.createEmployeeAccount(user);
+        return new ResponseEntity<>(null, HttpStatus.CREATED);
     }
 
     @PutMapping("/{id}/vaccination-status")

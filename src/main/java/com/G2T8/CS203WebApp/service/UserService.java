@@ -24,23 +24,23 @@ import org.slf4j.*;
 @Service
 public class UserService implements UserDetailsService {
 
-    @Autowired
-    private UserRepository userRepository;
-
+    
+    private final UserRepository userRepository;
+    private final PasswordResetRepository passwordResetRepository;
     private EmailService emailService;
 
-    @Autowired
-    private PasswordResetRepository passwordResetRepository;
 
     Logger logger = LoggerFactory.getLogger(UserService.class);
 
-    
-
     @Autowired
-    public void setEmailService(EmailService emailService) {
-        this.emailService = emailService;
+    public UserService(UserRepository userRepository, PasswordResetRepository passwordResetRepository){
+        this.userRepository=userRepository;
+        this.passwordResetRepository=passwordResetRepository;
     }
-
+    @Autowired
+    public void setEmailService(EmailService emailService){
+        this.emailService=emailService;
+    }
     public List<User> getAllUsers() {
         return userRepository.findAll();
     }
@@ -183,12 +183,12 @@ public class UserService implements UserDetailsService {
     }
 
     private String createRandomPassword(int stringLength) {
-        int leftLimit = 48; // numeral '0'
-        int rightLimit = 122; // letter 'z'
+        int leftLimit = '0'; 
+        int rightLimit = 'z';
         Random random = new Random();
 
         return random.ints(leftLimit, rightLimit + 1)
-                .filter(i -> (i <= 57 || i >= 65) && (i <= 90 || i >= 97)).limit(stringLength)
+                .filter(i -> (i <= '9' || i >= 'A') && (i <= 'Z' || i >= 'a')).limit(stringLength)
                 .collect(StringBuilder::new, StringBuilder::appendCodePoint, StringBuilder::append).toString();
     }
 

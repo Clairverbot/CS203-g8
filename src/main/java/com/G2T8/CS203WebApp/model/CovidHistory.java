@@ -18,7 +18,7 @@ public class CovidHistory {
     // primary key 
     @Id
     @Column(name = "covidHistoryid")
-    private long CovidHistoryid;
+    private long covidHistoryid;
 
     // each row can be uniquely discovered by userid 
     // hence created a findByUserId in CovidHistoryRepo
@@ -31,7 +31,7 @@ public class CovidHistory {
     private LocalDateTime contractedDate;
 
     @Column(name = "recoverDate")
-    private LocalDateTime RecoverDate;
+    private LocalDateTime recoverDate;
 
 
     /*

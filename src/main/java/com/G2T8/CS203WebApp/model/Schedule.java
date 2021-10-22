@@ -13,7 +13,7 @@ public class Schedule {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long ID;
+    private Long id;
 
     @Column(name = "startDateTime") @NonNull
     private LocalDateTime startDateTime;

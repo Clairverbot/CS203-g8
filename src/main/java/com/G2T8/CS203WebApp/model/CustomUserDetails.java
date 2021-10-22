@@ -17,21 +17,11 @@ public class CustomUserDetails implements UserDetails {
 
     @Override
     public Collection<GrantedAuthority> getAuthorities() {
-        final Set<GrantedAuthority> _grntdAuths = new HashSet<GrantedAuthority>();
-
-        List<String> roles = new ArrayList<>();
-
+        final Set<GrantedAuthority> grantedAuths = new HashSet<>();
         if (user != null) {
-            roles.add(user.getRole());
+            grantedAuths.add(new SimpleGrantedAuthority(user.getRole()));
         }
-
-        if (roles != null) {
-            for (String role : roles) {
-                _grntdAuths.add(new SimpleGrantedAuthority(role));
-            }
-        }
-
-        return _grntdAuths;
+        return grantedAuths;
     }
 
     @Override
