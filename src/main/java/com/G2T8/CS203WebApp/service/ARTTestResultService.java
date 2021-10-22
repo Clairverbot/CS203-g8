@@ -45,11 +45,8 @@ public class ARTTestResultService {
         if (user == null) {
             throw new UserNotFoundException(userId);
         }
-        List<ARTTestResults> toReturn = artTestResultRepository.findByUserId(userId);
-        if (toReturn != null) {
-            return toReturn;
-        }
-        return null;
+        List<ARTTestResults> toReturn = artTestResultRepository.findByUser(user);
+        return toReturn;
     }
 
     public ARTTestResults getARTbyUserIdAndDate(Long userId, LocalDateTime date) {
@@ -58,10 +55,7 @@ public class ARTTestResultService {
             throw new UserNotFoundException(userId);
         }
         ARTTestResults toReturn = artTestResultRepository.findByUserIdAndDate(userId, date);
-        if (toReturn != null) {
-            return toReturn;
-        }
-        return null;
+        return toReturn;
     }
 
     public ARTTestResults addART(String email, Boolean artResult) {

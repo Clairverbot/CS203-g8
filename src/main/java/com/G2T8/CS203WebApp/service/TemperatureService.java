@@ -33,12 +33,7 @@ public class TemperatureService {
             throw new UserNotFoundException(userId);
         }
         List<Temperature> toReturn = temperatureRepository.findByUser(user);
-
-        if (toReturn != null) {
-            return toReturn;
-        }
-
-        return null;
+        return toReturn;
     }
 
     public Temperature getTempbyUserIDAndDate(Long userId, LocalDateTime date) {
@@ -47,10 +42,7 @@ public class TemperatureService {
             throw new UserNotFoundException(userId);
         }
         Temperature toReturn = temperatureRepository.findByUserIdAndDate(userId, date);
-        if (toReturn != null) {
-            return toReturn;
-        }
-        return null;
+        return toReturn;
     }
 
     public Temperature addTemperature(String email, double temperature) {

@@ -14,12 +14,14 @@ import java.time.LocalDateTime;
 @Repository
 public interface ARTTestResultRepository extends JpaRepository<ARTTestResults, Long>{
     
-    @Query(value = "SELECT * FROM arttest_results a WHERE a.user_id = :user_id", nativeQuery= true)
-    List<ARTTestResults> findByUserId(@Param("user_id") Long user_id);
+    // @Query(value = "SELECT * FROM arttest_results a WHERE a.user_id = :user_id", nativeQuery= true)
+    // List<ARTTestResults> findByUserId(@Param("user_id") Long user_id);
 
     @Query(value = "SELECT * FROM arttest_results a WHERE a.user_id = :user_id and a.date = :date", nativeQuery = true)
     ARTTestResults findByUserIdAndDate(@Param("user_id") Long user_id, 
             @Param("date") LocalDateTime date);
+
+    List<ARTTestResults> findByUser(User user);
 
     List<ARTTestResults> findByUserAndWeeksMonday(User user, LocalDate weeksMonday);
 }
