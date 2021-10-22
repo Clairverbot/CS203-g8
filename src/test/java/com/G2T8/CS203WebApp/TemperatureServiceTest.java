@@ -75,11 +75,13 @@ public class TemperatureServiceTest {
     public void getAllTemp_ReturnAllTemperatureLog() {
         // arrange
         Temperature temperature1 = new Temperature();
+        temperature1.setTempId(Long.valueOf(1));
         temperature1.setDate(LocalDateTime.now());
         temperature1.setTemperature(36.0);
         temperature1.setUser(adminUser);
 
         Temperature temperature2 = new Temperature();
+        temperature2.setTempId(Long.valueOf(2));
         temperature2.setDate(LocalDateTime.now());
         temperature2.setTemperature(36.0);
         temperature2.setUser(basicUser);

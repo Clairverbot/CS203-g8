@@ -73,6 +73,41 @@ public class ARTTestResultServiceTest {
     }
 
     @Test
+    public void getAllResult_ReturnAllARTResults() {
+        // arrange
+        LocalDateTime current = LocalDateTime.now();
+        ARTTestResults artTestResult1 = new ARTTestResults();
+        artTestResult1.setArtId(Long.valueOf(1));
+        artTestResult1.setArtResult(false);
+        artTestResult1.setDate(current);
+        artTestResult1.setWeeksMonday(current.toLocalDate().with(TemporalAdjusters.previous(DayOfWeek.MONDAY)));
+        artTestResult1.setUser(adminUser);
+
+        ARTTestResults artTestResult2 = new ARTTestResults();
+        artTestResult2.setArtId(Long.valueOf(2));
+        artTestResult2.setArtResult(false);
+        artTestResult2.setDate(current);
+        artTestResult2.setWeeksMonday(current.toLocalDate().with(TemporalAdjusters.previous(DayOfWeek.MONDAY)));
+        artTestResult2.setUser(basicUser);
+
+        List<ARTTestResults> listART = new ArrayList<ARTTestResults>();
+
+        listART.add(artTestResult1);
+        listART.add(artTestResult2);
+
+        when(artResults.findAll()).thenReturn(listART);
+
+        // act
+        List<ARTTestResults> allART = artTestResultService.getAllResult();
+
+        // assert
+        assertNotNull(allART);
+        assertEquals(listART, allART);
+        verify(artResults).findAll();
+
+    }
+
+    @Test
     public void addART_NewArtResult_ReturnArtResult() {
         try (MockedStatic<LocalDateTime> mocked = mockStatic(LocalDateTime.class, Mockito.CALLS_REAL_METHODS)) {
             // arrange
