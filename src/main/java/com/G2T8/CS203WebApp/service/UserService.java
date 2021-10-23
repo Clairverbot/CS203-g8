@@ -2,6 +2,7 @@ package com.G2T8.CS203WebApp.service;
 
 import com.G2T8.CS203WebApp.repository.PasswordResetRepository;
 import com.G2T8.CS203WebApp.repository.UserRepository;
+import com.G2T8.CS203WebApp.repository.TeamRepository;
 
 import java.io.IOException;
 import java.util.*;
@@ -20,6 +21,7 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import java.lang.IllegalArgumentException;
 
 import org.slf4j.*;
 
@@ -40,6 +42,9 @@ public class UserService implements UserDetailsService {
     public void setEmailService(EmailService emailService) {
         this.emailService = emailService;
     }
+
+    @Autowired
+    private TeamRepository teamRepository;
 
     public List<User> getAllUsers() {
         return userRepository.findAll();
@@ -121,16 +126,20 @@ public class UserService implements UserDetailsService {
         return userRepository.save(user);
     }
 
-    // public User updateUserTeamID(Long ID, Long TeamID) {
-    // Optional<User> b = userRepository.findById(ID);
-    // if (b.isPresent()) {
-    // User user = b.get();
-    // user.setteam(TeamID);
-    // return userRepository.save(user);
-    // } else
-    // return null;
-
-    // }
+    public void updateUserTeam(Long userId, Long teamId) {
+        Optional<User> u = userRepository.findById(userId);
+        Optional<Team> t = teamRepository.findById(teamId);
+        if (u.isPresent() && t.isPresent()) {
+            User user = u.get();
+            Team team = t.get();
+            user.setTeam(team);
+            userRepository.save(user);
+        } else if(!u.isPresent()){
+            throw new UserNotFoundException(userId);
+        } else if(!t.isPresent()){
+            throw new IllegalArgumentException();
+        }
+    }
 
     public int updateUserRole(Long ID, String role) {
 

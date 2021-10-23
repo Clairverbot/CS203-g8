@@ -15,6 +15,7 @@ import java.util.*;
       // @Setter on all non-final fields, and @RequiredArgsConstructor(generate
       // constructor with args annotated with @NonNull)
 @Entity
+@NoArgsConstructor
 @Table(name = "Team")
 public class Team {
 
@@ -32,20 +33,6 @@ public class Team {
     @Transient
     @OneToMany(mappedBy = "team")
     private Set<User> users; 
-
-    public Team(){
-
-    }
-
-    public Team(String name){
-        this.name = name; 
-    }
-
-
-
-
-
-
 
     
 }
