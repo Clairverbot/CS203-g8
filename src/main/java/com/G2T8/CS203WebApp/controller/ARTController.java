@@ -1,6 +1,5 @@
 package com.G2T8.CS203WebApp.controller;
 
-import com.G2T8.CS203WebApp.repository.*;
 import com.G2T8.CS203WebApp.model.*;
 import com.G2T8.CS203WebApp.service.ARTTestResultService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,10 +17,12 @@ import java.util.*;
 @RestController
 @RequestMapping("/api/v1/art")
 public class ARTController {
+    private final ARTTestResultService artService;
+
     @Autowired
-    public ARTTestResultService artService;
-    @Autowired
-    public ARTTestResultRepository artRepo;
+    public ARTController(ARTTestResultService artService) {
+        this.artService = artService;
+    }
 
     @GetMapping("/")
     public List<ARTTestResults> findAllArt() {

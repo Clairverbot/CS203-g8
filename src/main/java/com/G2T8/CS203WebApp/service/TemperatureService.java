@@ -1,13 +1,10 @@
 package com.G2T8.CS203WebApp.service;
 
 import com.G2T8.CS203WebApp.repository.TemperatureRepository;
-import com.G2T8.CS203WebApp.repository.UserRepository;
 import java.util.*;
 import com.G2T8.CS203WebApp.model.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.http.HttpStatus;
-import org.springframework.web.server.ResponseStatusException;
 import com.G2T8.CS203WebApp.exception.UserNotFoundException;
 import java.time.LocalDateTime;
 

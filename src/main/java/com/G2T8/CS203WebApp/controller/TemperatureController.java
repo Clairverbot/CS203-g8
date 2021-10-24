@@ -1,6 +1,5 @@
 package com.G2T8.CS203WebApp.controller;
 
-import com.G2T8.CS203WebApp.repository.*;
 import com.G2T8.CS203WebApp.model.*;
 import com.G2T8.CS203WebApp.service.TemperatureService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,10 +17,12 @@ import java.util.*;
 @RestController
 @RequestMapping("/api/v1/temperature")
 public class TemperatureController {
+    private final TemperatureService tempService;
+    
     @Autowired
-    public TemperatureService tempService;
-    @Autowired
-    public TemperatureRepository tempRepo;
+    public TemperatureController(TemperatureService tempService){
+        this.tempService=tempService;
+    }
 
     @GetMapping("/")
     public List<Temperature> findAllTemp() {
