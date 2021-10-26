@@ -24,6 +24,7 @@ public class TemperatureController {
         this.tempService=tempService;
     }
 
+    //Get all temperature
     @GetMapping("/")
     public List<Temperature> findAllTemp() {
         try {
@@ -34,6 +35,7 @@ public class TemperatureController {
         }
     }
 
+    //Get all temperature based on userId
     @GetMapping("/{userId}")
     public List<Temperature> findTempByUserId(@PathVariable Long userId) {
         List<Temperature> toReturn;
@@ -48,9 +50,10 @@ public class TemperatureController {
         return toReturn;
     }
 
+    //Get temperature based on userId and date
     @GetMapping("/{userId}/{date}")
     public Temperature findTempByUserIdAndDate(@PathVariable Long userId,
-            @RequestParam("localDateTime") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime date) {
+            @RequestBody("localDateTime") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime date) {
         try {
             return tempService.getTempbyUserIDAndDate(userId, date);
         } catch (UserNotFoundException E) {
@@ -61,6 +64,7 @@ public class TemperatureController {
         }
     }
 
+    //Add temperature
     @PostMapping("/")
     public ResponseEntity<?> addTemp(@RequestBody double temperature, Principal principal) {
         try {

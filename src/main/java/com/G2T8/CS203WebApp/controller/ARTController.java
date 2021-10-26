@@ -24,6 +24,7 @@ public class ARTController {
         this.artService = artService;
     }
 
+    //Get all ART results
     @GetMapping("/")
     public List<ARTTestResults> findAllArt() {
         try {
@@ -34,6 +35,7 @@ public class ARTController {
         }
     }
 
+    //Get all ART result based on userId
     @RequestMapping("/{userId}")
     public List<ARTTestResults> findARTByUserId(@PathVariable Long userId) {
         List<ARTTestResults> toReturn;
@@ -48,6 +50,7 @@ public class ARTController {
         return toReturn;
     }
 
+    //Get ART result based on userId and date
     @GetMapping("/{userId}/{date}")
     public ARTTestResults findARTByUserIdAndDate(@PathVariable Long userId,
             @RequestParam("localDateTime") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime date) {
@@ -61,6 +64,7 @@ public class ARTController {
         }
     }
 
+    //Add ART result
     @PostMapping("/")
     public ResponseEntity<?> addResult(@RequestBody Boolean artResult, Principal principal) {
         try {
