@@ -33,13 +33,12 @@ public class Schedule {
     @NonNull
     private int mode;
 
-    // userid is a foreign key for the class/table Schedule
-    @JsonIgnore
+    // teamID is foreign key for the class/table Schedule
     @ManyToOne
-    @JoinColumn(name = "userID")
-    private User user;
+    @JoinColumn(name = "teamID")
+    private Team team;
     
-    public Schedule(){
+    public Schedule() {
 
     }
 
@@ -48,16 +47,4 @@ public class Schedule {
         this.endDateTime = endDateTime;
 
     }
-
-
-
-
-
-
-
-    
-
-
-
-    
 }

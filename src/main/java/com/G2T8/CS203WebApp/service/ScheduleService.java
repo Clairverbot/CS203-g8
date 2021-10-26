@@ -3,95 +3,117 @@ package com.G2T8.CS203WebApp.service;
 import com.G2T8.CS203WebApp.repository.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import com.G2T8.CS203WebApp.model.*; 
+import com.G2T8.CS203WebApp.repository.*; 
+import com.G2T8.CS203WebApp.exception.*; 
 import java.util.*;
 import java.time.LocalDateTime;
 import org.springframework.stereotype.Service;
 
 @Service
 public class ScheduleService {
+    private ScheduleRepository scheduleRepository;
+    private TeamService teamService;
 
     @Autowired
-    private ScheduleRepository scheduleRepository;
+    public ScheduleService(ScheduleRepository scheduleRepository, TeamService teamService) {
+        this.scheduleRepository = scheduleRepository;
+        this.teamService = teamService;
+    }
 
     public List<Schedule> getAllSchedules() {
         return scheduleRepository.findAll();
     }
 
-    // returns list because one person can have many schedules
-    public List<Schedule> getAllScheduleFromOneUser(Long ID) {
+    public List<Schedule> getAllScheduleByTeamID(Long teamID) {
+        Team team = teamService.getTeam(teamID);
+        if (team == null) {
+            throw new TeamNotFoundException(teamID);
+        }
+        List<Schedule> schedules = scheduleRepository.findByTeamId(teamID);
+        if (schedules == null) {
+            throw new ScheduleNotFoundException(teamID);
+        }
+        return schedules;
+    }
 
-        // getting the schedule of each user by custom query findByUserId in
-        // ScheduleRepository
-        // do not use findById bc that uses id of schedule bc we cannot use it to 
-        // point to the user we want
+    public Schedule getScheduleByTeamIDAndStartDateTime(Long teamID, LocalDateTime startDateTime) {
+        Team team = teamService.getTeam(teamID);
+        if (team == null) {
+            throw new TeamNotFoundException(teamID);
+        }
+        Schedule schedule = scheduleRepository.findByTeamIdAndStartDateTime(teamID, startDateTime);
+        if (schedule == null) {
+            throw new ScheduleNotFoundException(teamID, startDateTime);
+        }
+        return schedule;
+    }
 
-        List<Optional<Schedule>> origList = scheduleRepository.findByUserId(ID);
-        List<Schedule> toReturn = new ArrayList<>();
-
-        if (origList != null) {
-            for (int i = 0; i <= origList.size() - 1; i++) {
-                if (origList.get(i).isPresent()) {
-                    Optional<Schedule> opSchedule = origList.get(i);
-                    Schedule sched = opSchedule.get();
-                    toReturn.add(sched);
-
-                } else {
-                    continue;
-                }
-
+    public Schedule addSchedule(Long teamID, LocalDateTime startDateTime, LocalDateTime endDateTime, int mode) {
+        Team team = teamService.getTeam(teamID);
+        if (team == null) {
+            throw new TeamNotFoundException(teamID);
+        }
+        // check for intermingling
+        if (mode == 1) {
+            List<Schedule> schedulesWithSameTime = scheduleRepository.findByStartDateTimeAndEndDateTime(startDateTime, endDateTime);
+            if (schedulesWithSameTime != null) {
+                throw new ScheduleClashException();
             }
-            return toReturn;
-
         }
-        return null;
-
+        // 
+        Schedule schedule = new Schedule();
+        schedule.setTeam(team);
+        schedule.setStartDateTime(startDateTime);
+        schedule.setEndDateTime(endDateTime);
+        schedule.setMode(mode);
+        return scheduleRepository.save(schedule);
     }
 
-    // returns a particular covidHistory record of one user
-    public Schedule getOneScheduleFromOneUser(Long ID, LocalDateTime startdatetime) {
-        Optional <Schedule> temp = scheduleRepository.findByUserIdAndStartDateTime(ID, startdatetime);
-        if(temp.isPresent()){
-            Schedule toReturn = temp.get();
-            return toReturn; 
-
+    public Schedule updateScheduleMode(Long teamID, LocalDateTime startDateTime, int newMode) {
+        Team team = teamService.getTeam(teamID);
+        if (team == null) {
+            throw new TeamNotFoundException(teamID);
         }
-        return null;
+        Schedule schedule = scheduleRepository.findByTeamIdAndStartDateTime(teamID, startDateTime);
+        if (schedule == null) {
+            throw new ScheduleNotFoundException(teamID, startDateTime);
+        }
 
+        // check for intermingling
+        if (newMode == 1) {
+            List<Schedule> schedulesWithSameTime = scheduleRepository.findByStartDateTimeAndEndDateTime(startDateTime, schedule.getEndDateTime());
+            if (schedulesWithSameTime != null) {
+                throw new ScheduleClashException();
+            }
+        }
+        schedule.setMode(newMode);
+        return scheduleRepository.save(schedule);
     }
 
-    public Schedule addSchedule(Schedule schedule) {
+    public Schedule updateScheduleStartDateTime(Long teamID, LocalDateTime startDateTime,  LocalDateTime newStartDateTime) {
+        Team team = teamService.getTeam(teamID);
+        if (team == null) {
+            throw new TeamNotFoundException(teamID);
+        }
+        Schedule schedule = scheduleRepository.findByTeamIdAndStartDateTime(teamID, startDateTime);
+        if (schedule == null) {
+            throw new ScheduleNotFoundException(teamID, startDateTime);
+        }
+        schedule.setStartDateTime(newStartDateTime);
         return scheduleRepository.save(schedule);
     }
 
 
-    public Schedule updateScheduleMode(Long ID, LocalDateTime startdatetime, int newMode) {
-        Optional<Schedule> b = scheduleRepository.findByUserIdAndStartDateTime(ID, startdatetime);
-        if (b.isPresent()) {
-            Schedule schedule = b.get();
-            schedule.setMode(newMode);
-            return scheduleRepository.save(schedule);
-        } else
-            return null;
+    public Schedule updateScheduleEndDateTime(Long teamID, LocalDateTime startDateTime, LocalDateTime newEndDateTime) {
+        Team team = teamService.getTeam(teamID);
+        if (team == null) {
+            throw new TeamNotFoundException(teamID);
+        }
+        Schedule schedule = scheduleRepository.findByTeamIdAndStartDateTime(teamID, startDateTime);
+        if (schedule == null) {
+            throw new ScheduleNotFoundException(teamID, startDateTime);
+        }
+        schedule.setStartDateTime(newEndDateTime);
+        return scheduleRepository.save(schedule);
     }
-
-    public Schedule updateScheduleStartDateTime(Long ID, LocalDateTime startdatetime,  LocalDateTime newStartDateTime) {
-        Optional<Schedule> b = scheduleRepository.findByUserIdAndStartDateTime(ID, startdatetime);
-        if (b.isPresent()) {
-            Schedule schedule = b.get();
-            schedule.setStartDateTime(newStartDateTime);
-            return scheduleRepository.save(schedule);
-        } else
-            return null;
-    }
-
-    public Schedule updateScheduleEndDateTime(Long ID, LocalDateTime startdatetime, LocalDateTime newEndDateTime) {
-        Optional<Schedule> b = scheduleRepository.findByUserIdAndStartDateTime(ID, startdatetime);
-        if (b.isPresent()) {
-            Schedule schedule = b.get();
-            schedule.setEndDateTime(newEndDateTime);
-            return scheduleRepository.save(schedule);
-        } else
-            return null;
-    }
-    
 }
