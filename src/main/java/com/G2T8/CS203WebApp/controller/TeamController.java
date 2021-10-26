@@ -8,16 +8,22 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.server.ResponseStatusException;
 
-import com.G2T8.CS203WebApp.exception.UserNotFoundException;
+import com.G2T8.CS203WebApp.Exception.TeamNotFoundException;
 import com.G2T8.CS203WebApp.model.*;
 import com.G2T8.CS203WebApp.service.TeamService;
 
 @RestController
 @RequestMapping("/api/v1/teams")
 public  class TeamController {
-    @Autowired
+
     private TeamService teamService;
 
+    @Autowired
+    public TeamController(TeamService teamService){
+        this.teamService = teamService;
+    }
+
+    //Get all teams
     @GetMapping("/")
     public List<Team> findAllTeams() {
         try{
@@ -29,12 +35,13 @@ public  class TeamController {
     
     }
 
+    //Get team based on id
     @GetMapping("/{id}")
     public Team findTeamById(@PathVariable Long id){
         Team team;
         try{
             team = teamService.getTeam(id);
-        } catch (UserNotFoundException E) {
+        } catch (TeamNotFoundException E) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Team doesn't exist");
         } catch (Exception E) {
             throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR,
@@ -43,11 +50,12 @@ public  class TeamController {
         return team;
     }
 
+    //Update team name based on id
     @PutMapping("/{id}")
     public void updateName(@PathVariable Long id, @RequestBody String name){
         try{
             teamService.updateTeamName(id,name);
-        } catch (UserNotFoundException E) {
+        } catch (TeamNotFoundException E) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Team doesn't exist");
         } catch (Exception E) {
             throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR,
@@ -55,6 +63,7 @@ public  class TeamController {
         }
     }
 
+    //Add team
     @PostMapping("/")
     public ResponseEntity<?> addTeam(@RequestBody Team team){
         try{

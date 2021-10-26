@@ -2,7 +2,7 @@ package com.G2T8.CS203WebApp.service;
 
 import com.G2T8.CS203WebApp.repository.PasswordResetRepository;
 import com.G2T8.CS203WebApp.repository.UserRepository;
-import com.G2T8.CS203WebApp.repository.TeamRepository;
+import com.G2T8.CS203WebApp.service.*;
 
 import java.io.IOException;
 import java.util.*;
@@ -10,6 +10,7 @@ import java.util.*;
 import javax.mail.MessagingException;
 
 import com.G2T8.CS203WebApp.exception.UserNotFoundException;
+import com.G2T8.CS203WebApp.Exception.TeamNotFoundException;
 import com.G2T8.CS203WebApp.model.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -44,7 +45,7 @@ public class UserService implements UserDetailsService {
     }
 
     @Autowired
-    private TeamRepository teamRepository;
+    private TeamService teamService;
 
     public List<User> getAllUsers() {
         return userRepository.findAll();
@@ -128,16 +129,15 @@ public class UserService implements UserDetailsService {
 
     public void updateUserTeam(Long userId, Long teamId) {
         Optional<User> u = userRepository.findById(userId);
-        Optional<Team> t = teamRepository.findById(teamId);
-        if (u.isPresent() && t.isPresent()) {
+        Team team = teamService.getTeam(teamId);
+        if (u.isPresent() && team != null) {
             User user = u.get();
-            Team team = t.get();
             user.setTeam(team);
             userRepository.save(user);
         } else if(!u.isPresent()){
             throw new UserNotFoundException(userId);
-        } else if(!t.isPresent()){
-            throw new IllegalArgumentException();
+        } else if(team == null){
+            throw new TeamNotFoundException(teamId);
         }
     }
 
