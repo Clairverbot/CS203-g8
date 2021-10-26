@@ -11,14 +11,14 @@ import java.time.LocalDateTime;
 @Repository
 public interface ScheduleRepository extends JpaRepository<Schedule, Long> {
 
-    @Query(value = "SELECT s FROM Schedule s WHERE s.teamid = team_id", nativeQuery = true)
+    @Query(value = "SELECT * FROM Schedule s WHERE s.teamid = :team_id", nativeQuery = true)
     List<Schedule> findByTeamId(@Param("team_id") Long team_id);
 
-    @Query(value = "SELECT s FROM Schedule s WHERE s.start_date_time = startdatetime and s.end_date_time = enddatetime", nativeQuery = true)
+    @Query(value = "SELECT * FROM Schedule s WHERE s.start_date_time = :startdatetime and s.end_date_time = :enddatetime", nativeQuery = true)
     List<Schedule> findByStartDateTimeAndEndDateTime(@Param("startdatetime") LocalDateTime startdatetime,
             @Param("enddatetime") LocalDateTime enddatetime);
 
-    @Query(value = "SELECT s FROM Schedule s WHERE s.teamid = team_id and s.start_date_time = startdatetime", nativeQuery = true)
+    @Query(value = "SELECT * FROM Schedule s WHERE s.teamid = :team_id and s.start_date_time = :startdatetime", nativeQuery = true)
     Schedule findByTeamIdAndStartDateTime(@Param("team_id") Long team_id,
             @Param("startdatetime") LocalDateTime startdatetime);
 }
