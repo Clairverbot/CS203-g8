@@ -10,9 +10,12 @@ import com.G2T8.CS203WebApp.exception.UserNotFoundException;
 @Service
 public class TeamService {
 
-    @Autowired
     private TeamRepository teamRepository;
 
+    @Autowired
+    public TeamService(TeamRepository teamRepository){
+        this.teamRepository = teamRepository;
+    }
 
     public List<Team> getAllTeams() {
         return teamRepository.findAll();
