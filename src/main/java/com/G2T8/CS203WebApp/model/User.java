@@ -91,16 +91,16 @@ public class User implements Serializable {
     @JsonIgnore
     private PasswordResetToken passwordResetToken;
 
-    // public User(Long ID, String name, String email, int vaccination_status,
-    // String role, String password,
-    // Boolean first_login) {
-    // this.ID = ID;
-    // this.name = name;
-    // this.email = email;
-    // this.vaccinationStatus = vaccination_status;
-    // this.role = role;
-    // this.password = password;
-    // this.firstLogin = firstLogin;
-    // }
+    public User(Long ID, String name, String email, int vaccination_status,
+    String role, String password,
+    Boolean first_login) {
+    this.ID = ID;
+    this.name = name;
+    this.email = email;
+    this.vaccinationStatus = vaccination_status;
+    this.role = role;
+    this.password = password;
+    this.firstLogin = firstLogin;
+    }
 
 }
