@@ -25,7 +25,7 @@ import org.slf4j.*;
 
 @Service
 public class UserService implements UserDetailsService {
-
+    
     @Autowired
     private UserRepository userRepository;
 
