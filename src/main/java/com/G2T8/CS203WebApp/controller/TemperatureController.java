@@ -80,7 +80,24 @@ public class TemperatureController {
             @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) String date) {
         try {
             LocalDate day = LocalDate.parse(date);
-            return tempService.getUserTempOnDay(userId, day).size();
+            return tempService.getUserTempOnDayByUserId(userId, day).size();
+        } catch (UserNotFoundException E) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "User doesn't exist");
+        } catch (DateTimeParseException E) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
+                    "Input needs to be of a valid date format (YYYY-MM-DD)");
+        } catch (Exception E) {
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR,
+                    "Unknown error occurs, please try again!");
+        }
+    }
+
+    @GetMapping("/current/count")
+    public int getCurrentUserCountTemperatureLogOnDate(Principal principal,
+            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) String date) {
+        try {
+            LocalDate day = LocalDate.parse(date);
+            return tempService.getUserTempOnDayByUserEmail(principal.getName(), day).size();
         } catch (UserNotFoundException E) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "User doesn't exist");
         } catch (DateTimeParseException E) {

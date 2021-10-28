@@ -2,12 +2,15 @@ package com.G2T8.CS203WebApp;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mockStatic;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -125,4 +128,50 @@ public class TemperatureServiceTest {
             verify(temperatures).save(newTemperature);
         }
     }
+
+    @Test
+    public void getUserTempBetweenDateTime_lowerBoundAfterUpperBound_throwException() {
+        // arrange
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+
+        // act & assert
+        Exception expected = assertThrows(IllegalArgumentException.class, () -> {
+            temperatureService.getUserTempBetweenDateTime(adminUser,
+                    LocalDateTime.parse("2021-01-01 19:00:00", formatter),
+                    LocalDateTime.parse("2021-01-01 12:00:10", formatter));
+        });
+
+        assertEquals(expected.getMessage(), "Lower bound for date should be lower than upper bound");
+        verify(temperatures, never()).findAllByUserAndDateBetween(adminUser,
+                LocalDateTime.parse("2021-01-01 19:00:00", formatter),
+                LocalDateTime.parse("2021-01-01 12:00:10", formatter));
+
+    }
+
+    // @Test
+    // public void getUserTempBetweenDateTime_something_something() {
+    // // arrange
+    // DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd
+    // HH:mm:ss");
+
+    // Temperature temperature1 = new Temperature();
+    // temperature1.setTempId(Long.valueOf(1));
+    // temperature1.setDate(LocalDateTime.parse("2021-01-01 12:00:10", formatter));
+    // temperature1.setTemperature(36.0);
+    // temperature1.setUser(adminUser);
+
+    // Temperature temperature2 = new Temperature();
+    // temperature2.setTempId(Long.valueOf(2));
+    // temperature2.setDate(LocalDateTime.parse("2021-01-01 19:00:00", formatter));
+    // temperature2.setTemperature(36.0);
+    // temperature2.setUser(adminUser);
+
+    // List<Temperature> between = new ArrayList<>();
+    // between.add(temperature1);
+    // between.add(temperature2);
+
+    // when(temperatures.findAllByUserAndDateBetween(adminUser,
+    // any(LocalDateTime.class), any(LocalDateTime.class)))
+    // .thenReturn(between);
+    // }
 }
