@@ -53,20 +53,6 @@ public class TemperatureController {
         return toReturn;
     }
 
-    // Get temperature based on userId and date
-    @GetMapping("/{userId}/{date}")
-    public Temperature findTempByUserIdAndDate(@PathVariable Long userId,
-            @PathVariable @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime date) {
-        try {
-            return tempService.getTempbyUserIDAndDate(userId, date);
-        } catch (UserNotFoundException E) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "User doesn't exist");
-        } catch (Exception E) {
-            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR,
-                    "Unknown error occurs, please try again!");
-        }
-    }
-
     /**
      * Get the number of temperature logs of a user on a certain date
      * 

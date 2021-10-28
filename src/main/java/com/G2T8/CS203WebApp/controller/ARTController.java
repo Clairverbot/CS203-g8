@@ -53,20 +53,6 @@ public class ARTController {
         return toReturn;
     }
 
-    // Get ART result based on userId and date
-    @GetMapping("/{userId}/{date}")
-    public ARTTestResults findARTByUserIdAndDate(@PathVariable Long userId,
-            @RequestParam("localDateTime") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime date) {
-        try {
-            return artService.getARTbyUserIdAndDate(userId, date);
-        } catch (UserNotFoundException E) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "User doesn't exist");
-        } catch (Exception E) {
-            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR,
-                    "Unknown error occurs, please try again!");
-        }
-    }
-
     // Add ART result
     @PostMapping("/")
     public ResponseEntity<?> addResult(@RequestBody Boolean artResult, Principal principal) {

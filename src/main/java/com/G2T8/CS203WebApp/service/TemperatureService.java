@@ -75,19 +75,6 @@ public class TemperatureService {
     }
 
     /**
-     * Get a certain temperature log of a user on a specific date & time
-     * 
-     * @param userId
-     * @param date
-     * @return
-     */
-    public Temperature getTempbyUserIDAndDate(Long userId, LocalDateTime date) {
-        User user = validateUser(userId);
-        Temperature toReturn = temperatureRepository.findByUserIdAndDate(userId, date);
-        return toReturn;
-    }
-
-    /**
      * Get all user temperature logs by a certain day using user ID
      * 
      * @param userId

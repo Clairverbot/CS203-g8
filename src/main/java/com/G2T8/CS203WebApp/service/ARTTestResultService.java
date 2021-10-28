@@ -84,19 +84,6 @@ public class ARTTestResultService {
     }
 
     /**
-     * Get a certain ART test result of a user by specific user ID and dateTime
-     * 
-     * @param userId
-     * @param date
-     * @return
-     */
-    public ARTTestResults getARTbyUserIdAndDate(Long userId, LocalDateTime date) {
-        User user = validateUser(userId);
-        ARTTestResults toReturn = artTestResultRepository.findByUserIdAndDate(userId, date);
-        return toReturn;
-    }
-
-    /**
      * Method to add ART test
      * 
      * @param email
