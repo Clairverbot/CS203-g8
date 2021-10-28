@@ -199,11 +199,37 @@ public class UserService implements UserDetailsService {
     }
 
     /**
-     * Encodes user password and saves user details to database
+     * Saves user details to database
      * 
      * @param userDetails to save to database
+     * @return the created user entity
      */
     public User addUser(UserDTO userDetails) {
+        User user = setUserData(userDetails);
+        return userRepository.save(user);
+    }
+
+    /**
+     * Overloaded method: Saves user details and the manager who created that user
+     * into the database
+     * 
+     * @param userDetails details of the user account
+     * @param manager     manager who created the user account
+     * @return the created user entity
+     */
+    public User addUser(UserDTO userDetails, User manager) {
+        User user = setUserData(userDetails);
+        user.setManagerUser(manager);
+        return userRepository.save(user);
+    }
+
+    /**
+     * Helper method: Sets user information according to supplied user details
+     * 
+     * @param userDetails user details
+     * @return user entity with set information
+     */
+    private User setUserData(UserDTO userDetails) {
         User user = new User();
         BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
         String encodedPassword = encoder.encode(userDetails.getPassword());
@@ -212,7 +238,7 @@ public class UserService implements UserDetailsService {
         user.setRole(userDetails.getRole());
         user.setPassword(encodedPassword);
         user.setFirstLogin(true);
-        return userRepository.save(user);
+        return user;
     }
 
     /**
@@ -222,14 +248,14 @@ public class UserService implements UserDetailsService {
      */
     @PreAuthorize("hasRole('ROLE_ADMIN')")
     @Transactional(rollbackFor = { MessagingException.class, IOException.class })
-    public void createEmployeeAccount(UserDTO userDetails) throws MessagingException, IOException {
+    public void createEmployeeAccount(UserDTO userDetails, User manager) throws MessagingException, IOException {
         userDetails.setPassword(createRandomPassword(10));
 
         Map<String, Object> templateModel = new HashMap<>();
         templateModel.put("recipientName", userDetails.getName());
         templateModel.put("email", userDetails.getEmail());
 
-        User newEmployee = addUser(userDetails);
+        User newEmployee = addUser(userDetails, manager);
 
         PasswordResetToken passToken = generatePasswordResetToken(UUID.randomUUID().toString(), newEmployee);
 
