@@ -36,20 +36,22 @@ public class ARTTestResultService {
         return artTestResultRepository.findAll();
     }
 
-    public List<ARTTestResults> getARTbyUserID(Long userId) {
+    private User validateUser(Long userId) {
         User user = userService.getUser(userId);
         if (user == null) {
             throw new UserNotFoundException(userId);
         }
+        return user;
+    }
+
+    public List<ARTTestResults> getARTbyUserID(Long userId) {
+        User user = validateUser(userId);
         List<ARTTestResults> toReturn = artTestResultRepository.findByUser(user);
         return toReturn;
     }
 
     public ARTTestResults getARTbyUserIdAndDate(Long userId, LocalDateTime date) {
-        User user = userService.getUser(userId);
-        if (user == null) {
-            throw new UserNotFoundException(userId);
-        }
+        User user = validateUser(userId);
         ARTTestResults toReturn = artTestResultRepository.findByUserIdAndDate(userId, date);
         return toReturn;
     }
@@ -69,6 +71,11 @@ public class ARTTestResultService {
         art.setDate(date);
         art.setWeeksMonday(date.toLocalDate().with(TemporalAdjusters.previous(DayOfWeek.MONDAY)));
         return artTestResultRepository.save(art);
+    }
+
+    public List<ARTTestResults> getARTbyUserAndWeek(Long userId, LocalDateTime date) {
+        User user = validateUser(userId);
+        return getARTbyUserAndWeek(user, date);
     }
 
     public List<ARTTestResults> getARTbyUserAndWeek(User user, LocalDateTime date) {

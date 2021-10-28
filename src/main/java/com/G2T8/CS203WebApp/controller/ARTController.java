@@ -10,7 +10,10 @@ import org.springframework.web.server.ResponseStatusException;
 import org.springframework.format.annotation.*;
 
 import java.security.Principal;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeParseException;
+
 import com.G2T8.CS203WebApp.exception.UserNotFoundException;
 import java.util.*;
 
@@ -24,7 +27,7 @@ public class ARTController {
         this.artService = artService;
     }
 
-    //Get all ART results
+    // Get all ART results
     @GetMapping("/")
     public List<ARTTestResults> findAllArt() {
         try {
@@ -35,7 +38,7 @@ public class ARTController {
         }
     }
 
-    //Get all ART result based on userId
+    // Get all ART result based on userId
     @RequestMapping("/{userId}")
     public List<ARTTestResults> findARTByUserId(@PathVariable Long userId) {
         List<ARTTestResults> toReturn;
@@ -50,7 +53,7 @@ public class ARTController {
         return toReturn;
     }
 
-    //Get ART result based on userId and date
+    // Get ART result based on userId and date
     @GetMapping("/{userId}/{date}")
     public ARTTestResults findARTByUserIdAndDate(@PathVariable Long userId,
             @RequestParam("localDateTime") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime date) {
@@ -64,7 +67,7 @@ public class ARTController {
         }
     }
 
-    //Add ART result
+    // Add ART result
     @PostMapping("/")
     public ResponseEntity<?> addResult(@RequestBody Boolean artResult, Principal principal) {
         try {
@@ -76,6 +79,24 @@ public class ARTController {
             throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR,
                     "Unknown error occurs, please try again!");
         }
+    }
+
+    @GetMapping("/{userId}/count-on-week")
+    public int getCountUserARTResultOnWeek(@PathVariable Long userId,
+            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) String date) {
+        try {
+            LocalDateTime dateTime = LocalDate.parse(date).atStartOfDay();
+            return artService.getARTbyUserAndWeek(userId, dateTime).size();
+        } catch (UserNotFoundException E) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "User doesn't exist");
+        } catch (DateTimeParseException E) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
+                    "Input needs to be of a valid date format (YYYY-MM-DD)");
+        } catch (Exception E) {
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR,
+                    "Unknown error occurs, please try again!");
+        }
+
     }
 
 }
