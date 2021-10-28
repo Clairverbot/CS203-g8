@@ -9,16 +9,18 @@ import org.springframework.beans.factory.annotation.Autowired;
 import lombok.*;
 import java.util.*;
 
-@NoArgsConstructor
+
+
 @Data // A shortcut for @ToString, @EqualsAndHashCode, @Getter on all fields, and
       // @Setter on all non-final fields, and @RequiredArgsConstructor(generate
       // constructor with args annotated with @NonNull)
 @Entity
+@NoArgsConstructor
 @Table(name = "Team")
 public class Team {
 
     // @Autowired
-    // private User user;
+    // private User user; 
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -30,10 +32,7 @@ public class Team {
 
     @Transient
     @OneToMany(mappedBy = "team")
-    private Set<User> users;
+    private Set<User> users; 
 
-    public Team(String name) {
-        this.name = name;
-    }
-
+    
 }

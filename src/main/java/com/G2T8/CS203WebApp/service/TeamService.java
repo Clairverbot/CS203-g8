@@ -5,24 +5,30 @@ import com.G2T8.CS203WebApp.repository.TeamRepository;
 import java.util.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import com.G2T8.CS203WebApp.exception.UserNotFoundException;
 
 @Service
 public class TeamService {
 
-    @Autowired
     private TeamRepository teamRepository;
 
+    @Autowired
+    public TeamService(TeamRepository teamRepository){
+        this.teamRepository = teamRepository;
+    }
 
     public List<Team> getAllTeams() {
         return teamRepository.findAll();
     }
 
     public Team getTeam(Long ID) {
-
-        return teamRepository.findById(ID).map(team -> {
+        Optional<Team> t = teamRepository.findById(ID);
+        if(t.isPresent()){
+            Team team = t.get();
             return team;
-        }).orElse(null);
-
+        } else{
+            throw new UserNotFoundException(ID);
+        }
     }
 
     public Team updateTeamName(Long ID, String newName) {
@@ -31,11 +37,12 @@ public class TeamService {
             Team team = b.get();
             team.setName(newName);
             return teamRepository.save(team);
-        } else
-            return null;
-
+        } else{
+            throw new UserNotFoundException(ID);
+        }
     }
 
-
-    
+    public void addNewTeam(Team team){
+        teamRepository.save(team);
+    }
 }
