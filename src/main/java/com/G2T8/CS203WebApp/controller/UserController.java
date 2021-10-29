@@ -145,18 +145,18 @@ public class UserController {
 
     }
 
-    // @PutMapping("/{userId}/{teamId}")
-    // public void updateTeam(@PathVariable Long userId, @PathVariable Long teamId){
-    //     try{
-    //         userService.updateUserTeam(userId,teamId);
-    //     } catch (UserNotFoundException E) {
-    //         throw new ResponseStatusException(HttpStatus.NOT_FOUND, "User doesn't exist");
-    //     } catch (IllegalArgumentException E) {
-    //         throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Team doesn't exist");
-    //     } catch (Exception E) {
-    //         throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR,
-    //                 "Unknown error occurs, please try again!");
-    //     }
-    // }
+    @PutMapping("/{userId}/{teamId}")
+    public void updateTeam(@PathVariable Long userId, @PathVariable Long teamId){
+        try{
+            userService.updateUserTeam(userId,teamId);
+        } catch (UserNotFoundException E) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "User doesn't exist");
+        } catch (IllegalArgumentException E) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Team doesn't exist");
+        } catch (Exception E) {
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR,
+                    "Unknown error occurs, please try again!");
+        }
+    }
 
 }

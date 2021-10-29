@@ -38,7 +38,7 @@ public class User implements Serializable {
     @Email
     private String email;
 
-    @Column(name = "vaccinationStatus", columnDefinition = "integer default 0") // , nullable = false)
+    @Column(name = "vaccinationStatus", nullable = false)
     // @NonNull
     private int vaccinationStatus;
 
