@@ -145,7 +145,7 @@ public class UserController {
 
     }
 
-    @PutMapping("/{userId}/{teamId}")
+    @PutMapping("/{userId}/team/{teamId}")
     public void updateTeam(@PathVariable Long userId, @PathVariable Long teamId){
         try{
             userService.updateUserTeam(userId,teamId);
