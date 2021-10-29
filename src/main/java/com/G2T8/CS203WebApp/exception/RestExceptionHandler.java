@@ -1,4 +1,4 @@
-package com.G2T8.CS203WebApp.exception;
+package com.G2T8.CS203WebApp.Exception;
 
 import javax.validation.ConstraintViolationException;
 // import org.springframework.http.HttpHeaders;

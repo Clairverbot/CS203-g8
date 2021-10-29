@@ -1,4 +1,4 @@
-package com.G2T8.CS203WebApp.exception;
+package com.G2T8.CS203WebApp.Exception;
 
 import com.G2T8.CS203WebApp.model.*;
 import com.G2T8.CS203WebApp.repository.*;

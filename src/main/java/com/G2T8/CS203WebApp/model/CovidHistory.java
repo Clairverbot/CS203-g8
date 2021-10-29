@@ -33,6 +33,10 @@ public class CovidHistory {
     @Column(name = "recoverDate")
     private LocalDateTime RecoverDate;
 
+    public CovidHistory(){
+          
+    }
+
 
     /*
      * 

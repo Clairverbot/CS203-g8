@@ -5,7 +5,7 @@ import java.util.*;
 import com.G2T8.CS203WebApp.model.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import com.G2T8.CS203WebApp.exception.UserNotFoundException;
+import com.G2T8.CS203WebApp.Exception.UserNotFoundException;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;

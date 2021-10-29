@@ -8,8 +8,9 @@ import java.util.*;
 
 import javax.mail.MessagingException;
 
-import com.G2T8.CS203WebApp.exception.UserNotFoundException;
+import com.G2T8.CS203WebApp.Exception.UserNotFoundException;
 import com.G2T8.CS203WebApp.model.*;
+import com.G2T8.CS203WebApp.service.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -33,6 +34,9 @@ public class UserService implements UserDetailsService {
 
     @Autowired
     private PasswordResetRepository passwordResetRepository;
+
+    @Autowired
+    private TeamService teamService;
 
     Logger logger = LoggerFactory.getLogger(UserService.class);
 
@@ -131,6 +135,15 @@ public class UserService implements UserDetailsService {
     // return null;
 
     // }
+    public User updateUserTeam(Long userId, Long teamId) {
+        User user = getUser(userId);
+        if (user == null) {
+            throw new UserNotFoundException(userId);
+        }
+        Team team = teamService.getTeam(teamId);
+        user.setTeam(team);
+        return userRepository.save(user);
+    }
 
     public int updateUserRole(Long ID, String role) {
 

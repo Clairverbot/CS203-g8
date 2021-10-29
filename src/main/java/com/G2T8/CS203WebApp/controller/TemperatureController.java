@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.format.annotation.*;
 import org.springframework.format.annotation.DateTimeFormat.ISO;
 import org.springframework.web.server.ResponseStatusException;
-import com.G2T8.CS203WebApp.exception.UserNotFoundException;
+import com.G2T8.CS203WebApp.Exception.UserNotFoundException;
 
 import java.security.Principal;
 import java.time.LocalDate;

@@ -14,7 +14,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeParseException;
 
-import com.G2T8.CS203WebApp.exception.UserNotFoundException;
+import com.G2T8.CS203WebApp.Exception.UserNotFoundException;
 import java.util.*;
 
 @RestController

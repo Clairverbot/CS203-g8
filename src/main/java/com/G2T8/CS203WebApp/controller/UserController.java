@@ -9,7 +9,7 @@ import org.springframework.http.ResponseEntity;
 
 import org.springframework.web.server.ResponseStatusException;
 import java.lang.IllegalArgumentException;
-import com.G2T8.CS203WebApp.exception.UserNotFoundException;
+import com.G2T8.CS203WebApp.Exception.UserNotFoundException;
 import com.G2T8.CS203WebApp.model.*;
 import com.G2T8.CS203WebApp.service.UserService;
 import org.springframework.security.core.userdetails.UserDetails;
