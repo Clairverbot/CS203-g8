@@ -5,7 +5,7 @@ import com.G2T8.CS203WebApp.repository.TeamRepository;
 import java.util.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import com.G2T8.CS203WebApp.exception.UserNotFoundException;
+import com.G2T8.CS203WebApp.exception.TeamNotFoundException;
 
 @Service
 public class TeamService {
@@ -27,7 +27,7 @@ public class TeamService {
             Team team = t.get();
             return team;
         } else{
-            throw new UserNotFoundException(ID);
+            throw new TeamNotFoundException(ID);
         }
     }
 
@@ -38,7 +38,7 @@ public class TeamService {
             team.setName(newName);
             return teamRepository.save(team);
         } else{
-            throw new UserNotFoundException(ID);
+            throw new TeamNotFoundException(ID);
         }
     }
 

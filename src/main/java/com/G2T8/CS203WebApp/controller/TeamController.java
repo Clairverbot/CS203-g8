@@ -8,7 +8,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.server.ResponseStatusException;
 
-import com.G2T8.CS203WebApp.Exception.TeamNotFoundException;
+import com.G2T8.CS203WebApp.exception.TeamNotFoundException;
 import com.G2T8.CS203WebApp.model.*;
 import com.G2T8.CS203WebApp.service.TeamService;
 
