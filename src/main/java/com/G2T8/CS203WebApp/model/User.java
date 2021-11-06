@@ -12,6 +12,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import java.io.Serializable;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 
 @Data // A shortcut for @ToString, @EqualsAndHashCode, @Getter on all fields, and
       // @Setter on all non-final fields, and @RequiredArgsConstructor(generate
@@ -37,7 +38,7 @@ public class User implements Serializable {
     @Email
     private String email;
 
-    @Column(name = "vaccinationStatus") // , nullable = false)
+    @Column(name = "vaccinationStatus", nullable = false)
     // @NonNull
     private int vaccinationStatus;
 
@@ -78,11 +79,13 @@ public class User implements Serializable {
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = false)
     private List<OfficeRequest> officeRequests;
 
-    // public void setChildrenOR(List<OfficeRequest> children) {
-    // this.officeRequests.addAll(children);
-    // for (OfficeRequest child : children)
-    // child.setUser(this);
-    // }
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonManagedReference
+    private List<ARTTestResults> artTestResult;
+
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonManagedReference
+    private List<Temperature> temperature;
 
     @Column(name = "firstLogin", nullable = false, columnDefinition = "boolean default true")
     private Boolean firstLogin;
@@ -91,16 +94,22 @@ public class User implements Serializable {
     @JsonIgnore
     private PasswordResetToken passwordResetToken;
 
-    public User(Long ID, String name, String email, int vaccination_status,
-    String role, String password,
-    Boolean first_login) {
-    this.ID = ID;
-    this.name = name;
-    this.email = email;
-    this.vaccinationStatus = vaccination_status;
-    this.role = role;
-    this.password = password;
-    this.firstLogin = firstLogin;
-    }
+    // public void setChildrenOR(List<OfficeRequest> children) {
+    // this.officeRequests.addAll(children);
+    // for (OfficeRequest child : children)
+    // child.setUser(this);
+    // }
+
+    // public User(Long ID, String name, String email, int vaccination_status,
+    // String role, String password,
+    // Boolean first_login) {
+    // this.ID = ID;
+    // this.name = name;
+    // this.email = email;
+    // this.vaccinationStatus = vaccination_status;
+    // this.role = role;
+    // this.password = password;
+    // this.firstLogin = firstLogin;
+    // }
 
 }

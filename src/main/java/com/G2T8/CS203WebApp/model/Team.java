@@ -15,6 +15,7 @@ import java.util.*;
       // @Setter on all non-final fields, and @RequiredArgsConstructor(generate
       // constructor with args annotated with @NonNull)
 @Entity
+@NoArgsConstructor
 @Table(name = "Team")
 public class Team {
 
@@ -35,20 +36,5 @@ public class Team {
 
     @OneToMany(mappedBy = "team", cascade = CascadeType.ALL, orphanRemoval = false)
     private List<Schedule> schedules;
-
-    public Team(){
-
-    }
-
-    public Team(String name){
-        this.name = name; 
-    }
-
-
-
-
-
-
-
     
 }
