@@ -51,5 +51,11 @@ public class CovidHistory {
      * 
      * 
      */
-    
+
+      public Boolean recovered(){
+            if(contractedDate != null && RecoverDate == null){
+                  return false;
+            }
+            return true;
+      }
 }
