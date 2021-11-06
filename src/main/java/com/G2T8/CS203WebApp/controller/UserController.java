@@ -37,6 +37,13 @@ public class UserController {
         return users;
     }
 
+      //get all user vaccination percentage
+      @GetMapping("/vaccination-percentage")
+      public int findUsersVaxxPercentage() {
+          int percentage = userService.getUsersVaxxPercentage();
+          return percentage;
+      }
+
     // get user by Email ( necessary as we are logging in with email)
     @GetMapping(value = "/email/{email}")
     public User findUserByEmail(@RequestParam String email) {
