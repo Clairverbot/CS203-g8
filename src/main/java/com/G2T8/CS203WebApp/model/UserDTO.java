@@ -4,6 +4,8 @@ import lombok.*;
 
 import javax.validation.constraints.NotBlank;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
+
 /**
  * DTO layer for user details
  * 
