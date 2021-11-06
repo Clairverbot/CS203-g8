@@ -57,6 +57,7 @@ public class User implements Serializable {
     @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "teamID")
     // @NonNull
+    @JsonManagedReference
     private Team team;
 
     // Recursive key of User class to identify which user is managing a particular

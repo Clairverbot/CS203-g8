@@ -2,9 +2,7 @@ package com.G2T8.CS203WebApp.model;
 
 import javax.persistence.*;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonManagedReference;
+import com.fasterxml.jackson.annotation.*;
 
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -31,7 +29,7 @@ public class Team {
     private String name;
 
     @OneToMany(mappedBy = "team")
-    @JsonIgnore
-    private Set<User> users;
+    @JsonBackReference
+    private List<User> users;
 
 }

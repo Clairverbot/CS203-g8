@@ -115,10 +115,14 @@ public class UserService implements UserDetailsService {
     }
 
     @Transactional
-    public User updateManagerId(Long id, User manager) {
+    public User updateManagerId(Long id, Long managerId) {
         User user = getUser(id);
         if (user == null) {
             throw new UserNotFoundException(id);
+        }
+        User manager = getUser(managerId);
+        if (manager == null || !manager.getRole().equals("ROLE_ADMIN")) {
+            throw new UserNotFoundException(managerId);
         }
         user.setManagerUser(manager);
         return userRepository.save(user);
