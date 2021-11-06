@@ -148,8 +148,8 @@ public class UserController {
 
     }
 
-    @PutMapping("/{userId}/team/{teamId}")
-    public void updateTeam(@PathVariable Long userId, @PathVariable Long teamId) {
+    @PutMapping("/{userId}/team")
+    public void updateTeam(@PathVariable Long userId, @RequestBody Long teamId) {
         try {
             userService.updateUserTeam(userId, teamId);
         } catch (UserNotFoundException E) {
