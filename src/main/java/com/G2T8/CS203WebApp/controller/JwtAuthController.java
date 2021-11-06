@@ -65,8 +65,11 @@ public class JwtAuthController {
     }
 
     @PostMapping("/employee")
-    public ResponseEntity<?> addEmployee(@RequestBody @Validated UserDTO user) throws Exception {
-        userDetailsService.createEmployeeAccount(user);
+    public ResponseEntity<?> addEmployee(@RequestBody @Validated UserDTO user, Principal adminPrincipal) throws Exception {
+        CustomUserDetails userObj = (CustomUserDetails) userDetailsService.loadUserByUsername(adminPrincipal.getName());
+        User manager = userObj.getUser();
+
+        userDetailsService.createEmployeeAccount(user, manager);
         return new ResponseEntity<>(null, HttpStatus.CREATED);
     }
 
