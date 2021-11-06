@@ -34,6 +34,9 @@ public class UserService implements UserDetailsService {
     @Autowired
     private PasswordResetRepository passwordResetRepository;
 
+    @Autowired
+    private TeamService teamService;
+
     Logger logger = LoggerFactory.getLogger(UserService.class);
 
     @Autowired
@@ -131,6 +134,16 @@ public class UserService implements UserDetailsService {
     // return null;
 
     // }
+
+    public User updateUserTeam(Long userId, Long teamId) {
+        User user = getUser(userId);
+        if (user == null) {
+            throw new UserNotFoundException(userId);
+        }
+        Team team = teamService.getTeam(teamId);
+        user.setTeam(team);
+        return userRepository.save(user);
+    }
 
     public int updateUserRole(Long ID, String role) {
 
