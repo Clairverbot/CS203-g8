@@ -2,11 +2,10 @@ package com.G2T8.CS203WebApp.service;
 
 import com.G2T8.CS203WebApp.repository.*;
 import org.springframework.beans.factory.annotation.Autowired;
-import com.G2T8.CS203WebApp.model.*; 
-import com.G2T8.CS203WebApp.repository.*; 
-import com.G2T8.CS203WebApp.exception.*; 
+import com.G2T8.CS203WebApp.model.*;
+import com.G2T8.CS203WebApp.exception.*;
 import java.util.*;
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -36,84 +35,62 @@ public class ScheduleService {
         return schedules;
     }
 
-    public Schedule getScheduleByTeamIDAndStartDateTime(Long teamID, LocalDateTime startDateTime) {
-        Team team = teamService.getTeam(teamID);
-        if (team == null) {
-            throw new TeamNotFoundException(teamID);
-        }
-        Schedule schedule = scheduleRepository.findByTeamIdAndStartDateTime(teamID, startDateTime);
+    public Schedule getScheduleByTeamIDAndStartDate(Long teamID, LocalDate startDate) {
+        findTeam(teamID);
+        Schedule schedule = scheduleRepository.findByTeamIdAndStartDate(teamID, startDate);
         if (schedule == null) {
-            throw new ScheduleNotFoundException(teamID, startDateTime);
+            throw new ScheduleNotFoundException(teamID, startDate);
         }
         return schedule;
     }
 
-    public Schedule addSchedule(Long teamID, LocalDateTime startDateTime, LocalDateTime endDateTime, int mode) {
-        Team team = teamService.getTeam(teamID);
-        if (team == null) {
-            throw new TeamNotFoundException(teamID);
-        }
-        // check for intermingling
-        if (mode == 1) {
-            List<Schedule> schedulesWithSameTime = scheduleRepository.findByStartDateTimeAndEndDateTime(startDateTime, endDateTime);
-            if (schedulesWithSameTime != null) {
-                throw new ScheduleClashException();
-            }
-        }
-        // 
+    public Schedule addSchedule(Long teamID, LocalDate startDate, LocalDate endDate, int mode) {
+        Team team = findTeam(teamID);
+        checkScheduleConflict(mode, startDate, endDate);
+
         Schedule schedule = new Schedule();
         schedule.setTeam(team);
-        schedule.setStartDateTime(startDateTime);
-        schedule.setEndDateTime(endDateTime);
+        schedule.setStartDate(startDate);
+        schedule.setEndDate(endDate);
         schedule.setMode(mode);
         return scheduleRepository.save(schedule);
     }
 
-    public Schedule updateScheduleMode(Long teamID, LocalDateTime startDateTime, int newMode) {
+    public Schedule updateSchedule(Long scheduleId, Long teamID, LocalDate startDate, LocalDate endDate, int mode) {
+        Optional<Schedule> schedule = scheduleRepository.findById(scheduleId);
+        if (!schedule.isPresent()) {
+            throw new ScheduleNotFoundException(scheduleId, startDate);
+        }
+        Team team = findTeam(teamID);
+
+        checkScheduleConflict(mode, startDate, endDate);
+
+        Schedule updatedSchedule = schedule.get();
+        updatedSchedule.setMode(mode);
+        updatedSchedule.setTeam(team);
+        updatedSchedule.setStartDate(startDate);
+        updatedSchedule.setEndDate(endDate);
+        return scheduleRepository.save(updatedSchedule);
+    }
+
+    public void deleteSchedule(Long scheduleId) {
+        scheduleRepository.deleteById(scheduleId);
+    }
+
+    public Team findTeam(Long teamID) {
         Team team = teamService.getTeam(teamID);
         if (team == null) {
             throw new TeamNotFoundException(teamID);
         }
-        Schedule schedule = scheduleRepository.findByTeamIdAndStartDateTime(teamID, startDateTime);
-        if (schedule == null) {
-            throw new ScheduleNotFoundException(teamID, startDateTime);
-        }
+        return team;
+    }
 
-        // check for intermingling
-        if (newMode == 1) {
-            List<Schedule> schedulesWithSameTime = scheduleRepository.findByStartDateTimeAndEndDateTime(startDateTime, schedule.getEndDateTime());
-            if (schedulesWithSameTime != null) {
+    public void checkScheduleConflict(int mode, LocalDate startDate, LocalDate endDate) {
+        if (mode == 1) {
+            List<Schedule> schedulesWithSameTime = scheduleRepository.findByStartDateAndEndDate(startDate, endDate);
+            if (!schedulesWithSameTime.isEmpty()) {
                 throw new ScheduleClashException();
             }
         }
-        schedule.setMode(newMode);
-        return scheduleRepository.save(schedule);
-    }
-
-    public Schedule updateScheduleStartDateTime(Long teamID, LocalDateTime startDateTime,  LocalDateTime newStartDateTime) {
-        Team team = teamService.getTeam(teamID);
-        if (team == null) {
-            throw new TeamNotFoundException(teamID);
-        }
-        Schedule schedule = scheduleRepository.findByTeamIdAndStartDateTime(teamID, startDateTime);
-        if (schedule == null) {
-            throw new ScheduleNotFoundException(teamID, startDateTime);
-        }
-        schedule.setStartDateTime(newStartDateTime);
-        return scheduleRepository.save(schedule);
-    }
-
-
-    public Schedule updateScheduleEndDateTime(Long teamID, LocalDateTime startDateTime, LocalDateTime newEndDateTime) {
-        Team team = teamService.getTeam(teamID);
-        if (team == null) {
-            throw new TeamNotFoundException(teamID);
-        }
-        Schedule schedule = scheduleRepository.findByTeamIdAndStartDateTime(teamID, startDateTime);
-        if (schedule == null) {
-            throw new ScheduleNotFoundException(teamID, startDateTime);
-        }
-        schedule.setStartDateTime(newEndDateTime);
-        return scheduleRepository.save(schedule);
     }
 }

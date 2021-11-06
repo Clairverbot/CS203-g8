@@ -1,14 +1,10 @@
 package com.G2T8.CS203WebApp.model;
 
-import java.time.LocalDateTime;
-import java.util.*;
+import java.time.LocalDate;
 import javax.persistence.*;
 import lombok.*;
-import javax.validation.constraints.Email;
-import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Size;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonFormat;
 
 @Data // A shortcut for @ToString, @EqualsAndHashCode, @Getter on all fields, and
       // @Setter on all non-final fields, and @RequiredArgsConstructor(generate
@@ -21,12 +17,15 @@ public class Schedule {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long ID;
 
-    @Column(name = "startDateTime") @NonNull
-    private LocalDateTime startDateTime;
-
-    @Column(name = "endDateTime")
+    @Column(name = "startDate")
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
     @NonNull
-    private LocalDateTime endDateTime;
+    private LocalDate startDate;
+
+    @Column(name = "endDate")
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
+    @NonNull
+    private LocalDate endDate;
 
     // 0 for wfh , 1 for office
     @Column(name = "mode")
@@ -42,9 +41,8 @@ public class Schedule {
 
     }
 
-    public Schedule(LocalDateTime startDateTime, LocalDateTime endDateTime){
-        this.startDateTime = startDateTime;
-        this.endDateTime = endDateTime;
-
+    public Schedule(LocalDate startDate, LocalDate endDate){
+        this.startDate = startDate;
+        this.endDate = endDate;
     }
 }
