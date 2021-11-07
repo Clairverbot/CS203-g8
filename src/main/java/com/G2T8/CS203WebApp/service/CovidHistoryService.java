@@ -24,25 +24,27 @@ public class CovidHistoryService {
         // do not use findById bc that uses CovidHistoryId which does dont point to
         // which user it is referring to
 
-        List<Optional<CovidHistory>> origList = covidHistoryRepository.findByUserId(ID);
-        List<CovidHistory> toReturn = new ArrayList<>();
+        return covidHistoryRepository.findByUserId(ID);
 
-        if(origList != null){
-            for (int i = 0; i <= origList.size() - 1; i++) {
-                if (origList.get(i).isPresent()) {
-                    Optional<CovidHistory> opCovidHis = origList.get(i);
-                    CovidHistory covidHis = opCovidHis.get();
-                    toReturn.add(covidHis);
+        // List<Optional<CovidHistory>> origList = covidHistoryRepository.findByUserId(ID);
+        // List<CovidHistory> toReturn = new ArrayList<>();
 
-                } else {
-                    continue;
-                }
+        // if(origList != null){
+        //     for (int i = 0; i <= origList.size() - 1; i++) {
+        //         if (origList.get(i).isPresent()) {
+        //             Optional<CovidHistory> opCovidHis = origList.get(i);
+        //             CovidHistory covidHis = opCovidHis.get();
+        //             toReturn.add(covidHis);
 
-            }
-            return toReturn;
+        //         } else {
+        //             continue;
+        //         }
 
-        }
-        return null; 
+        //     }
+        //     return toReturn;
+
+        // }
+        // return null; 
 
     }
 

@@ -13,6 +13,8 @@ import javax.validation.constraints.Size;
       // constructor with args annotated with @NonNull)
 @Entity(name = "covid_his")
 @Table(name = "covid_history")
+@NoArgsConstructor
+@AllArgsConstructor
 public class CovidHistory {
 
     // primary key 

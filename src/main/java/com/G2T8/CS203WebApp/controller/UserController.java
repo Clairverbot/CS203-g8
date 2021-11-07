@@ -47,6 +47,16 @@ public class UserController {
         return users;
     }
 
+    //get number of contracted users
+    @GetMapping("/number-of-contracted-users")
+    public int findNumberOfContractedUsers() {
+        List<User> users = userService.getContractedUsers();
+        if (users == null) {
+            throw new UserNotFoundException();
+        }
+        return users.size();
+    }
+
     // get user by Email ( necessary as we are logging in with email)
     @GetMapping(value = "/email/{email}")
     public User findUserByEmail(@RequestParam String email) {

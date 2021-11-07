@@ -54,7 +54,7 @@ public class UserService implements UserDetailsService {
 
     public List<User> getContractedUsers(){
         List<User> userList = userRepository.findAll();
-        List<User> toReturn = new ArrayList();
+        List<User> toReturn = new ArrayList<User>();
         for(User u : userList){
             Long id = u.getID();
             boolean recovery = true;
