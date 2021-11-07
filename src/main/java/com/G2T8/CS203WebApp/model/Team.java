@@ -2,14 +2,12 @@ package com.G2T8.CS203WebApp.model;
 
 import javax.persistence.*;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.*;
 
 import org.springframework.beans.factory.annotation.Autowired;
 
 import lombok.*;
 import java.util.*;
-
-
 
 @Data // A shortcut for @ToString, @EqualsAndHashCode, @Getter on all fields, and
       // @Setter on all non-final fields, and @RequiredArgsConstructor(generate
@@ -20,7 +18,7 @@ import java.util.*;
 public class Team {
 
     // @Autowired
-    // private User user; 
+    // private User user;
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -30,9 +28,8 @@ public class Team {
     @NonNull
     private String name;
 
-    @Transient
     @OneToMany(mappedBy = "team")
-    private Set<User> users; 
+    @JsonBackReference
+    private List<User> users;
 
-    
 }

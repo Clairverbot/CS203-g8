@@ -115,10 +115,14 @@ public class UserService implements UserDetailsService {
     }
 
     @Transactional
-    public User updateManagerId(Long id, User manager) {
+    public User updateManagerId(Long id, Long managerId) {
         User user = getUser(id);
         if (user == null) {
             throw new UserNotFoundException(id);
+        }
+        User manager = getUser(managerId);
+        if (manager == null || !manager.getRole().equals("ROLE_ADMIN")) {
+            throw new UserNotFoundException(managerId);
         }
         user.setManagerUser(manager);
         return userRepository.save(user);
@@ -211,6 +215,18 @@ public class UserService implements UserDetailsService {
         }
     }
 
+    public int getUsersVaxxPercentage(){
+        List<User> userList = userRepository.findAll();
+        int countUser = 0;
+        int countVaxx = 0;
+        for(User u : userList){
+            if(u.isVaccinated()){
+                countVaxx++;
+            }
+            countUser++;
+        }
+        return (int)((double)countVaxx/(double)countUser * 100);
+    }
     /**
      * Saves user details to database
      * 
