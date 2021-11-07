@@ -85,8 +85,13 @@ public class UserService implements UserDetailsService {
     @Transactional
     public User updateUserVaccinationStatus(Long id, int vaccinationStatus) {
         User user = getUser(id);
-        user.setVaccinationStatus(vaccinationStatus);
-        return userRepository.save(user);
+        boolean isValidStatus = vaccinationStatus == 0 || vaccinationStatus == 1 || vaccinationStatus == 2;
+        if (isValidStatus) {
+            user.setVaccinationStatus(vaccinationStatus);
+            return userRepository.save(user);
+        } else {
+            throw new IllegalArgumentException("Vaccination Status must be 0, 1, or 2");
+        }
 
     }
 
@@ -178,6 +183,15 @@ public class UserService implements UserDetailsService {
         return userRepository.save(user);
     }
 
+    // ---------------- End of update user info methods ----------------------
+
+    /**
+     * Overrides loadUserByUsername method from Spring Security's UserDetails
+     * 
+     * @param email email of the user (username)
+     * @return CustomUserDetails (child of Spring Security's UserDetails with the
+     *         user entity wrapped inside it)
+     */
     @Override
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
         // In our case, username will be email
@@ -191,6 +205,12 @@ public class UserService implements UserDetailsService {
         return new CustomUserDetails(user);
     }
 
+    /**
+     * Retrieves a user from database by email
+     * 
+     * @param email email of the user
+     * @return user object, else null
+     */
     public User findByEmail(String email) {
         Optional<User> optional = userRepository.findByEmail(email);
 
@@ -200,6 +220,10 @@ public class UserService implements UserDetailsService {
             return null;
         }
     }
+
+    // ----------------------------------------------
+    // SAVE USER INTO DATABASE
+    // ----------------------------------------------
 
     /**
      * Saves user details to database
@@ -270,6 +294,12 @@ public class UserService implements UserDetailsService {
 
     }
 
+    /**
+     * Utility method: creates a random alphanumeric string for default password
+     * 
+     * @param stringLength length of generated string
+     * @return random alphanumeric string
+     */
     private String createRandomPassword(int stringLength) {
         int leftLimit = '0';
         int rightLimit = 'z';
@@ -279,6 +309,9 @@ public class UserService implements UserDetailsService {
                 .limit(stringLength).collect(StringBuilder::new, StringBuilder::appendCodePoint, StringBuilder::append)
                 .toString();
     }
+
+    // ---------------- End of save user into database methods
+    // ----------------------
 
     // ----------------------------------------------
     // RESET PASSWORD FUNCTIONALITY
@@ -290,7 +323,7 @@ public class UserService implements UserDetailsService {
      * date
      * 
      * @param user user entity for whom to create a password reset token for
-     * @throws Exception
+     * @throws Exception fail to email
      */
     @Transactional(rollbackFor = { MessagingException.class, IOException.class })
     public void createPasswordResetTokenForUser(User user) throws Exception {
@@ -308,12 +341,12 @@ public class UserService implements UserDetailsService {
     }
 
     /**
-     * Utility function to generate password reset token Deletes all tokens
+     * Utility function to generate password reset token, Deletes all tokens
      * previously created for that user
      * 
-     * @param resetToken
-     * @param user
-     * @return
+     * @param resetToken password reset token string
+     * @param user       user to generate the token for
+     * @return PasswordResetToken object that got saved into DB
      */
     @Transactional
     private PasswordResetToken generatePasswordResetToken(String resetToken, User user) {
