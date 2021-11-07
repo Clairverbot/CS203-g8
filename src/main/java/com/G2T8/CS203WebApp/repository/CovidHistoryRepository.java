@@ -10,7 +10,7 @@ import java.time.LocalDateTime;
 @Repository
 public interface CovidHistoryRepository extends JpaRepository<CovidHistory, Long>{
 
-    @Query(value = "SELECT * FROM covid_history c WHERE c.userid = userid", nativeQuery= true)
+    @Query(value = "SELECT * FROM covid_history c WHERE c.userid = :userid", nativeQuery= true)
     List<CovidHistory> findByUserId(@Param("userid") Long userid);
 
 

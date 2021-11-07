@@ -8,6 +8,8 @@ import javax.validation.constraints.Email;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
+
 @Data // A shortcut for @ToString, @EqualsAndHashCode, @Getter on all fields, and
       // @Setter on all non-final fields, and @RequiredArgsConstructor(generate
       // constructor with args annotated with @NonNull)
@@ -17,6 +19,7 @@ public class CovidHistory {
 
     // primary key 
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "covidHistoryid")
     private Long CovidHistoryid;
 
@@ -26,10 +29,12 @@ public class CovidHistory {
     @JoinColumn(name = "userid", referencedColumnName = "id")
     private User user;
 
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     @Column(name = "contractedDate")
     @NonNull
     private LocalDateTime contractedDate;
 
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     @Column(name = "recoverDate")
     private LocalDateTime RecoverDate;
 
@@ -75,6 +80,11 @@ public class CovidHistory {
             return Objects.hash(CovidHistoryid, user.getID(), contractedDate);
       }
 
-
+      public Boolean recovered(){
+            if(contractedDate != null && RecoverDate == null){
+                  return false;
+            }
+            return true;
+      }
     
 }

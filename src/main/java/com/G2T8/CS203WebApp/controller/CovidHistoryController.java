@@ -39,7 +39,7 @@ public class CovidHistoryController {
     }
 
     @GetMapping("/findAllHistoryFromOneUser/{ID}")
-    public List<CovidHistory> findAllCovidHistoryFromOneUser(Long ID) {
+    public List<CovidHistory> findAllCovidHistoryFromOneUser(@PathVariable Long ID) {
         if (covidHistoryService.getAllCovidHistoryFromOneUser(ID) != null) {
             return covidHistoryService.getAllCovidHistoryFromOneUser(ID);
 
