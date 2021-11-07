@@ -93,8 +93,10 @@ public class TeamController {
 
     // Add team
     @PostMapping("/")
-    public ResponseEntity<?> addTeam(@RequestBody Team team) {
+    public ResponseEntity<?> addTeam(@RequestBody Map<String, Object> requestBody) {
         try {
+            Team team = new Team();
+            team.setName(requestBody.get("name").toString());
             teamService.addNewTeam(team);
             return new ResponseEntity(HttpStatus.CREATED);
         } catch (Exception E) {
