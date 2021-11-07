@@ -221,7 +221,7 @@ public class UserService implements UserDetailsService {
             }
             countUser++;
         }
-        return countVaxx/countUser * 100;
+        return (int)((double)countVaxx/(double)countUser * 100);
     }
     /**
      * Saves user details to database
