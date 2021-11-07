@@ -36,6 +36,11 @@ public class CovidHistory {
     public CovidHistory(){
 
     }
+    public CovidHistory(User user,LocalDateTime contractedDate, LocalDateTime RecoverDate){
+          this.user = user;
+          this.contractedDate = contractedDate;
+          this.RecoverDate = RecoverDate; 
+    }
 
 
     /*

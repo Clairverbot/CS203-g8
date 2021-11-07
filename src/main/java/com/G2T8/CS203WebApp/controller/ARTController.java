@@ -1,6 +1,7 @@
 package com.G2T8.CS203WebApp.controller;
 
 import com.G2T8.CS203WebApp.model.*;
+import com.G2T8.CS203WebApp.repository.CovidHistoryRepository;
 import com.G2T8.CS203WebApp.service.ARTTestResultService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -13,6 +14,7 @@ import java.security.Principal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeParseException;
+import com.G2T8.CS203WebApp.service.*;
 
 import com.G2T8.CS203WebApp.exception.UserNotFoundException;
 import java.util.*;
@@ -22,6 +24,10 @@ import java.util.*;
 public class ARTController {
     private final ARTTestResultService artService;
 
+    @Autowired
+    CovidHistoryService covidHistoryService; 
+    
+    
     @Autowired
     public ARTController(ARTTestResultService artService) {
         this.artService = artService;
@@ -58,6 +64,10 @@ public class ARTController {
     public ResponseEntity<?> addResult(@RequestBody Boolean artResult, Principal principal) {
         try {
             ARTTestResults artTestResults = artService.addART(principal.getName(), artResult);
+            if(artTestResults.getArtResult() == true){
+                CovidHistory toAdd = new CovidHistory(artTestResults.getUser(), artTestResults.getDate(), null); 
+                covidHistoryService.addCovidHistory(toAdd); 
+            }
             return new ResponseEntity<ARTTestResults>(artTestResults, HttpStatus.CREATED);
         } catch (UserNotFoundException E) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "User doesn't exist");
