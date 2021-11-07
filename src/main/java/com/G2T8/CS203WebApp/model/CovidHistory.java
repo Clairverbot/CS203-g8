@@ -13,6 +13,7 @@ import javax.validation.constraints.Size;
       // constructor with args annotated with @NonNull)
 @Entity(name = "covid_his")
 @Table(name = "covid_history")
+@AllArgsConstructor
 public class CovidHistory {
 
     // primary key 
@@ -72,4 +73,11 @@ public class CovidHistory {
 
 
     
+
+      public Boolean recovered(){
+            if(contractedDate != null && RecoverDate == null){
+                  return false;
+            }
+            return true;
+      }
 }

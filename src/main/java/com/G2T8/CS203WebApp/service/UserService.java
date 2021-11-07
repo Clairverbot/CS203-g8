@@ -1,5 +1,6 @@
 package com.G2T8.CS203WebApp.service;
 
+import com.G2T8.CS203WebApp.repository.CovidHistoryRepository;
 import com.G2T8.CS203WebApp.repository.PasswordResetRepository;
 import com.G2T8.CS203WebApp.repository.UserRepository;
 
@@ -37,6 +38,9 @@ public class UserService implements UserDetailsService {
     @Autowired
     private TeamService teamService;
 
+    @Autowired
+    private CovidHistoryService cService;
+
     Logger logger = LoggerFactory.getLogger(UserService.class);
 
     @Autowired
@@ -46,6 +50,26 @@ public class UserService implements UserDetailsService {
 
     public List<User> getAllUsers() {
         return userRepository.findAll();
+    }
+
+    public List<User> getContractedUsers(){
+        List<User> userList = userRepository.findAll();
+        List<User> toReturn = new ArrayList<User>();
+        for(User u : userList){
+            Long id = u.getID();
+            boolean recovery = true;
+            List<CovidHistory> history = cService.getAllCovidHistoryFromOneUser(id);
+            for(CovidHistory c : history){
+                if(!c.recovered()){
+                    recovery = false;
+                    break;
+                }
+            }
+            if(!recovery){
+                toReturn.add(u);
+            }
+        }
+        return toReturn;
     }
 
     public User getUser(Long ID) {
