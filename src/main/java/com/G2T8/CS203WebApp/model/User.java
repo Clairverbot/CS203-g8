@@ -118,5 +118,11 @@ public class User implements Serializable {
     // this.password = password;
     // this.firstLogin = firstLogin;
     // }
-
+    
+    public Boolean isVaccinated(){
+        if(vaccinationStatus == 2){
+            return true;
+        }
+        return false;
+    }
 }

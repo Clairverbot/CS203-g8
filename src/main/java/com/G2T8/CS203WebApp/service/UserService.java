@@ -215,6 +215,18 @@ public class UserService implements UserDetailsService {
         }
     }
 
+    public int getUsersVaxxPercentage(){
+        List<User> userList = userRepository.findAll();
+        int countUser = 0;
+        int countVaxx = 0;
+        for(User u : userList){
+            if(u.isVaccinated()){
+                countVaxx++;
+            }
+            countUser++;
+        }
+        return (int)((double)countVaxx/(double)countUser * 100);
+    }
     /**
      * Saves user details to database
      * 
