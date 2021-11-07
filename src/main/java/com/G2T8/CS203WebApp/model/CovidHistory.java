@@ -18,7 +18,7 @@ public class CovidHistory {
     // primary key 
     @Id
     @Column(name = "covidHistoryid")
-    private long CovidHistoryid;
+    private Long CovidHistoryid;
 
     // each row can be uniquely discovered by userid 
     // hence created a findByUserId in CovidHistoryRepo
@@ -32,6 +32,10 @@ public class CovidHistory {
 
     @Column(name = "recoverDate")
     private LocalDateTime RecoverDate;
+
+    public CovidHistory(){
+
+    }
 
 
     /*
@@ -51,5 +55,21 @@ public class CovidHistory {
      * 
      * 
      */
+      @Override
+      public boolean equals(Object o) {
+            if (this == o)
+                  return true;
+            if (o == null || getClass() != o.getClass())
+                  return false;
+            CovidHistory covidHistory = (CovidHistory) o;
+            return CovidHistoryid.equals(covidHistory.CovidHistoryid) && user.getID().equals(covidHistory.user.getID()) && contractedDate.equals(covidHistory.contractedDate); 
+      }
+
+      @Override
+      public int hashCode() {
+            return Objects.hash(CovidHistoryid, user.getID(), contractedDate);
+      }
+
+
     
 }

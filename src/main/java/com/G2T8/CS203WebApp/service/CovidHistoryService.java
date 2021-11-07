@@ -5,6 +5,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import com.G2T8.CS203WebApp.model.*;
 import java.util.*;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @Service
@@ -24,36 +25,21 @@ public class CovidHistoryService {
         // do not use findById bc that uses CovidHistoryId which does dont point to
         // which user it is referring to
 
-        List<Optional<CovidHistory>> origList = covidHistoryRepository.findByUserId(ID);
-        List<CovidHistory> toReturn = new ArrayList<>();
-
-        if(origList != null){
-            for (int i = 0; i <= origList.size() - 1; i++) {
-                if (origList.get(i).isPresent()) {
-                    Optional<CovidHistory> opCovidHis = origList.get(i);
-                    CovidHistory covidHis = opCovidHis.get();
-                    toReturn.add(covidHis);
-
-                } else {
-                    continue;
-                }
-
-            }
-            return toReturn;
-
-        }
-        return null; 
+        List<CovidHistory> origList = covidHistoryRepository.findByUserId(ID);
+        return origList; 
 
     }
 
     // returns a particular covidHistory record of one user
     public CovidHistory getOneCovidHistoryFromOneUser(Long ID, LocalDateTime contracteddate){
-        Optional<CovidHistory> temp = covidHistoryRepository.findByUserIdAndContractedDate(ID, contracteddate);
-        if (temp.isPresent()) {
-            CovidHistory toReturn = temp.get();
-            return toReturn;
-
+        List<CovidHistory> answer = covidHistoryRepository.findByUserId(ID);
+        LocalDate contractdatewithoutime = contracteddate.toLocalDate(); 
+        for(int i = 0 ; i<= answer.size()-1 ; i++){
+            if(answer.get(i).getContractedDate().toLocalDate().equals(contractdatewithoutime)){
+                return answer.get(i);
+            }
         }
+
         return null; 
 
     }
@@ -66,15 +52,17 @@ public class CovidHistoryService {
     }
 
     // after recovery date is known , can use this method to add in recoverDate
-    public CovidHistory addRecoveryDate(Long ID, LocalDateTime contracteddate, LocalDateTime recoverdate){
-
-        Optional <CovidHistory> temp = covidHistoryRepository.findByUserIdAndContractedDate(ID, contracteddate); 
-        if (temp.isPresent()) {
-            CovidHistory toReturn = temp.get();
-            return toReturn;
+    public CovidHistory addRecoveryDate(Long ID, LocalDateTime contracteddate){
+        List<CovidHistory> answer = covidHistoryRepository.findByUserId(ID);
+        LocalDate contractdatewithoutime = contracteddate.toLocalDate();
+        for (int i = 0; i <= answer.size() - 1; i++) {
+            if (answer.get(i).getContractedDate().toLocalDate().equals(contractdatewithoutime)) {
+                return answer.get(i);
+            }
         }
-        return null; 
+        return null;
 
+    
     }
     
 }
