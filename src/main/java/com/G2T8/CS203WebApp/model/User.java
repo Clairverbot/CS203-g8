@@ -12,7 +12,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import java.io.Serializable;
-import com.fasterxml.jackson.annotation.JsonManagedReference;
+import com.fasterxml.jackson.annotation.*;
 
 @Data // A shortcut for @ToString, @EqualsAndHashCode, @Getter on all fields, and
       // @Setter on all non-final fields, and @RequiredArgsConstructor(generate
@@ -57,12 +57,14 @@ public class User implements Serializable {
     @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "teamID")
     // @NonNull
+    @JsonManagedReference
     private Team team;
 
     // Recursive key of User class to identify which user is managing a particular
     // user object;
 
     @OneToMany(mappedBy = "ManagerUser", orphanRemoval = true)
+    @Getter(onMethod = @__(@JsonIgnore))
     private List<User> EmployeeUsers;
 
     @ManyToOne
