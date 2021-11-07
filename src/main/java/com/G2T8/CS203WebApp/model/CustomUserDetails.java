@@ -22,7 +22,8 @@ public class CustomUserDetails implements UserDetails {
             grantedAuths.add(new SimpleGrantedAuthority(user.getRole()));
         }
         return grantedAuths;
-    }
+
+        }
 
     @Override
     public String getPassword() {

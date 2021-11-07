@@ -7,11 +7,12 @@ import javax.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
+import org.springframework.web.server.ResponseStatusException;
+import java.lang.IllegalArgumentException;
 import com.G2T8.CS203WebApp.exception.UserNotFoundException;
 import com.G2T8.CS203WebApp.model.*;
 import com.G2T8.CS203WebApp.service.UserService;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.validation.annotation.Validated;
 
 import java.security.Principal;
 
@@ -38,22 +39,18 @@ public class UserController {
 
     // get user by Email ( necessary as we are logging in with email)
     @GetMapping(value = "/email/{email}")
-    public User findUserByEmail(@PathVariable String email) {
+    public User findUserByEmail(@RequestParam String email) {
         User user = userService.findByEmail(email);
         if (user == null) {
             throw new UserNotFoundException(email);
+
         }
         return user;
     }
 
-    /**
-     * Get user by id
-     * 
-     * @param id user id
-     * @return user enntity
-     */
+    // get user by ID
     @GetMapping(value = "/{id}")
-    public User findUserById(@PathVariable Long id) {
+    public User findUserByID(@PathVariable(value = "id") Long id) {
         User user = userService.getUser(id);
         if (user == null) {
             throw new UserNotFoundException(id);
@@ -76,12 +73,6 @@ public class UserController {
             throw new UserNotFoundException();
         }
         return userEntity;
-    }
-
-    @PostMapping("/employee")
-    public ResponseEntity<?> addEmployee(@RequestBody @Validated UserDTO user) throws Exception {
-        userService.createEmployeeAccount(user);
-        return new ResponseEntity<>(null, HttpStatus.CREATED);
     }
 
     @PutMapping("/{id}/vaccination-status")
@@ -152,6 +143,20 @@ public class UserController {
             return new ResponseEntity<>(responseBody, HttpStatus.BAD_REQUEST);
         }
 
+    }
+
+    @PutMapping("/{userId}/team/{teamId}")
+    public void updateTeam(@PathVariable Long userId, @PathVariable Long teamId) {
+        try {
+            userService.updateUserTeam(userId, teamId);
+        } catch (UserNotFoundException E) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "User doesn't exist");
+        } catch (IllegalArgumentException E) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Team doesn't exist");
+        } catch (Exception E) {
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR,
+                    "Unknown error occurs, please try again!");
+        }
     }
 
 }

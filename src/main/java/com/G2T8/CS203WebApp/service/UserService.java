@@ -13,6 +13,7 @@ import com.G2T8.CS203WebApp.model.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -24,62 +25,95 @@ import org.slf4j.*;
 @Service
 public class UserService implements UserDetailsService {
 
-    
     private final UserRepository userRepository;
     private final PasswordResetRepository passwordResetRepository;
     private EmailService emailService;
-
+    private TeamService teamService;
 
     Logger logger = LoggerFactory.getLogger(UserService.class);
 
     @Autowired
-    public UserService(UserRepository userRepository, PasswordResetRepository passwordResetRepository){
-        this.userRepository=userRepository;
-        this.passwordResetRepository=passwordResetRepository;
+    public UserService(UserRepository userRepository, PasswordResetRepository passwordResetRepository) {
+        this.userRepository = userRepository;
+        this.passwordResetRepository = passwordResetRepository;
     }
+
     @Autowired
-    public void setEmailService(EmailService emailService){
-        this.emailService=emailService;
+    public void setTeamService(TeamService teamService) {
+        this.teamService = teamService;
     }
+
+    @Autowired
+    public void setEmailService(EmailService emailService) {
+        this.emailService = emailService;
+    }
+
+    /**
+     * Retrieves all users from the repository
+     * 
+     * @return list of all users from the repository
+     */
     public List<User> getAllUsers() {
         return userRepository.findAll();
     }
 
-    public User getUser(Long ID) {
-
-        return userRepository.findById(ID).map(user -> {
+    /**
+     * Get a specific user by index
+     * 
+     * @param id user ID
+     * @return user entity associated with that id
+     */
+    public User getUser(Long id) {
+        return userRepository.findById(id).map(user -> {
             return user;
-        }).orElse(null);
-
+        }).orElseThrow(() -> {
+            throw new UserNotFoundException(id);
+        });
     }
 
+    // ----------------------------------------------
+    // UPDATE USER INFORMATION
+    // ----------------------------------------------
+
+    /**
+     * Updates vaccination status of user
+     * 
+     * @param id                user id
+     * @param vaccinationStatus new vaccination status of the user
+     * @return updated user entity
+     */
     @Transactional
     public User updateUserVaccinationStatus(Long id, int vaccinationStatus) {
         User user = getUser(id);
-        if (user == null) {
-            throw new UserNotFoundException(id);
-        }
         user.setVaccinationStatus(vaccinationStatus);
         return userRepository.save(user);
 
     }
 
+    /**
+     * Update name of user
+     * 
+     * @param id   user id
+     * @param name new name of user
+     * @return updated user entity
+     */
     @Transactional
     public User updateUserName(Long id, String name) {
         User user = getUser(id);
-        if (user == null) {
-            throw new UserNotFoundException(id);
-        }
         user.setName(name);
         return userRepository.save(user);
     }
 
+    /**
+     * Update password of user
+     * 
+     * @param id       user id
+     * @param password new plain-text password
+     * @return updated user
+     */
     @Transactional
     public User updatePasswordInUserProfile(Long id, String password) {
         User user = getUser(id);
-        if (user == null) {
-            throw new UserNotFoundException(id);
-        }
         BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
         String encodedPassword = encoder.encode(password);
         user.setPassword(encodedPassword);
@@ -87,16 +121,31 @@ public class UserService implements UserDetailsService {
 
     }
 
+    /**
+     * Update role of user
+     * 
+     * @param id   user id
+     * @param role new role
+     * @return updated user entity
+     */
     @Transactional
     public User updateRole(Long id, String role) {
         User user = getUser(id);
-        if (user != null && (role.equals("ROLE_BASIC") || role.equals("ROLE_ADMIN"))) {
+        if (role.equals("ROLE_BASIC") || role.equals("ROLE_ADMIN")) {
             user.setRole(role);
             return userRepository.save(user);
+        } else {
+            throw new IllegalArgumentException("Role must be ROLE_BASIC or ROLE_ADMIN");
         }
-        throw new UserNotFoundException(id);
     }
 
+    /**
+     * Update manager of user
+     * 
+     * @param id
+     * @param manager
+     * @return
+     */
     @Transactional
     public User updateManagerId(Long id, User manager) {
         User user = getUser(id);
@@ -104,6 +153,17 @@ public class UserService implements UserDetailsService {
             throw new UserNotFoundException(id);
         }
         user.setManagerUser(manager);
+        return userRepository.save(user);
+    }
+
+    @Transactional
+    public User updateUserTeam(Long userId, Long teamId) {
+        User user = getUser(userId);
+        if (user == null) {
+            throw new UserNotFoundException(userId);
+        }
+        Team team = teamService.getTeam(teamId);
+        user.setTeam(team);
         return userRepository.save(user);
     }
 
@@ -117,15 +177,6 @@ public class UserService implements UserDetailsService {
             throw new UsernameNotFoundException("User not found with email: " + email);
         }
 
-        // Add authorization -- currently only takes in one role as per the User entity
-        // specifications
-        // Collection<SimpleGrantedAuthority> authorities = new ArrayList<>();
-        // authorities.add(new SimpleGrantedAuthority(user.getRole()));
-
-        // Return the Spring Framework User object, not our custom one!
-        // return new
-        // org.springframework.security.core.userdetails.User(user.getEmail(),
-        // user.getPassword(), authorities);
         return new CustomUserDetails(user);
     }
 
@@ -140,11 +191,37 @@ public class UserService implements UserDetailsService {
     }
 
     /**
-     * Encodes user password and saves user details to database
+     * Saves user details to database
      * 
      * @param userDetails to save to database
+     * @return the created user entity
      */
     public User addUser(UserDTO userDetails) {
+        User user = setUserData(userDetails);
+        return userRepository.save(user);
+    }
+
+    /**
+     * Overloaded method: Saves user details and the manager who created that user
+     * into the database
+     * 
+     * @param userDetails details of the user account
+     * @param manager     manager who created the user account
+     * @return the created user entity
+     */
+    public User addUser(UserDTO userDetails, User manager) {
+        User user = setUserData(userDetails);
+        user.setManagerUser(manager);
+        return userRepository.save(user);
+    }
+
+    /**
+     * Helper method: Sets user information according to supplied user details
+     * 
+     * @param userDetails user details
+     * @return user entity with set information
+     */
+    private User setUserData(UserDTO userDetails) {
         User user = new User();
         BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
         String encodedPassword = encoder.encode(userDetails.getPassword());
@@ -153,7 +230,7 @@ public class UserService implements UserDetailsService {
         user.setRole(userDetails.getRole());
         user.setPassword(encodedPassword);
         user.setFirstLogin(true);
-        return userRepository.save(user);
+        return user;
     }
 
     /**
@@ -163,14 +240,14 @@ public class UserService implements UserDetailsService {
      */
     @PreAuthorize("hasRole('ROLE_ADMIN')")
     @Transactional(rollbackFor = { MessagingException.class, IOException.class })
-    public void createEmployeeAccount(UserDTO userDetails) throws MessagingException, IOException {
+    public void createEmployeeAccount(UserDTO userDetails, User manager) throws MessagingException, IOException {
         userDetails.setPassword(createRandomPassword(10));
 
         Map<String, Object> templateModel = new HashMap<>();
         templateModel.put("recipientName", userDetails.getName());
         templateModel.put("email", userDetails.getEmail());
 
-        User newEmployee = addUser(userDetails);
+        User newEmployee = addUser(userDetails, manager);
 
         PasswordResetToken passToken = generatePasswordResetToken(UUID.randomUUID().toString(), newEmployee);
 
@@ -183,13 +260,13 @@ public class UserService implements UserDetailsService {
     }
 
     private String createRandomPassword(int stringLength) {
-        int leftLimit = '0'; 
+        int leftLimit = '0';
         int rightLimit = 'z';
         Random random = new Random();
 
-        return random.ints(leftLimit, rightLimit + 1)
-                .filter(i -> (i <= '9' || i >= 'A') && (i <= 'Z' || i >= 'a')).limit(stringLength)
-                .collect(StringBuilder::new, StringBuilder::appendCodePoint, StringBuilder::append).toString();
+        return random.ints(leftLimit, rightLimit + 1).filter(i -> (i <= '9' || i >= 'A') && (i <= 'Z' || i >= 'a'))
+                .limit(stringLength).collect(StringBuilder::new, StringBuilder::appendCodePoint, StringBuilder::append)
+                .toString();
     }
 
     // ----------------------------------------------

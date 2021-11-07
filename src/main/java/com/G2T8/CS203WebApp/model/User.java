@@ -6,19 +6,24 @@ import javax.persistence.*;
 import lombok.*;
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.Size;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import java.io.Serializable;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 
-@Data
+@Data // A shortcut for @ToString, @EqualsAndHashCode, @Getter on all fields, and
+      // @Setter on all non-final fields, and @RequiredArgsConstructor(generate
+      // constructor with args annotated with @NonNull)
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
 @Table(name = "User")
 public class User implements Serializable {
 
+    // private static final long serialVersionUID = 1L;
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -33,7 +38,8 @@ public class User implements Serializable {
     @Email
     private String email;
 
-    @Column(name = "vaccinationStatus")
+    @Column(name = "vaccinationStatus", nullable = false)
+    // @NonNull
     private int vaccinationStatus;
 
     @Column(name = "role", nullable = false)
@@ -41,6 +47,7 @@ public class User implements Serializable {
     private String role;
 
     @Column(name = "password", nullable = false)
+    // @Size(min = 8, max = 30)
     @NotEmpty
     @Getter(onMethod = @__(@JsonIgnore))
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
@@ -55,12 +62,12 @@ public class User implements Serializable {
     // Recursive key of User class to identify which user is managing a particular
     // user object;
 
-    @OneToMany(mappedBy = "managerUser", orphanRemoval = true)
-    private List<User> employeeUsers;
+    @OneToMany(mappedBy = "ManagerUser", orphanRemoval = true)
+    private List<User> EmployeeUsers;
 
     @ManyToOne
-    @JoinColumn(name = "managerUser_id")
-    private User managerUser;
+    @JoinColumn(name = "ManagerUser_id")
+    private User ManagerUser;
 
     // user id becomes a foreign key for class/table schedule
     @JsonIgnore
@@ -76,6 +83,14 @@ public class User implements Serializable {
     @JsonIgnore
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = false)
     private List<OfficeRequest> officeRequests;
+
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonManagedReference
+    private List<ARTTestResults> artTestResult;
+
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonManagedReference
+    private List<Temperature> temperature;
 
     @Column(name = "firstLogin", nullable = false, columnDefinition = "boolean default true")
     private Boolean firstLogin;

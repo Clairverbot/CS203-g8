@@ -15,41 +15,40 @@ import javax.validation.constraints.Size;
 @Table(name = "covid_history")
 public class CovidHistory {
 
-    // primary key 
-    @Id
-    @Column(name = "covidHistoryid")
-    private long covidHistoryid;
+      // primary key
+      @Id
+      @Column(name = "covidHistoryid")
+      private long CovidHistoryid;
 
-    // each row can be uniquely discovered by userid 
-    // hence created a findByUserId in CovidHistoryRepo
-    @ManyToOne
-    @JoinColumn(name = "userid", referencedColumnName = "id")
-    private User user;
+      // each row can be uniquely discovered by userid
+      // hence created a findByUserId in CovidHistoryRepo
+      @ManyToOne
+      @JoinColumn(name = "userid", referencedColumnName = "id")
+      private User user;
 
-    @Column(name = "contractedDate")
-    @NonNull
-    private LocalDateTime contractedDate;
+      @Column(name = "contractedDate")
+      @NonNull
+      private LocalDateTime contractedDate;
 
-    @Column(name = "recoverDate")
-    private LocalDateTime recoverDate;
+      @Column(name = "recoverDate")
+      private LocalDateTime RecoverDate;
 
+      /*
+       * 
+       * @Id
+       * 
+       * @ManyToOne
+       * 
+       * @PrimaryKeyJoinColumn(name = "userid", referencedColumnName = "ID") private
+       * User user;
+       * 
+       * @Column(name = "contractedDate")
+       * 
+       * @NonNull private LocalDateTime contractedDate;
+       * 
+       * @Column(name = "recoverDate") private LocalDateTime RecoverDate;
+       * 
+       * 
+       */
 
-    /*
-     * 
-     * @Id
-     * 
-     * @ManyToOne
-     * 
-     * @PrimaryKeyJoinColumn(name = "userid", referencedColumnName = "ID") private
-     * User user;
-     * 
-     * @Column(name = "contractedDate")
-     * 
-     * @NonNull private LocalDateTime contractedDate;
-     * 
-     * @Column(name = "recoverDate") private LocalDateTime RecoverDate;
-     * 
-     * 
-     */
-    
 }
