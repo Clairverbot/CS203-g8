@@ -12,6 +12,9 @@ import java.lang.IllegalArgumentException;
 import com.G2T8.CS203WebApp.exception.UserNotFoundException;
 import com.G2T8.CS203WebApp.model.*;
 import com.G2T8.CS203WebApp.service.UserService;
+
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import java.security.Principal;
@@ -62,7 +65,7 @@ public class UserController {
      * Get current logged-in user's information
      * 
      * @param principal Spring security principal object of current logged-in user
-     * @return user enntity
+     * @return user entity
      */
     @GetMapping("/current")
     public User getCurrentUser(Principal principal) {
@@ -91,8 +94,8 @@ public class UserController {
     }
 
     @PutMapping(value = "/{id}/manager")
-    public User updateManagerId(@PathVariable Long id, @Valid @RequestBody User managerUser) {
-        return userService.updateManagerId(id, managerUser);
+    public User updateManagerId(@PathVariable Long id, @Valid @RequestBody Long managerId) {
+        return userService.updateManagerId(id, managerId);
     }
 
     /**
@@ -145,8 +148,8 @@ public class UserController {
 
     }
 
-    @PutMapping("/{userId}/team/{teamId}")
-    public void updateTeam(@PathVariable Long userId, @PathVariable Long teamId) {
+    @PutMapping("/{userId}/team")
+    public void updateTeam(@PathVariable Long userId, @RequestBody Long teamId) {
         try {
             userService.updateUserTeam(userId, teamId);
         } catch (UserNotFoundException E) {

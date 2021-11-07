@@ -142,20 +142,31 @@ public class UserService implements UserDetailsService {
     /**
      * Update manager of user
      * 
-     * @param id
-     * @param manager
-     * @return
+     * @param id        user id
+     * @param managerId user id of manager
+     * @return updated user entity
      */
     @Transactional
-    public User updateManagerId(Long id, User manager) {
+    public User updateManagerId(Long id, Long managerId) {
         User user = getUser(id);
         if (user == null) {
             throw new UserNotFoundException(id);
+        }
+        User manager = getUser(managerId);
+        if (manager == null || !manager.getRole().equals("ROLE_ADMIN")) {
+            throw new UserNotFoundException(managerId);
         }
         user.setManagerUser(manager);
         return userRepository.save(user);
     }
 
+    /**
+     * Update team of user
+     * 
+     * @param userId user id
+     * @param teamId team id
+     * @return updated user entity
+     */
     @Transactional
     public User updateUserTeam(Long userId, Long teamId) {
         User user = getUser(userId);

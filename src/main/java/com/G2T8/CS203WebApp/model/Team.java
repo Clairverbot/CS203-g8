@@ -2,7 +2,7 @@ package com.G2T8.CS203WebApp.model;
 
 import javax.persistence.*;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.*;
 
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -28,8 +28,8 @@ public class Team {
     @NonNull
     private String name;
 
-    @Transient
     @OneToMany(mappedBy = "team")
-    private Set<User> users;
+    @JsonBackReference
+    private List<User> users;
 
 }
