@@ -17,12 +17,12 @@ public class Schedule {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long ID;
 
-    @Column(name = "startDate")
+    @Column(name = "start_date")
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
     @NonNull
     private LocalDate startDate;
 
-    @Column(name = "endDate")
+    @Column(name = "end_date")
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
     @NonNull
     private LocalDate endDate;
@@ -34,7 +34,7 @@ public class Schedule {
 
     // teamID is foreign key for the class/table Schedule
     @ManyToOne
-    @JoinColumn(name = "teamID")
+    @JoinColumn(name = "team_id")
     private Team team;
     
     public Schedule() {

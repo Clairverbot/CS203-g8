@@ -10,14 +10,14 @@ import java.time.LocalDate;
 @Repository
 public interface ScheduleRepository extends JpaRepository<Schedule, Long> {
 
-    @Query(value = "SELECT * FROM Schedule s WHERE s.teamid = :team_id", nativeQuery = true)
+    @Query(value = "SELECT * FROM Schedule s WHERE s.team_id = :team_id", nativeQuery = true)
     List<Schedule> findByTeamId(@Param("team_id") Long team_id);
 
-    @Query(value = "SELECT * FROM Schedule s WHERE s.startdate = :startdate and s.enddate = :enddate", nativeQuery = true)
-    List<Schedule> findByStartDateAndEndDate(@Param("startdate") LocalDate startdate,
-            @Param("enddate") LocalDate enddate);
+    @Query(value = "SELECT * FROM Schedule s WHERE s.start_date = :start_date and s.end_date = :end_date", nativeQuery = true)
+    List<Schedule> findByStartDateAndEndDate(@Param("start_date") LocalDate startdate,
+            @Param("end_date") LocalDate enddate);
 
-    @Query(value = "SELECT * FROM Schedule s WHERE s.teamid = :team_id and s.startdate = :startdate", nativeQuery = true)
+    @Query(value = "SELECT * FROM Schedule s WHERE s.teamid = :team_id and s.start_date = :start_date", nativeQuery = true)
     Schedule findByTeamIdAndStartDate(@Param("team_id") Long team_id,
-            @Param("startdate") LocalDate startdate);
+            @Param("start_date") LocalDate startdate);
 }
