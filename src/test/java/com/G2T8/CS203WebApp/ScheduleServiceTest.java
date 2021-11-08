@@ -6,6 +6,7 @@ import static org.mockito.Mockito.*;
 
 import java.time.LocalDate;
 import java.util.*;
+import java.beans.Transient;
 import java.lang.Long;
 
 import com.G2T8.CS203WebApp.model.*;
@@ -78,12 +79,14 @@ public class ScheduleServiceTest {
         schedule1.setID(Long.valueOf(1));
         schedule1.setStartDate(LocalDate.of(2021,11,1));
         schedule1.setEndDate(LocalDate.of(2021,11,5));
+        schedule1.setMode(0);
         schedule1.setTeam(team);
 
         Schedule schedule2 = new Schedule();
         schedule2.setID(Long.valueOf(2));
         schedule2.setStartDate(LocalDate.of(2021,11,8));
         schedule2.setEndDate(LocalDate.of(2021,11,12));
+        schedule2.setMode(1);
         schedule2.setTeam(team);
 
         List<Schedule> scheduleList = new ArrayList<>();
@@ -100,5 +103,26 @@ public class ScheduleServiceTest {
         assertNotNull(allSchedules);
         assertEquals(scheduleList, allSchedules);
         verify(scheduleRepository).findAll();
+    }
+
+    @Test
+    public void addSchedule_NewSchedule_ReturnSchedule() {
+        // arrange
+        Schedule newSchedule = new Schedule();
+        newSchedule.setID(Long.valueOf(1));
+        newSchedule.setStartDate(LocalDate.of(2021,11,1));
+        newSchedule.setEndDate(LocalDate.of(2021,11,5));
+        newSchedule.setMode(0);
+        newSchedule.setTeam(team);
+
+        when(scheduleRepository.save(newSchedule)).thenReturn(newSchedule);
+
+        // act
+        Schedule returnedSchedule = scheduleService.addSchedule(team.getTeamID(), LocalDate.of(2021,11,1), LocalDate.of(2021,11,5), 0);
+
+        // assert
+        assertNotNull(returnedSchedule);
+        verify(teamService).getTeam(team.getTeamID());
+        verify(scheduleRepository).save(newSchedule);
     }
 }
