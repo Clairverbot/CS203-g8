@@ -34,14 +34,14 @@ public class CovidHistoryService {
         // do not use findById bc that uses CovidHistoryId which does dont point to
         // which user it is referring to
 
-        List<CovidHistory> origList = covidHistoryRepository.findByUserId(ID);
+        List<CovidHistory> origList = covidHistoryRepository.findByUserID(ID);
         return origList; 
 
     }
 
     // returns a particular covidHistory record of one user
     public CovidHistory getOneCovidHistoryFromOneUser(Long ID, LocalDateTime contracteddate){
-        List<CovidHistory> answer = covidHistoryRepository.findByUserId(ID);
+        List<CovidHistory> answer = covidHistoryRepository.findByUserID(ID);
         LocalDate contractdatewithoutime = contracteddate.toLocalDate(); 
         for(int i = 0 ; i<= answer.size()-1 ; i++){
             if(answer.get(i).getContractedDate().toLocalDate().equals(contractdatewithoutime)){
@@ -75,7 +75,7 @@ public class CovidHistoryService {
 
     // after recovery date is known , can use this method to add in recoverDate
     public CovidHistory addRecoveryDate(Long ID, LocalDateTime contracteddate){
-        List<CovidHistory> answer = covidHistoryRepository.findByUserId(ID);
+        List<CovidHistory> answer = covidHistoryRepository.findByUserID(ID);
         LocalDate contractdatewithoutime = contracteddate.toLocalDate();
         for (int i = 0; i <= answer.size() - 1; i++) {
             if (answer.get(i).getContractedDate().toLocalDate().equals(contractdatewithoutime)) {
