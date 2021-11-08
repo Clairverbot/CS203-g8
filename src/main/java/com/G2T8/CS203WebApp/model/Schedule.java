@@ -27,7 +27,7 @@ public class Schedule {
     @NonNull
     private LocalDate endDate;
 
-    // 0 for wfh , 1 for office
+    // 0 for wfh, 1 for office
     @Column(name = "mode")
     @NonNull
     private int mode;
