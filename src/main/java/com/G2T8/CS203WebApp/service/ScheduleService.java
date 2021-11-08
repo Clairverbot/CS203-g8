@@ -43,10 +43,9 @@ public class ScheduleService {
         }
         return schedule;
     }
-
     public Schedule addSchedule(Long teamID, LocalDate startDate, LocalDate endDate, int mode) {
         Team team = findTeam(teamID);
-        checkScheduleConflict(mode, startDate, endDate);
+        checkScheduleConflict(teamID,mode, startDate, endDate);
 
         Schedule schedule = new Schedule();
         schedule.setTeam(team);
@@ -63,7 +62,7 @@ public class ScheduleService {
         }
         Team team = findTeam(teamID);
 
-        checkScheduleConflict(mode, startDate, endDate);
+        checkScheduleConflict(teamID,mode, startDate, endDate);
 
         Schedule updatedSchedule = schedule.get();
         updatedSchedule.setMode(mode);
@@ -85,12 +84,15 @@ public class ScheduleService {
         return team;
     }
 
-    public void checkScheduleConflict(int mode, LocalDate startDate, LocalDate endDate) {
+    public void checkScheduleConflict(Long teamID,int mode, LocalDate startDate, LocalDate endDate) {
+        List<Schedule> conflicts;
         if (mode == 1) {
-            List<Schedule> schedulesWithSameTime = scheduleRepository.findByStartDateAndEndDate(startDate, endDate);
-            if (!schedulesWithSameTime.isEmpty()) {
-                throw new ScheduleClashException();
-            }
+            conflicts = scheduleRepository.findAllByTeamIdOrModeAndStartDateBetweenOrEndDateBetween(teamID,mode, startDate, endDate);
+        }else{
+            conflicts = scheduleRepository.findAllByTeamIdAndStartDateBetweenOrEndDateBetween(teamID, startDate,endDate);
+        }
+        if (!conflicts.isEmpty()) {
+            throw new ScheduleClashException();
         }
     }
 }
