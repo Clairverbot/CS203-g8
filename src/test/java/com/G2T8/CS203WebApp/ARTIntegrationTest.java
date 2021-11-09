@@ -1,15 +1,10 @@
 package com.G2T8.CS203WebApp;
 
-import static org.junit.jupiter.api.Assertions.*;
-
 import java.net.URI;
 import java.time.DayOfWeek;
 import java.time.LocalDateTime;
 import java.time.temporal.TemporalAdjusters;
-import java.util.ArrayList;
-import java.util.List;
 
-import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -23,14 +18,10 @@ import org.springframework.security.core.userdetails.UserDetails;
 import io.restassured.RestAssured;
 import io.restassured.config.JsonConfig;
 import io.restassured.path.json.config.JsonPathConfig;
-import io.restassured.response.Response;
-import net.minidev.json.JSONObject;
 import static io.restassured.config.RedirectConfig.redirectConfig;
-import static org.hamcrest.Matchers.equalTo;
 
 import static io.restassured.RestAssured.*;
 
-import com.G2T8.CS203WebApp.service.ARTTestResultService;
 import com.G2T8.CS203WebApp.service.UserService;
 import com.G2T8.CS203WebApp.repository.ARTTestResultRepository;
 import com.G2T8.CS203WebApp.repository.UserRepository;

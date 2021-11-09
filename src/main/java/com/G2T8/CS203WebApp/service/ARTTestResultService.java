@@ -19,7 +19,9 @@ import org.slf4j.*;
 public class ARTTestResultService {
 
     private ARTTestResultRepository artTestResultRepository;
+
     private UserService userService;
+    
     private EmailService emailService;
 
     Logger logger = LoggerFactory.getLogger(ARTTestResultService.class);
@@ -35,7 +37,7 @@ public class ARTTestResultService {
     /**
      * Method to get all ART results
      * 
-     * @return
+     * @return list of all ART results in database
      */
     public List<ARTTestResults> getAllResult() {
         return artTestResultRepository.findAll();
@@ -44,8 +46,8 @@ public class ARTTestResultService {
     /**
      * Utility method to validate that a user with the user ID exists
      * 
-     * @param userId
-     * @return
+     * @param userId of user to find
+     * @return validated User with the user ID userId
      */
     private User validateUser(Long userId) {
         User user = userService.getUser(userId);
@@ -58,8 +60,8 @@ public class ARTTestResultService {
     /**
      * Utility method to validate that a user with the email exists
      * 
-     * @param email
-     * @return
+     * @param email of user to be validated
+     * @return User that has been validated
      */
     private User validateUserEmail(String email) {
         CustomUserDetails userObj = (CustomUserDetails) userService.loadUserByUsername(email);
@@ -74,8 +76,8 @@ public class ARTTestResultService {
     /**
      * Get all ART test results of a certain user by user ID
      * 
-     * @param userId
-     * @return
+     * @param userId of user to get all ART test results of
+     * @return List of art results from user with user ID userId
      */
     public List<ARTTestResults> getARTbyUserID(Long userId) {
         User user = validateUser(userId);
@@ -84,11 +86,11 @@ public class ARTTestResultService {
     }
 
     /**
-     * Method to add ART test
+     * Method to add ART test result
      * 
-     * @param email
-     * @param artResult
-     * @return
+     * @param email of user that is adding the ART test result
+     * @param artResult to be added to the db
+     * @return the newly created ARTTestResults object
      */
     public ARTTestResults addART(String email, Boolean artResult) {
         CustomUserDetails userObj = (CustomUserDetails) userService.loadUserByUsername(email);
@@ -108,8 +110,7 @@ public class ARTTestResultService {
     }
 
     /**
-     * Method to get all ART test results posted by a user on a certain week by user
-     * email
+     * Method to get all ART test results posted by a user on a certain week by user email
      * 
      * @param email
      * @param date
