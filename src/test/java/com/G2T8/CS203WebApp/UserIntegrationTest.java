@@ -13,6 +13,8 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import io.restassured.RestAssured;
 import io.restassured.config.JsonConfig;
 import io.restassured.path.json.config.JsonPathConfig;
+import net.minidev.json.JSONObject;
+
 import static io.restassured.config.RedirectConfig.redirectConfig;
 import static io.restassured.RestAssured.*;
 
@@ -321,6 +323,40 @@ public class UserIntegrationTest {
         PasswordResetToken passResetToken = passwordResetTokens.findByUser(user);
 
         assertNotNull(passResetToken);
+
+        // Clean up dummy user
+        users.deleteById(user.getID());
+    }
+
+    @Test
+    public void resetPassword_MalformedRequestBody_ReturnBadRequest() {
+        // Arrange
+        // Create dummy user entity
+        User testUser = new User();
+        testUser.setEmail("noreply.cs203g2t8.smu@gmail.com");
+        testUser.setName("Test");
+        testUser.setPassword(passwordEncoder.encode("password"));
+        testUser.setRole("ROLE_ADMIN");
+        testUser.setFirstLogin(true);
+
+        // Save dummy user into database
+        User user = users.save(testUser);
+
+        // Create password reset token
+        String token = "testing-token";
+
+        PasswordResetToken passResetToken = new PasswordResetToken(token, user);
+        user.setPasswordResetToken(passResetToken);
+
+        // Create request body
+        JSONObject requestBody = new JSONObject();
+        requestBody.put("token", token);
+        requestBody.put("password", "mynewpassword");
+
+        // Issue put request
+        given().contentType("application/json").body(requestBody).put(baseUrl + port + baseEndpoint + "/reset-password")
+                // Expected response
+                .then().statusCode(400);
 
         // Clean up dummy user
         users.deleteById(user.getID());

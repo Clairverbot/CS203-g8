@@ -88,10 +88,10 @@ public class User implements Serializable {
     @JsonManagedReference
     private List<Temperature> temperature;
 
-    @Column(name = "firstLogin", nullable = false, columnDefinition = "boolean default true")
+    @Column(name = "first_login", nullable = false, columnDefinition = "boolean default true")
     private Boolean firstLogin;
 
-    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL)
+    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonIgnore
     private PasswordResetToken passwordResetToken;
 
