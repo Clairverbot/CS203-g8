@@ -25,12 +25,12 @@ import static io.restassured.RestAssured.*;
 import com.G2T8.CS203WebApp.service.UserService;
 import com.G2T8.CS203WebApp.repository.ARTTestResultRepository;
 import com.G2T8.CS203WebApp.repository.UserRepository;
-import com.G2T8.CS203WebApp.model.ARTTestResults;
+import com.G2T8.CS203WebApp.model.ARTTestResult;
 import com.G2T8.CS203WebApp.model.User;
 import com.G2T8.CS203WebApp.configuration.JwtTokenUtil;
 
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
-public class ARTIntegrationTest {
+public class ARTTestResultIntegrationTest {
 
     @LocalServerPort
     private int port;
@@ -80,19 +80,13 @@ public class ARTIntegrationTest {
 
         final String token = jwtTokenUtil.generateToken(userDetails);
 
-        // Create dummy art results
+        // Get current LocalDateTime
         LocalDateTime current = LocalDateTime.now();
-        ARTTestResults artTestResult1 = new ARTTestResults();
-        artTestResult1.setUser(testUser);
-        artTestResult1.setArtResult(false);
-        artTestResult1.setDate(current);
-        artTestResult1.setWeeksMonday(current.toLocalDate().with(TemporalAdjusters.previous(DayOfWeek.MONDAY)));
 
-        ARTTestResults artTestResult2 = new ARTTestResults();
-        artTestResult2.setUser(testUser);
-        artTestResult2.setArtResult(true);
-        artTestResult2.setDate(current);
-        artTestResult2.setWeeksMonday(current.toLocalDate().with(TemporalAdjusters.previous(DayOfWeek.MONDAY)));
+        // Create dummy art results
+        ARTTestResult artTestResult1 = new ARTTestResult(testUser, false, current, current.toLocalDate().with(TemporalAdjusters.previous(DayOfWeek.MONDAY)));
+
+        ARTTestResult artTestResult2 = new ARTTestResult(testUser, true, current, current.toLocalDate().with(TemporalAdjusters.previous(DayOfWeek.MONDAY)));
 
         // Save dummy art results to artRepo
         artTestResult1 = artResults.save(artTestResult1);
@@ -105,8 +99,8 @@ public class ARTIntegrationTest {
 
         // Issue get request
         given().contentType("application/json").header("Authorization", "Bearer " + token).get(uri)
-                // Expected response
-                .then().statusCode(200);
+            // Expected response
+            .then().statusCode(200);
 
         users.delete(testUser);
     }
@@ -120,8 +114,8 @@ public class ARTIntegrationTest {
 
         // Issue get request
         given().contentType("application/json").header("Authorization", "Bearer " + token).get(uri)
-                // Expected response
-                .then().statusCode(401);
+            // Expected response
+            .then().statusCode(401);
         
     }
 
@@ -132,8 +126,8 @@ public class ARTIntegrationTest {
 
         // Issue get request
         given().contentType("application/json").get(uri)
-                // Expected response
-                .then().statusCode(401);
+            // Expected response
+            .then().statusCode(401);
         
     }
 
@@ -153,19 +147,13 @@ public class ARTIntegrationTest {
         final UserDetails userDetails = userService.loadUserByUsername(testUser.getEmail());
         final String token = jwtTokenUtil.generateToken(userDetails);
 
-        // Create dummy art results
+        // Get current LocalDateTime
         LocalDateTime current = LocalDateTime.now();
-        ARTTestResults artTestResult1 = new ARTTestResults();
-        artTestResult1.setUser(testUser);
-        artTestResult1.setArtResult(false);
-        artTestResult1.setDate(current);
-        artTestResult1.setWeeksMonday(current.toLocalDate().with(TemporalAdjusters.previous(DayOfWeek.MONDAY)));
 
-        ARTTestResults artTestResult2 = new ARTTestResults();
-        artTestResult2.setUser(testUser);
-        artTestResult2.setArtResult(true);
-        artTestResult2.setDate(current);
-        artTestResult2.setWeeksMonday(current.toLocalDate().with(TemporalAdjusters.previous(DayOfWeek.MONDAY)));
+        // Create dummy art results
+        ARTTestResult artTestResult1 = new ARTTestResult(testUser, false, current, current.toLocalDate().with(TemporalAdjusters.previous(DayOfWeek.MONDAY)));
+
+        ARTTestResult artTestResult2 = new ARTTestResult(testUser, true, current, current.toLocalDate().with(TemporalAdjusters.previous(DayOfWeek.MONDAY)));
 
         // Save dummy art results to artRepo
         artResults.save(artTestResult1);
@@ -176,8 +164,8 @@ public class ARTIntegrationTest {
 
         // Issue get request
         given().contentType("application/json").pathParam("userId", testUser.getID()).header("Authorization", "Bearer " + token).get(baseUrl + port + baseEndpoint + "/{userId}")
-                // Expected response
-                .then().statusCode(200);
+            // Expected response
+            .then().statusCode(200);
 
         users.delete(testUser);
     }
@@ -198,19 +186,13 @@ public class ARTIntegrationTest {
         final UserDetails userDetails = userService.loadUserByUsername(testUser.getEmail());
         final String token = jwtTokenUtil.generateToken(userDetails);
 
-        // Create dummy art results
+        // Get current LocalDateTime
         LocalDateTime current = LocalDateTime.now();
-        ARTTestResults artTestResult1 = new ARTTestResults();
-        artTestResult1.setUser(testUser);
-        artTestResult1.setArtResult(false);
-        artTestResult1.setDate(current);
-        artTestResult1.setWeeksMonday(current.toLocalDate().with(TemporalAdjusters.previous(DayOfWeek.MONDAY)));
 
-        ARTTestResults artTestResult2 = new ARTTestResults();
-        artTestResult2.setUser(testUser);
-        artTestResult2.setArtResult(true);
-        artTestResult2.setDate(current);
-        artTestResult2.setWeeksMonday(current.toLocalDate().with(TemporalAdjusters.previous(DayOfWeek.MONDAY)));
+        // Create dummy art results
+        ARTTestResult artTestResult1 = new ARTTestResult(testUser, false, current, current.toLocalDate().with(TemporalAdjusters.previous(DayOfWeek.MONDAY)));
+
+        ARTTestResult artTestResult2 = new ARTTestResult(testUser, true, current, current.toLocalDate().with(TemporalAdjusters.previous(DayOfWeek.MONDAY)));
 
         // Save dummy art results to artResults
         artResults.save(artTestResult1);
@@ -221,8 +203,8 @@ public class ARTIntegrationTest {
 
         // Issue get request
         given().contentType("application/json").pathParam("userId", 0L).header("Authorization", "Bearer " + token).get(baseUrl + port + baseEndpoint + "/{userId}")
-                // Expected response
-                .then().statusCode(404);
+            // Expected response
+            .then().statusCode(404);
 
         users.delete(testUser);
     }
@@ -245,8 +227,8 @@ public class ARTIntegrationTest {
 
         // Issue post request
         given().contentType("application/json").header("Authorization", "Bearer " + token).body(true).post(baseUrl + port + baseEndpoint + "/")
-                // Expected response
-                .then().statusCode(201);
+            // Expected response
+            .then().statusCode(201);
 
         // Get updated user from the db after saving new art test result
         testUser = users.getById(testUser.getID());
@@ -272,8 +254,8 @@ public class ARTIntegrationTest {
 
         // Issue post request
         given().contentType("application/json").header("Authorization", "Bearer " + token).body("not an ART test result").post(baseUrl + port + baseEndpoint + "/")
-                // Expected response
-                .then().statusCode(400);
+            // Expected response
+            .then().statusCode(400);
 
         // Get updated user from the db after saving new art test result
         testUser = users.getById(testUser.getID());
@@ -286,8 +268,8 @@ public class ARTIntegrationTest {
 
         // Issue post request
         given().contentType("application/json").body(true).post(baseUrl + port + baseEndpoint + "/")
-                // Expected response
-                .then().statusCode(401);
+            // Expected response
+            .then().statusCode(401);
 
     }
 
@@ -309,8 +291,8 @@ public class ARTIntegrationTest {
 
         // Issue get request
         given().contentType("application/json").queryParam("date", "2021-11-09").header("Authorization", "Bearer " + token).get(baseUrl + port + baseEndpoint + "/current/count-on-week")
-                // Expected response
-                .then().statusCode(200);
+            // Expected response
+            .then().statusCode(200);
 
         // Get updated user from the db after saving new art test result
         testUser = users.getById(testUser.getID());

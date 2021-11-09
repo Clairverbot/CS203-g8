@@ -1,6 +1,6 @@
 package com.G2T8.CS203WebApp.repository;
 
-import com.G2T8.CS203WebApp.model.ARTTestResults;
+import com.G2T8.CS203WebApp.model.ARTTestResult;
 import com.G2T8.CS203WebApp.model.User;
 
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -10,9 +10,9 @@ import java.util.*;
 import java.time.LocalDate;
 
 @Repository
-public interface ARTTestResultRepository extends JpaRepository<ARTTestResults, Long>{
+public interface ARTTestResultRepository extends JpaRepository<ARTTestResult, Long>{
 
-    List<ARTTestResults> findByUser(User user);
+    List<ARTTestResult> findByUser(User user);
 
-    List<ARTTestResults> findByUserAndWeeksMonday(User user, LocalDate weeksMonday);
+    List<ARTTestResult> findByUserAndWeeksMonday(User user, LocalDate weeksMonday);
 }

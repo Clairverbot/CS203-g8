@@ -39,7 +39,7 @@ public class ARTTestResultService {
      * 
      * @return list of all ART results in database
      */
-    public List<ARTTestResults> getAllResult() {
+    public List<ARTTestResult> getAllResult() {
         return artTestResultRepository.findAll();
     }
 
@@ -79,9 +79,9 @@ public class ARTTestResultService {
      * @param userId of user to get all ART test results of
      * @return List of art results from user with user ID userId
      */
-    public List<ARTTestResults> getARTbyUserID(Long userId) {
+    public List<ARTTestResult> getARTbyUserID(Long userId) {
         User user = validateUser(userId);
-        List<ARTTestResults> toReturn = artTestResultRepository.findByUser(user);
+        List<ARTTestResult> toReturn = artTestResultRepository.findByUser(user);
         return toReturn;
     }
 
@@ -90,9 +90,9 @@ public class ARTTestResultService {
      * 
      * @param email of user that is adding the ART test result
      * @param artResult to be added to the db
-     * @return the newly created ARTTestResults object
+     * @return the newly created ARTTestResult object
      */
-    public ARTTestResults addART(String email, Boolean artResult) {
+    public ARTTestResult addART(String email, Boolean artResult) {
         CustomUserDetails userObj = (CustomUserDetails) userService.loadUserByUsername(email);
         User userEntity = userObj.getUser();
 
@@ -100,23 +100,26 @@ public class ARTTestResultService {
             throw new UserNotFoundException();
         }
 
-        ARTTestResults art = new ARTTestResults();
+        // get current DateTime
         LocalDateTime date = LocalDateTime.now();
-        art.setUser(userEntity);
-        art.setArtResult(artResult);
-        art.setDate(date);
-        art.setWeeksMonday(date.toLocalDate().with(TemporalAdjusters.previous(DayOfWeek.MONDAY)));
-        return artTestResultRepository.save(art);
+
+        // create new ART Test Result
+        ARTTestResult newArtTestResult = new ARTTestResult(userEntity, artResult, date, date.toLocalDate().with(TemporalAdjusters.previous(DayOfWeek.MONDAY)));
+
+        return artTestResultRepository.save(newArtTestResult);
     }
 
     /**
-     * Method to get all ART test results posted by a user on a certain week by user email
+     * Method to get all ART test results posted by a user on a 
+     * certain week by user email
      * 
-     * @param email
-     * @param date
-     * @return
+     * @param email of user to get the ART test results of
+     * @param date find all ART test results submitted by user during 
+     * the week this date is in
+     * @return List of ARTTestResults of user with email email 
+     * submitted on the week of date
      */
-    public List<ARTTestResults> getARTbyUserEmailAndWeek(String email, LocalDateTime date) {
+    public List<ARTTestResult> getARTbyUserEmailAndWeek(String email, LocalDateTime date) {
         User user = validateUserEmail(email);
         return getARTbyUserAndWeek(user, date);
     }
@@ -125,11 +128,13 @@ public class ARTTestResultService {
      * Utility method to get ART test results of a user on a certain week
      * corresponding to the given date
      * 
-     * @param user
-     * @param date
-     * @return
+     * @param user to get the ART test results of
+     * @param date find all ART test results submitted by user during 
+     * the week this date is in
+     * @return List of ARTTestResults of user user submitted on the week 
+     * of date
      */
-    private List<ARTTestResults> getARTbyUserAndWeek(User user, LocalDateTime date) {
+    private List<ARTTestResult> getARTbyUserAndWeek(User user, LocalDateTime date) {
         LocalDate monday = date.toLocalDate().with(TemporalAdjusters.previous(DayOfWeek.MONDAY));
         return artTestResultRepository.findByUserAndWeeksMonday(user, monday);
     }
@@ -146,7 +151,7 @@ public class ARTTestResultService {
         // Loops through all users and send them an email if they only have 0-1 ART test
         // result records for that week
         for (User user : users) {
-            List<ARTTestResults> thisWeekART = getARTbyUserAndWeek(user, now);
+            List<ARTTestResult> thisWeekART = getARTbyUserAndWeek(user, now);
             if (thisWeekART.size() < 2) {
                 try {
                     Map<String, Object> templateModel = new HashMap<>();
