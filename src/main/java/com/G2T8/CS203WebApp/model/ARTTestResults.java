@@ -15,10 +15,12 @@ public class ARTTestResults {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long artId;
+
     @JsonFormat(pattern = "yyyy-MM-dd")
     private LocalDate weeksMonday;
     private Boolean artResult;
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    
+    @JsonFormat(pattern = "dd MMM yyyy, HH:mm")
     private LocalDateTime date;
     @ManyToOne
     @JoinColumn(name = "user_id")

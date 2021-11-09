@@ -109,19 +109,6 @@ public class ARTTestResultService {
 
     /**
      * Method to get all ART test results posted by a user on a certain week by user
-     * ID
-     * 
-     * @param userId
-     * @param date
-     * @return
-     */
-    public List<ARTTestResults> getARTbyUserIdAndWeek(Long userId, LocalDateTime date) {
-        User user = validateUser(userId);
-        return getARTbyUserAndWeek(user, date);
-    }
-
-    /**
-     * Method to get all ART test results posted by a user on a certain week by user
      * email
      * 
      * @param email

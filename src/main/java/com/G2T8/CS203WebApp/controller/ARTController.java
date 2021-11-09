@@ -67,23 +67,6 @@ public class ARTController {
         }
     }
 
-    @GetMapping("/{userId}/count-on-week")
-    public int getCountUserARTResultOnWeek(@PathVariable Long userId,
-            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) String date) {
-        try {
-            LocalDateTime dateTime = LocalDate.parse(date).atStartOfDay();
-            return artService.getARTbyUserIdAndWeek(userId, dateTime).size();
-        } catch (UserNotFoundException E) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "User doesn't exist");
-        } catch (DateTimeParseException E) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
-                    "Input needs to be of a valid date format (YYYY-MM-DD)");
-        } catch (Exception E) {
-            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR,
-                    "Unknown error occurs, please try again!");
-        }
-    }
-
     @GetMapping("/current/count-on-week")
     public int getCountCurrentUserARTResultOnWeek(Principal principal,
             @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) String date) {

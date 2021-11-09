@@ -101,7 +101,6 @@ public class ARTTestResultServiceTest {
         List<ARTTestResults> allART = artTestResultService.getAllResult();
 
         // assert
-        assertNotNull(allART);
         assertEquals(listART, allART);
         verify(artResults).findAll();
 
@@ -132,5 +131,40 @@ public class ARTTestResultServiceTest {
             verify(artResults).save(newARTResult);
 
         }
+    }
+
+    @Test
+    public void getARTbyUserID_ReturnAllUserResults() {
+        // arrange
+        LocalDateTime current = LocalDateTime.now();
+        ARTTestResults artTestResult1 = new ARTTestResults();
+        artTestResult1.setUser(basicUser);
+        artTestResult1.setArtResult(false);
+        artTestResult1.setDate(current);
+        artTestResult1.setWeeksMonday(current.toLocalDate().with(TemporalAdjusters.previous(DayOfWeek.MONDAY)));
+
+        ARTTestResults artTestResult2 = new ARTTestResults();
+        artTestResult2.setUser(basicUser);
+        artTestResult2.setArtResult(false);
+        artTestResult2.setDate(current);
+        artTestResult2.setWeeksMonday(current.toLocalDate().with(TemporalAdjusters.previous(DayOfWeek.MONDAY)));
+
+        List<ARTTestResults> basicUserListART = new ArrayList<ARTTestResults>();
+
+        basicUserListART.add(artTestResult1);
+        basicUserListART.add(artTestResult2);
+
+        Long basicUserID = basicUser.getID();
+
+        when(artResults.findByUser(basicUser)).thenReturn(basicUserListART);
+        when(userService.getUser(basicUserID)).thenReturn(basicUser);
+
+        // act
+        List<ARTTestResults> getARTbyUserIDResult = artTestResultService.getARTbyUserID(basicUserID);
+
+        // assert
+        assertEquals(basicUserListART, getARTbyUserIDResult);
+        verify(artResults).findByUser(basicUser);
+        verify(userService).getUser(basicUserID);
     }
 }
