@@ -329,6 +329,40 @@ public class UserIntegrationTest {
     }
 
     @Test
+    public void resetPassword_success() {
+        // Arrange
+        // Create dummy user entity
+        User testUser = new User();
+        testUser.setEmail("noreply.cs203g2t8.smu@gmail.com");
+        testUser.setName("Test");
+        testUser.setPassword(passwordEncoder.encode("password"));
+        testUser.setRole("ROLE_ADMIN");
+        testUser.setFirstLogin(true);
+
+        // Save dummy user into database
+        User user = users.save(testUser);
+
+        // Create password reset token
+        String token = "testing-token";
+
+        PasswordResetToken passResetToken = new PasswordResetToken(token, user);
+        passwordResetTokens.save(passResetToken);
+
+        // Create request body
+        JSONObject requestBody = new JSONObject();
+        requestBody.put("token", token);
+        requestBody.put("newPassword", "mynewpassword");
+
+        // Issue put request
+        given().contentType("application/json").body(requestBody).put(baseUrl + port + baseEndpoint + "/reset-password")
+                // Expected response
+                .then().statusCode(200);
+
+        // Clean up dummy user
+        users.deleteById(user.getID());
+    }
+
+    @Test
     public void resetPassword_MalformedRequestBody_ReturnBadRequest() {
         // Arrange
         // Create dummy user entity
@@ -346,7 +380,7 @@ public class UserIntegrationTest {
         String token = "testing-token";
 
         PasswordResetToken passResetToken = new PasswordResetToken(token, user);
-        user.setPasswordResetToken(passResetToken);
+        passwordResetTokens.save(passResetToken);
 
         // Create request body
         JSONObject requestBody = new JSONObject();
