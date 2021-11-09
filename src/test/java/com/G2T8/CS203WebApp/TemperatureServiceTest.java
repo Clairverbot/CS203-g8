@@ -74,36 +74,36 @@ public class TemperatureServiceTest {
         temperatures.deleteAll();
     }
 
-    @Test
-    public void getAllTemp_ReturnAllTemperatureLog() {
-        // arrange
-        Temperature temperature1 = new Temperature();
-        temperature1.setTempId(Long.valueOf(1));
-        temperature1.setDate(LocalDateTime.now());
-        temperature1.setTemperature(36.0);
-        temperature1.setUser(adminUser);
+    // @Test
+    // public void getAllTemp_ReturnAllTemperatureLog() {
+    //     // arrange
+    //     Temperature temperature1 = new Temperature();
+    //     temperature1.setTempId(Long.valueOf(1));
+    //     temperature1.setDate(LocalDateTime.now());
+    //     temperature1.setTemperature(36.0);
+    //     temperature1.setUser(adminUser);
 
-        Temperature temperature2 = new Temperature();
-        temperature2.setTempId(Long.valueOf(2));
-        temperature2.setDate(LocalDateTime.now());
-        temperature2.setTemperature(36.0);
-        temperature2.setUser(basicUser);
+    //     Temperature temperature2 = new Temperature();
+    //     temperature2.setTempId(Long.valueOf(2));
+    //     temperature2.setDate(LocalDateTime.now());
+    //     temperature2.setTemperature(36.0);
+    //     temperature2.setUser(basicUser);
 
-        List<Temperature> listTemp = new ArrayList<Temperature>();
+    //     List<Temperature> listTemp = new ArrayList<Temperature>();
 
-        listTemp.add(temperature1);
-        listTemp.add(temperature2);
+    //     listTemp.add(temperature1);
+    //     listTemp.add(temperature2);
 
-        when(temperatures.findAll()).thenReturn(listTemp);
+    //     when(temperatures.findAll()).thenReturn(listTemp);
 
-        // act
-        List<Temperature> allTemps = temperatureService.getAllTemp();
+    //     // act
+    //     List<Temperature> allTemps = temperatureService.getAllTemp();
 
-        // assert
-        assertNotNull(allTemps);
-        assertEquals(listTemp, allTemps);
-        verify(temperatures).findAll();
-    }
+    //     // assert
+    //     assertNotNull(allTemps);
+    //     assertEquals(listTemp, allTemps);
+    //     verify(temperatures).findAll();
+    // }
 
     @Test
     public void addTemperature_NewTemperature_ReturnTempLog() {
@@ -129,24 +129,24 @@ public class TemperatureServiceTest {
         }
     }
 
-    @Test
-    public void getUserTempBetweenDateTime_lowerBoundAfterUpperBound_throwException() {
-        // arrange
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+    // @Test
+    // public void getUserTempBetweenDateTime_lowerBoundAfterUpperBound_throwException() {
+    //     // arrange
+    //     DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 
-        // act & assert
-        Exception expected = assertThrows(IllegalArgumentException.class, () -> {
-            temperatureService.getUserTempBetweenDateTime(adminUser,
-                    LocalDateTime.parse("2021-01-01 19:00:00", formatter),
-                    LocalDateTime.parse("2021-01-01 12:00:10", formatter));
-        });
+    //     // act & assert
+    //     Exception expected = assertThrows(IllegalArgumentException.class, () -> {
+    //         temperatureService.getUserTempBetweenDateTime(adminUser,
+    //                 LocalDateTime.parse("2021-01-01 19:00:00", formatter),
+    //                 LocalDateTime.parse("2021-01-01 12:00:10", formatter));
+    //     });
 
-        assertEquals(expected.getMessage(), "Lower bound for date should be lower than upper bound");
-        verify(temperatures, never()).findAllByUserAndDateBetween(adminUser,
-                LocalDateTime.parse("2021-01-01 19:00:00", formatter),
-                LocalDateTime.parse("2021-01-01 12:00:10", formatter));
+    //     assertEquals(expected.getMessage(), "Lower bound for date should be lower than upper bound");
+    //     verify(temperatures, never()).findAllByUserAndDateBetween(adminUser,
+    //             LocalDateTime.parse("2021-01-01 19:00:00", formatter),
+    //             LocalDateTime.parse("2021-01-01 12:00:10", formatter));
 
-    }
+    // }
 
     // @Test
     // public void getUserTempBetweenDateTime_something_something() {
