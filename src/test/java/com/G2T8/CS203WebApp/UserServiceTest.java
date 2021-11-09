@@ -1,46 +1,62 @@
 package com.G2T8.CS203WebApp;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.mockStatic;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Optional;
-
-import javax.validation.ConstraintViolationException;
 
 import com.G2T8.CS203WebApp.exception.UserNotFoundException;
 import com.G2T8.CS203WebApp.model.User;
 import com.G2T8.CS203WebApp.service.UserService;
+import com.G2T8.CS203WebApp.repository.PasswordResetRepository;
 import com.G2T8.CS203WebApp.repository.UserRepository;
 
 import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.orm.jpa.JpaSystemException;
 
 @ExtendWith(MockitoExtension.class)
 public class UserServiceTest {
     @Mock
     private UserRepository users;
+    @Mock
+    private PasswordResetRepository passwordResetTokens;
     @InjectMocks
     private UserService userService;
 
     @AfterEach
     void tearDown() {
         users.deleteAll();
+    }
+
+    @Test
+    public void getUser_CorrectId_Succeed() {
+        // arrange
+        User mockUser = new User();
+        final Long inputId = Long.valueOf(1);
+        mockUser.setID(inputId);
+        mockUser.setRole("ROLE_ADMIN");
+        mockUser.setName("Test Admin");
+        mockUser.setEmail("test_admin@gmail.com");
+        mockUser.setPassword("password");
+        mockUser.setFirstLogin(false);
+
+        Optional<User> opt = Optional.of(mockUser);
+
+        when(users.findById(inputId)).thenReturn(opt);
+
+        // act
+        User user = userService.getUser(inputId);
+
+        // assert
+        assertEquals(mockUser, user);
     }
 
     @Test
@@ -68,6 +84,42 @@ public class UserServiceTest {
         assertEquals(expected.getMessage(), "Could not find user with id " + inputId);
         verify(users, never()).findById(mockUser.getID());
         verify(users).findById(inputId);
+    }
+
+    @Test
+    public void updateUserVaccinationStatus_validVaccinationStatus_Success() {
+        // arrange
+        User mockUser = new User();
+        final Long userId = Long.valueOf(2);
+        mockUser.setID(userId);
+        mockUser.setRole("ROLE_ADMIN");
+        mockUser.setName("Test Admin");
+        mockUser.setEmail("test_admin@gmail.com");
+        mockUser.setPassword("password");
+        mockUser.setFirstLogin(false);
+
+        Optional<User> opt = Optional.of(mockUser);
+
+        final int vaccinationStatus = 1;
+
+        User mockUserUpdated = new User();
+        mockUserUpdated.setID(userId);
+        mockUserUpdated.setRole("ROLE_ADMIN");
+        mockUserUpdated.setName("Test Admin");
+        mockUserUpdated.setEmail("test_admin@gmail.com");
+        mockUserUpdated.setPassword("password");
+        mockUserUpdated.setFirstLogin(false);
+        mockUserUpdated.setVaccinationStatus(vaccinationStatus);
+
+        when(users.findById(userId)).thenReturn(opt);
+        when(users.save(any(User.class))).thenReturn(mockUserUpdated);
+
+        // act
+        User user = userService.updateUserVaccinationStatus(userId, vaccinationStatus);
+
+        // assert
+        assertEquals(mockUserUpdated, user);
+        verify(users).save(user);
     }
 
     @Test
@@ -99,6 +151,43 @@ public class UserServiceTest {
     }
 
     @Test
+    public void updateRole_ValidRole_ThrowIllegalArgumentException() {
+        // arrange
+        final String updatedRole = "ROLE_ADMIN";
+
+        User mockUser = new User();
+        final Long userId = Long.valueOf(2);
+        mockUser.setID(userId);
+        mockUser.setRole("ROLE_BASIC");
+        mockUser.setName("Test");
+        mockUser.setEmail("test_basic@gmail.com");
+        mockUser.setPassword("password");
+        mockUser.setFirstLogin(false);
+
+        User mockUserUpdated = new User();
+        mockUserUpdated.setID(userId);
+        mockUserUpdated.setRole(updatedRole);
+        mockUserUpdated.setName("Test");
+        mockUserUpdated.setEmail("test_basic@gmail.com");
+        mockUserUpdated.setPassword("password");
+        mockUserUpdated.setFirstLogin(false);
+
+        Optional<User> opt = Optional.of(mockUser);
+
+        when(users.findById(userId)).thenReturn(opt);
+        when(users.save(any(User.class))).thenReturn(mockUserUpdated);
+
+        // act
+        User user = userService.updateRole(userId, updatedRole);
+
+        // assert
+        assertEquals(mockUserUpdated, user);
+        verify(users).findById(userId);
+        verify(users).save(user);
+
+    }
+
+    @Test
     public void updateRole_InvalidRole_ThrowIllegalArgumentException() {
         // arrange
         User mockUser = new User();
@@ -125,4 +214,60 @@ public class UserServiceTest {
         verify(users, never()).save(mockUser);
     }
 
+    @Test
+    public void updateManagerId_ManageThemself_ThrowIllegalArgumentException() {
+        // arrange
+        User mockUser = new User();
+        final Long userId = Long.valueOf(1);
+        mockUser.setID(userId);
+        mockUser.setRole("ROLE_ADMIN");
+        mockUser.setName("Test Admin");
+        mockUser.setEmail("test_admin@gmail.com");
+        mockUser.setPassword("password");
+        mockUser.setFirstLogin(false);
+
+        // act
+        Exception expected = assertThrows(IllegalArgumentException.class, () -> {
+            userService.updateManagerId(userId, userId);
+        });
+
+        assertEquals(expected.getMessage(), "Manager cannot have the same ID as user");
+        verify(users, never()).save(mockUser);
+    }
+
+    @Test
+    public void updateManagerId_SetNonManagerAsManager_ThrowUserNotFoundException() {
+        // arrange
+        User mockUser1 = new User();
+        final Long userId1 = Long.valueOf(1);
+        mockUser1.setID(userId1);
+        mockUser1.setRole("ROLE_BASIC");
+        mockUser1.setName("Test User");
+        mockUser1.setEmail("test_user@gmail.com");
+        mockUser1.setPassword("password");
+        mockUser1.setFirstLogin(false);
+
+        User mockUser2 = new User();
+        final Long userId2 = Long.valueOf(2);
+        mockUser2.setID(userId2);
+        mockUser2.setRole("ROLE_BASIC");
+        mockUser2.setName("Test User 2");
+        mockUser2.setEmail("test_user2@gmail.com");
+        mockUser2.setPassword("password");
+        mockUser2.setFirstLogin(false);
+
+        Optional<User> opt1 = Optional.of(mockUser1);
+        Optional<User> opt2 = Optional.of(mockUser2);
+
+        when(users.findById(userId1)).thenReturn(opt1);
+        when(users.findById(userId2)).thenReturn(opt2);
+
+        // act & assert
+        Exception expected = assertThrows(UserNotFoundException.class, () -> {
+            userService.updateManagerId(userId1, userId2);
+        });
+        mockUser1.setManagerUser(mockUser2);
+        assertEquals(expected.getMessage(), "Could not find user with id " + userId2);
+        verify(users, never()).save(mockUser1);
+    }
 }

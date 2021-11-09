@@ -8,12 +8,12 @@ import java.util.*;
 
 import javax.mail.MessagingException;
 
+import com.G2T8.CS203WebApp.exception.InvalidPasswordResetTokenException;
 import com.G2T8.CS203WebApp.exception.UserNotFoundException;
 import com.G2T8.CS203WebApp.model.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -153,12 +153,12 @@ public class UserService implements UserDetailsService {
      */
     @Transactional
     public User updateManagerId(Long id, Long managerId) {
-        User user = getUser(id);
-        if (user == null) {
-            throw new UserNotFoundException(id);
+        if (id.equals(managerId)) {
+            throw new IllegalArgumentException("Manager cannot have the same ID as user");
         }
-        User manager = getUser(managerId);
-        if (manager == null || !manager.getRole().equals("ROLE_ADMIN")) {
+        User user = getUser(id);
+        User manager = managerId == null ? null : getUser(managerId);
+        if (manager != null && !manager.getRole().equals("ROLE_ADMIN")) {
             throw new UserNotFoundException(managerId);
         }
         user.setManagerUser(manager);
@@ -175,9 +175,6 @@ public class UserService implements UserDetailsService {
     @Transactional
     public User updateUserTeam(Long userId, Long teamId) {
         User user = getUser(userId);
-        if (user == null) {
-            throw new UserNotFoundException(userId);
-        }
         Team team = teamService.getTeam(teamId);
         user.setTeam(team);
         return userRepository.save(user);
@@ -310,15 +307,14 @@ public class UserService implements UserDetailsService {
                 .toString();
     }
 
-    // ---------------- End of save user into database methods
-    // ----------------------
+    // ------------ End of save user into database methods ------------
 
     // ----------------------------------------------
     // RESET PASSWORD FUNCTIONALITY
     // ----------------------------------------------
 
     /**
-     * Creates a password reset token for a particular user The token itself is a
+     * Creates a password reset token for a particular user. The token itself is a
      * UUID string, but the entity contains the user it corresponds to and an expiry
      * date
      * 
@@ -358,29 +354,26 @@ public class UserService implements UserDetailsService {
     /**
      * Actually resets the password for the user
      * 
-     * @param user
-     * @param token
-     * @param password
-     * @return
-     * @throws Exception
+     * @param user     the user entity to reset password for
+     * @param token    the password reset token
+     * @param password the new password
+     * @throws Exception InvalidPasswordResetToken exception propagated from
+     *                   validatePasswordResetToken method
      */
     @Transactional
-    public String resetPasswordForUser(User user, String token, String password) throws Exception {
-        String invalidityMessage = validatePasswordResetToken(token);
-        if (invalidityMessage == null) {
-            BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
-            user.setPassword(encoder.encode(password));
-            userRepository.save(user);
-            passwordResetRepository.deleteByToken(token);
-        }
-        return invalidityMessage;
+    public void resetPasswordForUser(User user, String token, String password) throws Exception {
+        validatePasswordResetToken(token);
+        BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
+        user.setPassword(encoder.encode(password));
+        userRepository.save(user);
+        passwordResetRepository.deleteByToken(token);
     }
 
     /**
      * Function to find user corresponding to a password reset token
      * 
-     * @param token
-     * @return
+     * @param token password reset token
+     * @return optional containing the user entity corresponding to that token
      */
     public Optional<User> findUserByPasswordResetToken(final String token) {
         Optional<PasswordResetToken> opt = passwordResetRepository.findByToken(token);
@@ -395,18 +388,21 @@ public class UserService implements UserDetailsService {
      * Validation of password reset token. Checks whether the token is present in
      * the database & whether it's expired or not
      * 
-     * @param token
-     * @return
+     * @param token password reset token
+     * @return true if token valid
      */
-    private String validatePasswordResetToken(String token) {
+    private boolean validatePasswordResetToken(String token) {
         Optional<PasswordResetToken> opt = passwordResetRepository.findByToken(token);
         if (opt.isPresent()) {
             PasswordResetToken passToken = opt.get();
-            logger.info(passToken.getToken());
             final Calendar cal = Calendar.getInstance();
-            return passToken.getExpiryDate().before(cal.getTime()) ? "Expired" : null;
+            if (passToken.getExpiryDate().before(cal.getTime())) {
+                throw new InvalidPasswordResetTokenException("Password reset token expired");
+            } else {
+                return true;
+            }
         } else {
-            return "Invalid Token";
+            throw new InvalidPasswordResetTokenException("Password reset token is invalid");
         }
 
     }

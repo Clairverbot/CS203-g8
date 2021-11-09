@@ -1,14 +1,11 @@
 package com.G2T8.CS203WebApp;
 
-import static org.junit.jupiter.api.Assertions.*;
 
 import java.net.URI;
-import java.util.Optional;
-
-import org.hamcrest.core.Is;
-import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mock;
+import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
@@ -18,14 +15,13 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import io.restassured.RestAssured;
 import io.restassured.config.JsonConfig;
 import io.restassured.path.json.config.JsonPathConfig;
-import io.restassured.response.Response;
 import net.minidev.json.JSONObject;
 import static io.restassured.config.RedirectConfig.redirectConfig;
-import static org.hamcrest.Matchers.equalTo;
 
 import static io.restassured.RestAssured.*;
 
 import com.G2T8.CS203WebApp.repository.UserRepository;
+import com.G2T8.CS203WebApp.service.UserService;
 import com.G2T8.CS203WebApp.model.User;
 
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
@@ -41,6 +37,9 @@ public class JWTAuthIntegrationTest {
     private UserRepository users;
 
     @Autowired
+    private UserService userService;
+
+    @Autowired
     private BCryptPasswordEncoder passwordEncoder;
 
     @BeforeAll
@@ -53,14 +52,6 @@ public class JWTAuthIntegrationTest {
                 .redirect(redirectConfig().followRedirects(false));
     }
 
-    /**
-     * Clear database after every test
-     */
-    @AfterEach
-    void tearDown() {
-        users.deleteAll();
-    }
-
     // --------------------------------------------------
     // Tests for saving user into database
     // --------------------------------------------------
@@ -71,15 +62,20 @@ public class JWTAuthIntegrationTest {
 
         // Create request body in JSON
         JSONObject requestBody = new JSONObject();
-        requestBody.put("email", "test420@gmail.com");
+        requestBody.put("email", "test420@cs203g2t8.com");
         requestBody.put("name", "Test");
         requestBody.put("password", "whatpassword");
-        requestBody.put("role", "ROLE_EMPLOYEE");
+        requestBody.put("role", "ROLE_BASIC");
 
         // Issue post request
         given().contentType("application/json").body(requestBody.toJSONString()).post(uri)
                 // Expected response
                 .then().statusCode(201);
+
+        // Clean up dummy user
+        User user = userService.findByEmail("test420@cs203g2t8.com");
+        users.delete(user);
+
     }
 
     @Test
@@ -124,7 +120,7 @@ public class JWTAuthIntegrationTest {
         requestBody.put("email", "test420@gmail.com");
         requestBody.put("name", "Test");
         requestBody.put("password", " ");
-        requestBody.put("role", "ROLE_EMPLOYEE");
+        requestBody.put("role", "ROLE_BASIC");
 
         // Issue post request
         given().contentType("application/json").body(requestBody.toJSONString()).post(uri)
@@ -141,7 +137,7 @@ public class JWTAuthIntegrationTest {
         requestBody.put("email", "test");
         requestBody.put("name", "Test");
         requestBody.put("password", "password");
-        requestBody.put("role", "ROLE_EMPLOYEE");
+        requestBody.put("role", "ROLE_BASIC");
 
         // Issue post request
         given().contentType("application/json").body(requestBody.toJSONString()).post(uri)
@@ -160,21 +156,26 @@ public class JWTAuthIntegrationTest {
         // Create dummy user entity
         User testUser = new User();
         testUser.setID((long) 1);
-        testUser.setEmail("test420@gmail.com");
+        testUser.setEmail("test420@cs203g2t8.com");
         testUser.setName("Test");
         testUser.setPassword(passwordEncoder.encode("password"));
         testUser.setRole("ROLE_ADMIN");
+        testUser.setFirstLogin(true);
         // Save dummy user into database
         users.save(testUser);
 
         // Create request body in JSON
         JSONObject requestBody = new JSONObject();
-        requestBody.put("email", "test420@gmail.com");
+        requestBody.put("email", "test420@cs203g2t8.com");
         requestBody.put("password", "password");
 
         // Issue post request
         given().contentType("application/json").body(requestBody.toJSONString()).post(uri)
                 // Expected response
                 .then().statusCode(200);
+        
+        // Clean up dummy user
+        User user = userService.findByEmail("test420@cs203g2t8.com");
+        users.delete(user);
     }
 }

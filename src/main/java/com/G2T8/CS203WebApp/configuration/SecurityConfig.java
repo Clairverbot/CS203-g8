@@ -54,15 +54,13 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     public AuthenticationManager authenticationManagerBean() throws Exception {
         return super.authenticationManagerBean();
     }
+
     @Override
     public void configure(final WebSecurity webSecurity) {
-        webSecurity.ignoring().antMatchers(
-                "/v1/api-docs/**",
-                "/swagger-ui/**",
-                "/swagger-resources/**",
-                "/webjars/**",
-                "/swagger-ui.html");
+        webSecurity.ignoring().antMatchers("/v1/api-docs/**", "/swagger-ui/**", "/swagger-resources/**", "/webjars/**",
+                "/swagger-ui.html", "/h2-console/**");
     }
+
     @Override
     protected void configure(HttpSecurity httpSecurity) throws Exception {
         // We don't need CSRF for this
