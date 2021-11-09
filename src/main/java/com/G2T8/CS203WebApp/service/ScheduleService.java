@@ -24,10 +24,7 @@ public class ScheduleService {
     }
 
     public List<Schedule> getAllScheduleByTeamID(Long teamID) {
-        Team team = teamService.getTeam(teamID);
-        if (team == null) {
-            throw new TeamNotFoundException(teamID);
-        }
+        Team team = findTeam(teamID);
         List<Schedule> schedules = scheduleRepository.findByTeamId(teamID);
         if (schedules == null) {
             throw new ScheduleNotFoundException(teamID);
@@ -36,7 +33,7 @@ public class ScheduleService {
     }
 
     public Schedule getScheduleByTeamIDAndStartDate(Long teamID, LocalDate startDate) {
-        findTeam(teamID);
+        Team team = findTeam(teamID);
         Schedule schedule = scheduleRepository.findByTeamIdAndStartDate(teamID, startDate);
         if (schedule == null) {
             throw new ScheduleNotFoundException(teamID, startDate);
@@ -45,7 +42,7 @@ public class ScheduleService {
     }
     public Schedule addSchedule(Long teamID, LocalDate startDate, LocalDate endDate, int mode) {
         Team team = findTeam(teamID);
-        checkScheduleConflict(teamID,mode, startDate, endDate);
+        checkScheduleConflict(teamID, mode, startDate, endDate);
 
         Schedule schedule = new Schedule();
         schedule.setTeam(team);
