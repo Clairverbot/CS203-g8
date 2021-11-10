@@ -77,8 +77,9 @@ public class TemperatureIntegrationTest {
 
     final String token = jwtTokenUtil.generateToken(userDetails);
 
-    URI uri = new URI(baseUrl + port + baseEndpoint + "/" + testUser.getID());
-    given().contentType("application/json").header("Authorization", "Bearer " + token).get(uri).then().statusCode(200);
+    URI uri = new URI(baseUrl + port + baseEndpoint);
+    given().contentType("application/json").header("Authorization", "Bearer " + token)
+        .queryParam("userId", testUser.getID()).get(uri).then().statusCode(200);
 
     testUser = userRepository.getById(testUser.getID());
     userRepository.delete(testUser);
