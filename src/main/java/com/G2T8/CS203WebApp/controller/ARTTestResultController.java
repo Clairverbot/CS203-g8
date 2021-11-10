@@ -13,8 +13,6 @@ import java.security.Principal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeParseException;
-
-import com.G2T8.CS203WebApp.exception.UserNotFoundException;
 import java.util.*;
 
 @RestController
@@ -29,59 +27,43 @@ public class ARTTestResultController {
 
     /**
      * Endpoint to return all ART Test Results
+     * 
      * @return List of all ARTTestResults present in the database
      */
     @GetMapping("/")
     public List<ARTTestResult> findAllArt() {
-        try {
-            return artService.getAllResult();
-        } catch (Exception E) {
-            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR,
-                    "Unknown error occurs, please try again!");
-        }
+        return artService.getAllResult();
     }
 
     /**
      * Endpoint to return all ART result with a specific userId
+     * 
      * @param userId of User of which we want to return all ART Test Results of
      * @return List of ARTTestResults belonging to the user with User ID userId
      */
     @RequestMapping("/{userId}")
     public List<ARTTestResult> findARTByUserId(@PathVariable Long userId) {
-        List<ARTTestResult> toReturn;
-        try {
-            toReturn = artService.getARTbyUserID(userId);
-        } catch (UserNotFoundException E) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "User doesn't exist");
-        } catch (Exception E) {
-            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR,
-                    "Unknown error occurs, please try again!");
-        }
-        return toReturn;
+        return artService.getARTbyUserID(userId);
     }
 
     /**
      * Endpoint to add new ART Test Result
+     * 
      * @param artResult result of user's ART Test (boolean)
      * @param principal account information of current logged in user
      * @return newly created ARTTestResult and Reponse Status
      */
     @PostMapping("/")
     public ResponseEntity<?> addResult(@RequestBody Boolean artResult, Principal principal) {
-        try {
-            ARTTestResult artTestResults = artService.addART(principal.getName(), artResult);
-            return new ResponseEntity<ARTTestResult>(artTestResults, HttpStatus.CREATED);
-        } catch (UserNotFoundException E) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "User doesn't exist");
-        } catch (Exception E) {
-            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR,
-                    "Unknown error occurs, please try again!");
-        }
+        ARTTestResult artTestResults = artService.addART(principal.getName(), artResult);
+        return new ResponseEntity<ARTTestResult>(artTestResults, HttpStatus.CREATED);
+
     }
 
     /**
-     * Endpoint to get number of ART Tests the curent logged in user has 
-     * submitted this week
+     * Endpoint to get number of ART Tests the curent logged in user has submitted
+     * this week
+     * 
      * @param principal account information of current logged in user
      * @param date
      * @return
@@ -92,14 +74,9 @@ public class ARTTestResultController {
         try {
             LocalDateTime dateTime = LocalDate.parse(date).atStartOfDay();
             return artService.getARTbyUserEmailAndWeek(principal.getName(), dateTime).size();
-        } catch (UserNotFoundException E) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "User doesn't exist");
         } catch (DateTimeParseException E) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
                     "Input needs to be of a valid date format (YYYY-MM-DD)");
-        } catch (Exception E) {
-            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR,
-                    "Unknown error occurs, please try again!");
         }
     }
 
