@@ -3,7 +3,6 @@ package com.G2T8.CS203WebApp;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.mockStatic;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -13,13 +12,10 @@ import com.G2T8.CS203WebApp.service.TeamService;
 import java.util.*;
 
 import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.MockedStatic;
-import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 @ExtendWith(MockitoExtension.class)
@@ -29,7 +25,7 @@ public class TeamServiceTest {
 
     @InjectMocks
     private TeamService teamService;
-    
+
     /**
      * Clear database after every test
      */
@@ -39,8 +35,8 @@ public class TeamServiceTest {
     }
 
     @Test
-    public void getAllTeams_ReturnAllTeams(){
-        //arrange
+    public void getAllTeams_ReturnAllTeams() {
+        // arrange
         Team team1 = new Team();
         Team team2 = new Team();
 
@@ -60,35 +56,38 @@ public class TeamServiceTest {
     }
 
     @Test
-    public void addNewTeam_NewTeam_ReturnNewTeam(){
-        //arrange
+    public void addNewTeam_NewTeam_ReturnNewTeam() {
+        // arrange
         Team team = new Team();
         team.setName("team two");
 
         when(teamRepository.save(any(Team.class))).thenReturn(team);
 
-        //act
+        // act
         Team newTeam = teamService.addNewTeam(team);
 
-        //assert
+        // assert
         assertNotNull(newTeam);
         verify(teamRepository).save(team);
     }
 
     @Test
-    public void getTeam_ReturnTeam(){
-        //arrange
+    public void getTeam_ReturnTeam() {
+        // arrange
         Team team = new Team();
-        Long teamId = team.getTeamID(); 
+        team.setTeamID(1L);
+        Long teamId = team.getTeamID();
 
-        when(teamRepository.getById(teamId)).thenReturn(team);
+        Optional<Team> opt = Optional.of(team);
 
-        //act
+        when(teamRepository.findById(teamId)).thenReturn(opt);
+
+        // act
         Team toReturn = teamService.getTeam(teamId);
 
-        //assert
-        assertEquals(team,toReturn);
-        verify(teamRepository).getById(teamId);
+        // assert
+        assertEquals(team, toReturn);
+        verify(teamRepository).findById(teamId);
 
     }
 }
