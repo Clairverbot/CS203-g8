@@ -29,6 +29,7 @@ public class UserService implements UserDetailsService {
     private final PasswordResetRepository passwordResetRepository;
     private EmailService emailService;
     private TeamService teamService;
+    private CovidHistoryService covidHistoryService;
 
     Logger logger = LoggerFactory.getLogger(UserService.class);
 
@@ -41,6 +42,11 @@ public class UserService implements UserDetailsService {
     @Autowired
     public void setTeamService(TeamService teamService) {
         this.teamService = teamService;
+    }
+
+    @Autowired
+    public void setCovidHistoryService(CovidHistoryService covidHistoryService) {
+        this.covidHistoryService = covidHistoryService;
     }
 
     @Autowired
@@ -69,6 +75,27 @@ public class UserService implements UserDetailsService {
         }).orElseThrow(() -> {
             throw new UserNotFoundException(id);
         });
+    }
+
+    public List<User> getContractedUsers() {
+        List<User> userList = userRepository.findAll();
+        List<User> toReturn = new ArrayList<User>();
+        for (User u : userList) {
+            Long id = u.getID();
+            boolean recovery = true;
+            List<CovidHistory> history = covidHistoryService.getAllCovidHistoryFromOneUser(id);
+            for (CovidHistory c : history) {
+                logger.info("covidHistory:" + c.getCovidHistoryid().toString() + "user" + u.getID().toString());
+                if (!c.recovered()) {
+                    recovery = false;
+                    break;
+                }
+            }
+            if (!recovery) {
+                toReturn.add(u);
+            }
+        }
+        return toReturn;
     }
 
     // ----------------------------------------------

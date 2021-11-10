@@ -34,7 +34,7 @@ public class User implements Serializable {
     @Email
     private String email;
 
-    @Column(name = "vaccinationStatus", nullable = false)
+    @Column(name = "vaccination_status", nullable = false)
     // @NonNull
     private int vaccinationStatus;
 
@@ -65,14 +65,9 @@ public class User implements Serializable {
     @JoinColumn(name = "manager_user_id")
     private User managerUser;
 
-    // user id becomes a foreign key for class/table schedule
-    @JsonIgnore
-    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = false)
-    private List<Schedule> schedules;
-
     // user id becomes a foreign key for CovidHistory class/table
     @JsonIgnore
-    @OneToMany(mappedBy = "user", orphanRemoval = false)
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<CovidHistory> covidHistories;
 
     // user id becomes a foreign key for Officerequest
@@ -82,7 +77,7 @@ public class User implements Serializable {
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonManagedReference
-    private List<ARTTestResults> artTestResult;
+    private List<ARTTestResult> artTestResult;
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonManagedReference

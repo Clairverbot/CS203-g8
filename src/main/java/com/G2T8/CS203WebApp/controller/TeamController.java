@@ -44,16 +44,7 @@ public class TeamController {
     // Get team based on id
     @GetMapping("/{id}")
     public Team findTeamById(@PathVariable Long id) {
-        Team team;
-        try {
-            team = teamService.getTeam(id);
-        } catch (TeamNotFoundException E) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Team doesn't exist");
-        } catch (Exception E) {
-            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR,
-                    "Unknown error occurs, please try again!");
-        }
-        return team;
+        return teamService.getTeam(id);
     }
 
     /**
@@ -64,44 +55,22 @@ public class TeamController {
      */
     @GetMapping("/{id}/users")
     public List<User> findUsersByTeamId(@PathVariable Long id) {
-        Team team;
-        try {
-            team = teamService.getTeam(id);
-        } catch (TeamNotFoundException E) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Team doesn't exist");
-        } catch (Exception E) {
-            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR,
-                    "Unknown error occurs, please try again!");
-        }
-
+        Team team = teamService.getTeam(id);
         return team.getUsers();
-
     }
 
     // Update team name based on id
     @PutMapping("/{id}")
-    public void updateName(@PathVariable Long id, @RequestBody String name) {
-        try {
-            teamService.updateTeamName(id, name);
-        } catch (TeamNotFoundException E) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Team doesn't exist");
-        } catch (Exception E) {
-            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR,
-                    "Unknown error occurs, please try again!");
-        }
+    public Team updateName(@PathVariable Long id, @RequestBody String name) {
+        return teamService.updateTeamName(id, name);
     }
 
     // Add team
     @PostMapping("/")
     public ResponseEntity<?> addTeam(@RequestBody Map<String, Object> requestBody) {
-        try {
-            Team team = new Team();
-            team.setName(requestBody.get("name").toString());
-            teamService.addNewTeam(team);
-            return new ResponseEntity(HttpStatus.CREATED);
-        } catch (Exception E) {
-            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR,
-                    "Unknown error occurs, please try again!");
-        }
+        Team team = new Team();
+        team.setName(requestBody.get("name").toString());
+        Team responseBody = teamService.addNewTeam(team);
+        return new ResponseEntity<Team>(responseBody, HttpStatus.CREATED);
     }
 }

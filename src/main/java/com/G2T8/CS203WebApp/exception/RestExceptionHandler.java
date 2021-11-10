@@ -15,4 +15,6 @@ public class RestExceptionHandler {
             throws IOException {
         webRequest.getResponse().sendError(HttpStatus.BAD_REQUEST.value(), exception.getMessage());
     }
+
+    
 }

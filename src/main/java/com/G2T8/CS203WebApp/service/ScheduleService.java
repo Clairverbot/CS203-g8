@@ -2,96 +2,102 @@ package com.G2T8.CS203WebApp.service;
 
 import com.G2T8.CS203WebApp.repository.*;
 import org.springframework.beans.factory.annotation.Autowired;
-import com.G2T8.CS203WebApp.model.*; 
+import com.G2T8.CS203WebApp.model.*;
+import com.G2T8.CS203WebApp.exception.*;
 import java.util.*;
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 import org.springframework.stereotype.Service;
 
 @Service
 public class ScheduleService {
+    private ScheduleRepository scheduleRepository;
+    private TeamService teamService;
 
     @Autowired
-    private ScheduleRepository scheduleRepository;
+    public ScheduleService(ScheduleRepository scheduleRepository, TeamService teamService) {
+        this.scheduleRepository = scheduleRepository;
+        this.teamService = teamService;
+    }
 
     public List<Schedule> getAllSchedules() {
         return scheduleRepository.findAll();
     }
 
-    // returns list because one person can have many schedules
-    public List<Schedule> getAllScheduleFromOneUser(Long ID) {
-
-        // getting the schedule of each user by custom query findByUserId in
-        // ScheduleRepository
-        // do not use findById bc that uses id of schedule bc we cannot use it to 
-        // point to the user we want
-
-        List<Optional<Schedule>> origList = scheduleRepository.findByUserId(ID);
-        List<Schedule> toReturn = new ArrayList<>();
-
-        if (origList != null) {
-            for (int i = 0; i <= origList.size() - 1; i++) {
-                if (origList.get(i).isPresent()) {
-                    Optional<Schedule> opSchedule = origList.get(i);
-                    Schedule sched = opSchedule.get();
-                    toReturn.add(sched);
-
-                } else {
-                    continue;
-                }
-
-            }
-            return toReturn;
-
+    public List<Schedule> getAllScheduleByTeamID(Long teamID) {
+        Team team = findTeam(teamID);
+        List<Schedule> schedules = scheduleRepository.findByTeamId(teamID);
+        if (schedules == null) {
+            throw new ScheduleNotFoundException(teamID);
         }
-        return null;
-
+        return schedules;
     }
 
-    // returns a particular covidHistory record of one user
-    public Schedule getOneScheduleFromOneUser(Long ID, LocalDateTime startdatetime) {
-        Optional <Schedule> temp = scheduleRepository.findByUserIdAndStartDateTime(ID, startdatetime);
-        if(temp.isPresent()){
-            Schedule toReturn = temp.get();
-            return toReturn; 
-
+    public Schedule getScheduleByTeamIDAndStartDate(Long teamID, LocalDate startDate) {
+        Team team = findTeam(teamID);
+        Schedule schedule = scheduleRepository.findByTeamIdAndStartDate(teamID, startDate);
+        if (schedule == null) {
+            throw new ScheduleNotFoundException(teamID, startDate);
         }
-        return null;
-
+        return schedule;
     }
-
-    public Schedule addSchedule(Schedule schedule) {
+    public Schedule addSchedule(Long teamID, LocalDate startDate, LocalDate endDate, int mode) {
+        Team team = findTeam(teamID);
+        
+        if (checkScheduleConflict(teamID, mode, startDate, endDate)) {
+            throw new ScheduleClashException();
+        }
+        
+        Schedule schedule = new Schedule();
+        schedule.setTeam(team);
+        schedule.setStartDate(startDate);
+        schedule.setEndDate(endDate);
+        schedule.setMode(mode);
         return scheduleRepository.save(schedule);
     }
 
+    public Schedule updateSchedule(Long scheduleId, Long teamID, LocalDate startDate, LocalDate endDate, int mode) {
+        Optional<Schedule> schedule = scheduleRepository.findById(scheduleId);
+        if (!schedule.isPresent()) {
+            throw new ScheduleNotFoundException(scheduleId, startDate);
+        }
+        Team team = findTeam(teamID);
 
-    public Schedule updateScheduleMode(Long ID, LocalDateTime startdatetime, int newMode) {
-        Optional<Schedule> b = scheduleRepository.findByUserIdAndStartDateTime(ID, startdatetime);
-        if (b.isPresent()) {
-            Schedule schedule = b.get();
-            schedule.setMode(newMode);
-            return scheduleRepository.save(schedule);
-        } else
-            return null;
+        if (checkScheduleConflict(teamID, mode, startDate, endDate)) {
+            throw new ScheduleClashException();
+        }
+
+        Schedule updatedSchedule = schedule.get();
+        updatedSchedule.setMode(mode);
+        updatedSchedule.setTeam(team);
+        updatedSchedule.setStartDate(startDate);
+        updatedSchedule.setEndDate(endDate);
+        return scheduleRepository.save(updatedSchedule);
     }
 
-    public Schedule updateScheduleStartDateTime(Long ID, LocalDateTime startdatetime,  LocalDateTime newStartDateTime) {
-        Optional<Schedule> b = scheduleRepository.findByUserIdAndStartDateTime(ID, startdatetime);
-        if (b.isPresent()) {
-            Schedule schedule = b.get();
-            schedule.setStartDateTime(newStartDateTime);
-            return scheduleRepository.save(schedule);
-        } else
-            return null;
+    public void deleteSchedule(Long scheduleId) {
+        scheduleRepository.deleteById(scheduleId);
     }
 
-    public Schedule updateScheduleEndDateTime(Long ID, LocalDateTime startdatetime, LocalDateTime newEndDateTime) {
-        Optional<Schedule> b = scheduleRepository.findByUserIdAndStartDateTime(ID, startdatetime);
-        if (b.isPresent()) {
-            Schedule schedule = b.get();
-            schedule.setEndDateTime(newEndDateTime);
-            return scheduleRepository.save(schedule);
-        } else
-            return null;
+    public Team findTeam(Long teamID) {
+        Team team = teamService.getTeam(teamID);
+        if (team == null) {
+            throw new TeamNotFoundException(teamID);
+        }
+        return team;
     }
-    
+
+    public boolean checkScheduleConflict(Long teamID,int mode, LocalDate startDate, LocalDate endDate) {
+        List<Schedule> conflicts;
+        if (mode == 1) {
+            conflicts = scheduleRepository.findAllByTeamIdOrModeAndStartDateBetweenOrEndDateBetween(teamID,mode, startDate, endDate);
+        }else{
+            conflicts = scheduleRepository.findAllByTeamIdAndStartDateBetweenOrEndDateBetween(teamID, startDate, endDate);
+        }
+
+        if (!conflicts.isEmpty()) {
+            return true;
+        } else {
+            return false;
+        }
+    }
 }

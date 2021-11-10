@@ -7,15 +7,26 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 import java.util.*;
 import java.time.LocalDateTime;
+import java.time.LocalDate;
 
 @Repository
 public interface ScheduleRepository extends JpaRepository<Schedule, Long> {
 
-    @Query(value = "SELECT s FROM Schedule s WHERE s.userid = user_id", nativeQuery = true)
-    List<Optional<Schedule>> findByUserId(@Param("user_id") Long user_id);
+    @Query(value = "SELECT * FROM Schedule s WHERE s.team_id = :team_id", nativeQuery = true)
+    List<Schedule> findByTeamId(@Param("team_id") Long team_id);
 
-    @Query(value = "SELECT s FROM Schedule s WHERE s.userid = user_id and s.start_date_time = startdatetime", nativeQuery = true)
-    Optional<Schedule> findByUserIdAndStartDateTime(@Param("user_id") Long user_id,
-            @Param("startdatetime") LocalDateTime startdatetime);
-    
+    @Query(value = "SELECT * FROM Schedule s WHERE s.start_date = :start_date and s.end_date = :end_date", nativeQuery = true)
+    List<Schedule> findByStartDateAndEndDate(@Param("start_date") LocalDate start_date,
+            @Param("end_date") LocalDate end_date);
+
+    @Query(value = "SELECT * FROM Schedule s WHERE s.team_id = :team_id and s.start_date = :start_date", nativeQuery = true)
+    Schedule findByTeamIdAndStartDate(@Param("team_id") Long team_id, @Param("start_date") LocalDate start_date);
+
+    @Query(value = "SELECT * FROM Schedule s WHERE s.team_id = :team_id and (s.start_date between :start_date and :end_date or s.end_date between :start_date and :end_date)", nativeQuery = true)
+    List<Schedule> findAllByTeamIdAndStartDateBetweenOrEndDateBetween(@Param("team_id") Long team_id,
+            @Param("start_date") LocalDate start_date, @Param("end_date") LocalDate end_date);
+
+    @Query(value = "SELECT * FROM Schedule s WHERE (s.team_id = :team_id or s.mode = :mode) and (:start_date between s.start_date and s.end_date or :end_date between s.start_date and s.end_date)", nativeQuery = true)
+    List<Schedule> findAllByTeamIdOrModeAndStartDateBetweenOrEndDateBetween(@Param("team_id") Long team_id,
+            @Param("mode") int mode, @Param("start_date") LocalDate start_date, @Param("end_date") LocalDate end_date);
 }
