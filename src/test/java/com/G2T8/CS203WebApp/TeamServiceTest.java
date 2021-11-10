@@ -75,6 +75,7 @@ public class TeamServiceTest {
         verify(teamRepository).save(team);
     }
 
+    @Test
     public void getTeam_ReturnTeam(){
         //arrange
         Team team = new Team();
