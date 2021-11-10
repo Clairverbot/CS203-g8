@@ -19,9 +19,7 @@ import org.slf4j.*;
 public class ARTTestResultService {
 
     private ARTTestResultRepository artTestResultRepository;
-
     private UserService userService;
-    
     private EmailService emailService;
 
     Logger logger = LoggerFactory.getLogger(ARTTestResultService.class);

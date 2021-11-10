@@ -75,7 +75,7 @@ public class ARTTestResultIntegrationTest {
         testUser.setFirstLogin(true);
 
         testUser = userRepository.save(testUser);
-        
+
         final UserDetails userDetails = userService.loadUserByUsername(testUser.getEmail());
 
         final String token = jwtTokenUtil.generateToken(userDetails);
@@ -84,9 +84,11 @@ public class ARTTestResultIntegrationTest {
         LocalDateTime current = LocalDateTime.now();
 
         // Create dummy art results
-        ARTTestResult artTestResult1 = new ARTTestResult(testUser, false, current, current.toLocalDate().with(TemporalAdjusters.previous(DayOfWeek.MONDAY)));
+        ARTTestResult artTestResult1 = new ARTTestResult(testUser, false, current,
+                current.toLocalDate().with(TemporalAdjusters.previous(DayOfWeek.MONDAY)));
 
-        ARTTestResult artTestResult2 = new ARTTestResult(testUser, true, current, current.toLocalDate().with(TemporalAdjusters.previous(DayOfWeek.MONDAY)));
+        ARTTestResult artTestResult2 = new ARTTestResult(testUser, true, current,
+                current.toLocalDate().with(TemporalAdjusters.previous(DayOfWeek.MONDAY)));
 
         // Save dummy art results to artRepo
         artTestResultRepository.save(artTestResult1);
@@ -99,8 +101,8 @@ public class ARTTestResultIntegrationTest {
 
         // Issue get request
         given().contentType("application/json").header("Authorization", "Bearer " + token).get(uri)
-            // Expected response
-            .then().statusCode(200);
+                // Expected response
+                .then().statusCode(200);
 
         // Clean up database
         userRepository.delete(testUser);
@@ -115,9 +117,9 @@ public class ARTTestResultIntegrationTest {
 
         // Issue get request
         given().contentType("application/json").header("Authorization", "Bearer " + token).get(uri)
-            // Expected response
-            .then().statusCode(401);
-        
+                // Expected response
+                .then().statusCode(401);
+
     }
 
     @Test
@@ -127,9 +129,9 @@ public class ARTTestResultIntegrationTest {
 
         // Issue get request
         given().contentType("application/json").get(uri)
-            // Expected response
-            .then().statusCode(401);
-        
+                // Expected response
+                .then().statusCode(401);
+
     }
 
     @Test
@@ -143,7 +145,7 @@ public class ARTTestResultIntegrationTest {
         testUser.setRole("ROLE_ADMIN");
         testUser.setFirstLogin(true);
         testUser = userRepository.save(testUser);
-        
+
         // Get user token
         final UserDetails userDetails = userService.loadUserByUsername(testUser.getEmail());
         final String token = jwtTokenUtil.generateToken(userDetails);
@@ -152,9 +154,11 @@ public class ARTTestResultIntegrationTest {
         LocalDateTime current = LocalDateTime.now();
 
         // Create dummy art results
-        ARTTestResult artTestResult1 = new ARTTestResult(testUser, false, current, current.toLocalDate().with(TemporalAdjusters.previous(DayOfWeek.MONDAY)));
+        ARTTestResult artTestResult1 = new ARTTestResult(testUser, false, current,
+                current.toLocalDate().with(TemporalAdjusters.previous(DayOfWeek.MONDAY)));
 
-        ARTTestResult artTestResult2 = new ARTTestResult(testUser, true, current, current.toLocalDate().with(TemporalAdjusters.previous(DayOfWeek.MONDAY)));
+        ARTTestResult artTestResult2 = new ARTTestResult(testUser, true, current,
+                current.toLocalDate().with(TemporalAdjusters.previous(DayOfWeek.MONDAY)));
 
         // Save dummy art results to artRepo
         artTestResultRepository.save(artTestResult1);
@@ -164,9 +168,10 @@ public class ARTTestResultIntegrationTest {
         testUser = userRepository.getById(testUser.getID());
 
         // Issue get request
-        given().contentType("application/json").pathParam("userId", testUser.getID()).header("Authorization", "Bearer " + token).get(baseUrl + port + baseEndpoint + "/{userId}")
-            // Expected response
-            .then().statusCode(200);
+        given().contentType("application/json").queryParam("userId", testUser.getID())
+                .header("Authorization", "Bearer " + token).get(baseUrl + port + baseEndpoint)
+                // Expected response
+                .then().statusCode(200);
 
         // Clean up database
         userRepository.delete(testUser);
@@ -183,7 +188,7 @@ public class ARTTestResultIntegrationTest {
         testUser.setRole("ROLE_ADMIN");
         testUser.setFirstLogin(true);
         userRepository.save(testUser);
-        
+
         // Get user token
         final UserDetails userDetails = userService.loadUserByUsername(testUser.getEmail());
         final String token = jwtTokenUtil.generateToken(userDetails);
@@ -192,9 +197,11 @@ public class ARTTestResultIntegrationTest {
         LocalDateTime current = LocalDateTime.now();
 
         // Create dummy art results
-        ARTTestResult artTestResult1 = new ARTTestResult(testUser, false, current, current.toLocalDate().with(TemporalAdjusters.previous(DayOfWeek.MONDAY)));
+        ARTTestResult artTestResult1 = new ARTTestResult(testUser, false, current,
+                current.toLocalDate().with(TemporalAdjusters.previous(DayOfWeek.MONDAY)));
 
-        ARTTestResult artTestResult2 = new ARTTestResult(testUser, true, current, current.toLocalDate().with(TemporalAdjusters.previous(DayOfWeek.MONDAY)));
+        ARTTestResult artTestResult2 = new ARTTestResult(testUser, true, current,
+                current.toLocalDate().with(TemporalAdjusters.previous(DayOfWeek.MONDAY)));
 
         // Save dummy art results to artResults
         artTestResultRepository.save(artTestResult1);
@@ -204,9 +211,10 @@ public class ARTTestResultIntegrationTest {
         testUser = userRepository.getById(testUser.getID());
 
         // Issue get request
-        given().contentType("application/json").pathParam("userId", 0L).header("Authorization", "Bearer " + token).get(baseUrl + port + baseEndpoint + "/{userId}")
-            // Expected response
-            .then().statusCode(404);
+        given().contentType("application/json").queryParam("userId", 0L).header("Authorization", "Bearer " + token)
+                .get(baseUrl + port + baseEndpoint)
+                // Expected response
+                .then().statusCode(404);
 
         // Clean up database
         userRepository.delete(testUser);
@@ -223,15 +231,16 @@ public class ARTTestResultIntegrationTest {
         testUser.setRole("ROLE_ADMIN");
         testUser.setFirstLogin(true);
         testUser = userRepository.save(testUser);
-        
+
         // Get user token
         final UserDetails userDetails = userService.loadUserByUsername(testUser.getEmail());
         final String token = jwtTokenUtil.generateToken(userDetails);
 
         // Issue post request
-        given().contentType("application/json").header("Authorization", "Bearer " + token).body(true).post(baseUrl + port + baseEndpoint + "/")
-            // Expected response
-            .then().statusCode(201);
+        given().contentType("application/json").header("Authorization", "Bearer " + token).body(true)
+                .post(baseUrl + port + baseEndpoint + "/")
+                // Expected response
+                .then().statusCode(201);
 
         // Get updated user from the db after saving new art test result
         testUser = userRepository.getById(testUser.getID());
@@ -251,19 +260,20 @@ public class ARTTestResultIntegrationTest {
         testUser.setRole("ROLE_ADMIN");
         testUser.setFirstLogin(true);
         testUser = userRepository.save(testUser);
-        
+
         // Get user token
         final UserDetails userDetails = userService.loadUserByUsername(testUser.getEmail());
         final String token = jwtTokenUtil.generateToken(userDetails);
 
         // Issue post request
-        given().contentType("application/json").header("Authorization", "Bearer " + token).body("not an ART test result").post(baseUrl + port + baseEndpoint + "/")
-            // Expected response
-            .then().statusCode(400);
+        given().contentType("application/json").header("Authorization", "Bearer " + token)
+                .body("not an ART test result").post(baseUrl + port + baseEndpoint + "/")
+                // Expected response
+                .then().statusCode(400);
 
         // Get updated user from the db after saving new art test result
         testUser = userRepository.getById(testUser.getID());
-        
+
         // Clean up database
         userRepository.delete(testUser);
 
@@ -274,8 +284,8 @@ public class ARTTestResultIntegrationTest {
 
         // Issue post request
         given().contentType("application/json").body(true).post(baseUrl + port + baseEndpoint + "/")
-            // Expected response
-            .then().statusCode(401);
+                // Expected response
+                .then().statusCode(401);
 
     }
 
@@ -290,19 +300,21 @@ public class ARTTestResultIntegrationTest {
         testUser.setRole("ROLE_ADMIN");
         testUser.setFirstLogin(true);
         testUser = userRepository.save(testUser);
-        
+
         // Get user token
         final UserDetails userDetails = userService.loadUserByUsername(testUser.getEmail());
         final String token = jwtTokenUtil.generateToken(userDetails);
 
         // Issue get request
-        given().contentType("application/json").queryParam("date", "2021-11-09").header("Authorization", "Bearer " + token).get(baseUrl + port + baseEndpoint + "/current/count-on-week")
-            // Expected response
-            .then().statusCode(200);
+        given().contentType("application/json").queryParam("date", "2021-11-09")
+                .header("Authorization", "Bearer " + token)
+                .get(baseUrl + port + baseEndpoint + "/current/count-on-week")
+                // Expected response
+                .then().statusCode(200);
 
         // Get updated user from the db after saving new art test result
         testUser = userRepository.getById(testUser.getID());
-        
+
         // Clean up database
         userRepository.delete(testUser);
     }

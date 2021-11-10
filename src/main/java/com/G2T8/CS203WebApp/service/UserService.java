@@ -37,6 +37,9 @@ public class UserService implements UserDetailsService {
     @Autowired
     private TeamService teamService;
 
+    @Autowired
+    private CovidHistoryService covidHistoryService;
+
     Logger logger = LoggerFactory.getLogger(UserService.class);
 
     @Autowired
@@ -54,6 +57,27 @@ public class UserService implements UserDetailsService {
             return user;
         }).orElse(null);
 
+    }
+
+    public List<User> getContractedUsers(){
+        List<User> userList = userRepository.findAll();
+        List<User> toReturn = new ArrayList<User>();
+        for(User u : userList){
+            Long id = u.getID();
+            boolean recovery = true;
+            List<CovidHistory> history = covidHistoryService.getAllCovidHistoryFromOneUser(id);
+            for(CovidHistory c : history){
+                logger.info("covidHistory:" + c.getCovidHistoryid().toString() + "user" + u.getID().toString());
+                if(!c.recovered()){
+                    recovery = false;
+                    break;
+                }
+            }
+            if(!recovery){
+                toReturn.add(u);
+            }
+        }
+        return toReturn;
     }
 
     // should delete as we logging in w email not possible to change

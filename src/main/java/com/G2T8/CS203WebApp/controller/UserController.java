@@ -40,12 +40,32 @@ public class UserController {
         return users;
     }
 
-      //get all user vaccination percentage
-      @GetMapping("/vaccination-percentage")
-      public int findUsersVaxxPercentage() {
-          int percentage = userService.getUsersVaxxPercentage();
-          return percentage;
-      }
+    //get all contracted users
+    @GetMapping("/contracted-users")
+    public List<User> findContractedUsers() {
+        List<User> users = userService.getContractedUsers();
+        if (users == null) {
+            throw new UserNotFoundException();
+        }
+        return users;
+    }
+
+    //get number of contracted users
+    @GetMapping("/number-of-contracted-users")
+    public int findNumberOfContractedUsers() {
+        List<User> users = userService.getContractedUsers();
+        if (users == null) {
+            throw new UserNotFoundException();
+        }
+        return users.size();
+    }
+
+    //get all user vaccination percentage
+    @GetMapping("/vaccination-percentage")
+    public int findUsersVaxxPercentage() {
+        int percentage = userService.getUsersVaxxPercentage();
+        return percentage;
+    }
 
     // get user by Email ( necessary as we are logging in with email)
     @GetMapping(value = "/email/{email}")

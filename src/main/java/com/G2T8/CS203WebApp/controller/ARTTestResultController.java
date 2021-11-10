@@ -2,6 +2,8 @@ package com.G2T8.CS203WebApp.controller;
 
 import com.G2T8.CS203WebApp.model.*;
 import com.G2T8.CS203WebApp.service.ARTTestResultService;
+import com.G2T8.CS203WebApp.service.CovidHistoryService;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -9,20 +11,25 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 import org.springframework.format.annotation.*;
 
+import java.io.IOException;
 import java.security.Principal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeParseException;
 import java.util.*;
 
+import javax.mail.MessagingException;
+
 @RestController
 @RequestMapping("/api/v1/art")
 public class ARTTestResultController {
     private final ARTTestResultService artService;
+    private final CovidHistoryService covidHistoryService;
 
     @Autowired
-    public ARTTestResultController(ARTTestResultService artService) {
+    public ARTTestResultController(ARTTestResultService artService, CovidHistoryService covidHistoryService) {
         this.artService = artService;
+        this.covidHistoryService = covidHistoryService;
     }
 
     /**
@@ -41,8 +48,8 @@ public class ARTTestResultController {
      * @param userId of User of which we want to return all ART Test Results of
      * @return List of ARTTestResults belonging to the user with User ID userId
      */
-    @RequestMapping("/{userId}")
-    public List<ARTTestResult> findARTByUserId(@PathVariable Long userId) {
+    @GetMapping("")
+    public List<ARTTestResult> findARTByUserId(@RequestParam Long userId) {
         return artService.getARTbyUserID(userId);
     }
 
@@ -55,8 +62,18 @@ public class ARTTestResultController {
      */
     @PostMapping("/")
     public ResponseEntity<?> addResult(@RequestBody Boolean artResult, Principal principal) {
-        ARTTestResult artTestResults = artService.addART(principal.getName(), artResult);
-        return new ResponseEntity<ARTTestResult>(artTestResults, HttpStatus.CREATED);
+        try {
+            ARTTestResult artTestResults = artService.addART(principal.getName(), artResult);
+            if (artTestResults.getArtResult() == true) {
+                CovidHistory toAdd = new CovidHistory(artTestResults.getUser(), artTestResults.getDate(), null);
+                covidHistoryService.addCovidHistory(toAdd);
+            } else {
+                covidHistoryService.updateRecoveryDate(artTestResults.getUser(), artTestResults.getDate());
+            }
+            return new ResponseEntity<ARTTestResult>(artTestResults, HttpStatus.CREATED);
+        } catch (MessagingException | IOException e) {
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "An error with emailing has occurred");
+        }
 
     }
 
@@ -65,8 +82,8 @@ public class ARTTestResultController {
      * this week
      * 
      * @param principal account information of current logged in user
-     * @param date
-     * @return
+     * @param date      date for the week you want to query
+     * @return number of current user's ART test results
      */
     @GetMapping("/current/count-on-week")
     public int getCountCurrentUserARTResultOnWeek(Principal principal,

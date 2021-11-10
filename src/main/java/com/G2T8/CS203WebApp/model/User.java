@@ -38,7 +38,7 @@ public class User implements Serializable {
     @Email
     private String email;
 
-    @Column(name = "vaccinationStatus", nullable = false)
+    @Column(name = "vaccination_status", nullable = false)
     // @NonNull
     private int vaccinationStatus;
 
@@ -65,7 +65,7 @@ public class User implements Serializable {
 
     @OneToMany(mappedBy = "ManagerUser", orphanRemoval = true)
     @Getter(onMethod = @__(@JsonIgnore))
-    private List<User> EmployeeUsers;
+    private List<User> employeeUsers;
 
     @ManyToOne
     @JoinColumn(name = "ManagerUser_id")
@@ -73,7 +73,7 @@ public class User implements Serializable {
 
     // user id becomes a foreign key for CovidHistory class/table
     @JsonIgnore
-    @OneToMany(mappedBy = "user", orphanRemoval = false)
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<CovidHistory> covidHistories;
 
     // user id becomes a foreign key for Officerequest
@@ -89,7 +89,7 @@ public class User implements Serializable {
     @JsonManagedReference
     private List<Temperature> temperature;
 
-    @Column(name = "firstLogin", nullable = false, columnDefinition = "boolean default true")
+    @Column(name = "first_login", nullable = false, columnDefinition = "boolean default true")
     private Boolean firstLogin;
 
     @OneToOne(mappedBy = "user")
