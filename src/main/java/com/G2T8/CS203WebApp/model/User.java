@@ -95,4 +95,10 @@ public class User implements Serializable {
     @JsonIgnore
     private PasswordResetToken passwordResetToken;
 
+    public Boolean isVaccinated() {
+        if (vaccinationStatus == 2) {
+            return true;
+        }
+        return false;
+    }
 }

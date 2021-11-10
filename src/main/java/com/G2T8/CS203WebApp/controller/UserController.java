@@ -73,6 +73,16 @@ public class UserController {
     }
 
     /**
+     * Get percentage of users vaccinated
+     * 
+     * @return percentage of users vaccinated in integer (0-100)
+     */
+    @GetMapping("/vaccination-percentage")
+    public int findUsersVaxxPercentage() {
+        return userService.getUsersVaxxPercentage();
+    }
+
+    /**
      * Update a certain user's vaccination status
      * 
      * @param id                user ID

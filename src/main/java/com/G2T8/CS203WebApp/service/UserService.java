@@ -218,6 +218,25 @@ public class UserService implements UserDetailsService {
         }
     }
 
+    /**
+     * Get percentage of users vaccinated
+     * 
+     * @return percentage of users vaccinated in integer (e.g. 95% means it will
+     *         return 95)
+     */
+    public int getUsersVaxxPercentage() {
+        List<User> userList = userRepository.findAll();
+        int countUser = 0;
+        int countVaxx = 0;
+        for (User u : userList) {
+            if (u.isVaccinated()) {
+                countVaxx++;
+            }
+            countUser++;
+        }
+        return (int) ((double) countVaxx / (double) countUser * 100);
+    }
+
     // ----------------------------------------------
     // SAVE USER INTO DATABASE
     // ----------------------------------------------
