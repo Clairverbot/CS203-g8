@@ -109,7 +109,7 @@ public class ScheduleServiceTest {
     public void addSchedule_NewSchedule_ReturnSchedule() {
         // arrange
         Schedule newSchedule = new Schedule();
-        newSchedule.setID(Long.valueOf(1));
+        // newSchedule.setID(Long.valueOf(1));
         newSchedule.setStartDate(LocalDate.of(2021,11,1));
         newSchedule.setEndDate(LocalDate.of(2021,11,5));
         newSchedule.setMode(0);
