@@ -4,22 +4,12 @@ import com.G2T8.CS203WebApp.model.Temperature;
 import com.G2T8.CS203WebApp.model.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
-import org.springframework.data.jpa.repository.Query;
-import org.springframework.data.repository.query.Param;
 import java.util.*;
 import java.time.LocalDateTime;
 
 @Repository
 public interface TemperatureRepository extends JpaRepository<Temperature, Long> {
-
-    // @Query(value = "SELECT * FROM temperature t WHERE t.user_id = :user_id",
-    // nativeQuery= true)
-    // List<Temperature> findByUserId(@Param("user_id") Long user_id);
-
     List<Temperature> findByUser(User user);
 
     List<Temperature> findAllByUserAndDateBetween(User user, LocalDateTime lowerBound, LocalDateTime upperBound);
-
-    @Query(value = "SELECT * FROM temperature t WHERE t.user_id = :user_id and t.date = :date", nativeQuery = true)
-    Temperature findByUserIdAndDate(@Param("user_id") Long user_id, @Param("date") LocalDateTime date);
 }
