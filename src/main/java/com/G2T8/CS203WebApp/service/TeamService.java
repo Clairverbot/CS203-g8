@@ -42,7 +42,7 @@ public class TeamService {
         }
     }
 
-    public void addNewTeam(Team team){
-        teamRepository.save(team);
+    public Team addNewTeam(Team team){
+        return teamRepository.save(team);
     }
 }
