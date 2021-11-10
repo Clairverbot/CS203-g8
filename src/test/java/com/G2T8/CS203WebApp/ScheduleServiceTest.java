@@ -37,7 +37,7 @@ public class ScheduleServiceTest {
     @BeforeAll
     public static void setup() {
         // setup users
-        Set<User> users = new HashSet<>();
+        List<User> users = new ArrayList<>();
 
         adminUser = new User();
         adminUser.setID(Long.valueOf(1));
@@ -77,15 +77,15 @@ public class ScheduleServiceTest {
         // arrange
         Schedule schedule1 = new Schedule();
         schedule1.setID(Long.valueOf(1));
-        schedule1.setStartDate(LocalDate.of(2021,11,1));
-        schedule1.setEndDate(LocalDate.of(2021,11,5));
+        schedule1.setStartDate(LocalDate.of(2021, 11, 1));
+        schedule1.setEndDate(LocalDate.of(2021, 11, 5));
         schedule1.setMode(0);
         schedule1.setTeam(team);
 
         Schedule schedule2 = new Schedule();
         schedule2.setID(Long.valueOf(2));
-        schedule2.setStartDate(LocalDate.of(2021,11,8));
-        schedule2.setEndDate(LocalDate.of(2021,11,12));
+        schedule2.setStartDate(LocalDate.of(2021, 11, 8));
+        schedule2.setEndDate(LocalDate.of(2021, 11, 12));
         schedule2.setMode(1);
         schedule2.setTeam(team);
 
@@ -110,22 +110,25 @@ public class ScheduleServiceTest {
         // arrange
         Schedule newSchedule = new Schedule();
         // newSchedule.setID(Long.valueOf(1));
-        newSchedule.setStartDate(LocalDate.of(2021,11,1));
-        newSchedule.setEndDate(LocalDate.of(2021,11,5));
+        newSchedule.setStartDate(LocalDate.of(2021, 11, 1));
+        newSchedule.setEndDate(LocalDate.of(2021, 11, 5));
         newSchedule.setMode(0);
         newSchedule.setTeam(team);
-    
+
         when(teamService.getTeam(any(Long.class))).thenReturn(team);
-        when(scheduleRepository.findAllByTeamIdAndStartDateBetweenOrEndDateBetween(team.getTeamID(), LocalDate.of(2021,11,1), LocalDate.of(2021,11,5))).thenReturn(new ArrayList<Schedule>());
+        when(scheduleRepository.findAllByTeamIdAndStartDateBetweenOrEndDateBetween(team.getTeamID(),
+                LocalDate.of(2021, 11, 1), LocalDate.of(2021, 11, 5))).thenReturn(new ArrayList<Schedule>());
         when(scheduleRepository.save(any(Schedule.class))).thenReturn(newSchedule);
 
         // act
-        Schedule returnedSchedule = scheduleService.addSchedule(team.getTeamID(), LocalDate.of(2021,11,1), LocalDate.of(2021,11,5), 0);
+        Schedule returnedSchedule = scheduleService.addSchedule(team.getTeamID(), LocalDate.of(2021, 11, 1),
+                LocalDate.of(2021, 11, 5), 0);
 
         // assert
         assertNotNull(returnedSchedule);
         verify(teamService).getTeam(team.getTeamID());
-        verify(scheduleRepository).findAllByTeamIdAndStartDateBetweenOrEndDateBetween(team.getTeamID(), LocalDate.of(2021,11,1), LocalDate.of(2021,11,5));
-        //verify(scheduleRepository).save(newSchedule);
+        verify(scheduleRepository).findAllByTeamIdAndStartDateBetweenOrEndDateBetween(team.getTeamID(),
+                LocalDate.of(2021, 11, 1), LocalDate.of(2021, 11, 5));
+        verify(scheduleRepository).save(newSchedule);
     }
 }

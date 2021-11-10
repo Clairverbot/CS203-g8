@@ -13,7 +13,7 @@ import java.time.temporal.TemporalAdjusters;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.G2T8.CS203WebApp.model.ARTTestResults;
+import com.G2T8.CS203WebApp.model.ARTTestResult;
 import com.G2T8.CS203WebApp.model.CustomUserDetails;
 import com.G2T8.CS203WebApp.model.User;
 import com.G2T8.CS203WebApp.repository.ARTTestResultRepository;
@@ -33,7 +33,8 @@ import org.mockito.junit.jupiter.MockitoExtension;
 @ExtendWith(MockitoExtension.class)
 public class ARTTestResultServiceTest {
     @Mock
-    private ARTTestResultRepository artResults;
+    private ARTTestResultRepository artTestResultRepository;
+
     @Mock
     private UserService userService;
 
@@ -41,6 +42,7 @@ public class ARTTestResultServiceTest {
     private ARTTestResultService artTestResultService;
 
     private static User adminUser;
+    
     private static User basicUser;
 
     private LocalDateTime defaultLocalDateTime = LocalDateTime.of(2021, 1, 1, 12, 0);
@@ -69,41 +71,29 @@ public class ARTTestResultServiceTest {
      */
     @AfterEach
     void tearDown() {
-        artResults.deleteAll();
+        artTestResultRepository.deleteAll();
     }
 
     @Test
     public void getAllResult_ReturnAllARTResults() {
         // arrange
         LocalDateTime current = LocalDateTime.now();
-        ARTTestResults artTestResult1 = new ARTTestResults();
-        artTestResult1.setArtId(Long.valueOf(1));
-        artTestResult1.setArtResult(false);
-        artTestResult1.setDate(current);
-        artTestResult1.setWeeksMonday(current.toLocalDate().with(TemporalAdjusters.previous(DayOfWeek.MONDAY)));
-        artTestResult1.setUser(adminUser);
+        ARTTestResult artTestResult1 = new ARTTestResult(adminUser, false, current, current.toLocalDate().with(TemporalAdjusters.previous(DayOfWeek.MONDAY)));
+        ARTTestResult artTestResult2 = new ARTTestResult(basicUser, false, current, current.toLocalDate().with(TemporalAdjusters.previous(DayOfWeek.MONDAY)));
 
-        ARTTestResults artTestResult2 = new ARTTestResults();
-        artTestResult2.setArtId(Long.valueOf(2));
-        artTestResult2.setArtResult(false);
-        artTestResult2.setDate(current);
-        artTestResult2.setWeeksMonday(current.toLocalDate().with(TemporalAdjusters.previous(DayOfWeek.MONDAY)));
-        artTestResult2.setUser(basicUser);
-
-        List<ARTTestResults> listART = new ArrayList<ARTTestResults>();
+        List<ARTTestResult> listART = new ArrayList<ARTTestResult>();
 
         listART.add(artTestResult1);
         listART.add(artTestResult2);
 
-        when(artResults.findAll()).thenReturn(listART);
+        when(artTestResultRepository.findAll()).thenReturn(listART);
 
         // act
-        List<ARTTestResults> allART = artTestResultService.getAllResult();
+        List<ARTTestResult> allART = artTestResultService.getAllResult();
 
         // assert
-        assertNotNull(allART);
         assertEquals(listART, allART);
-        verify(artResults).findAll();
+        verify(artTestResultRepository).findAll();
 
     }
 
@@ -113,24 +103,46 @@ public class ARTTestResultServiceTest {
             // arrange
             mocked.when(LocalDateTime::now).thenReturn(defaultLocalDateTime);
 
-            ARTTestResults newARTResult = new ARTTestResults();
             LocalDateTime current = LocalDateTime.now();
-            newARTResult.setUser(adminUser);
-            newARTResult.setArtResult(false);
-            newARTResult.setDate(current);
-            newARTResult.setWeeksMonday(current.toLocalDate().with(TemporalAdjusters.previous(DayOfWeek.MONDAY)));
+            ARTTestResult newARTResult = new ARTTestResult(adminUser, false, current, current.toLocalDate().with(TemporalAdjusters.previous(DayOfWeek.MONDAY)));
 
             when(userService.loadUserByUsername(any(String.class))).thenReturn(new CustomUserDetails(adminUser));
-            when(artResults.save(any(ARTTestResults.class))).thenReturn(newARTResult);
+            when(artTestResultRepository.save(any(ARTTestResult.class))).thenReturn(newARTResult);
 
             // act
-            ARTTestResults artTestResult = artTestResultService.addART(adminUser.getEmail(), false);
+            ARTTestResult artTestResult = artTestResultService.addART(adminUser.getEmail(), false);
 
             // assert
             assertNotNull(artTestResult);
             verify(userService).loadUserByUsername(adminUser.getEmail());
-            verify(artResults).save(newARTResult);
+            verify(artTestResultRepository).save(newARTResult);
 
         }
+    }
+
+    @Test
+    public void getARTbyUserID_ReturnAllUserResults() {
+        /// arrange
+        LocalDateTime current = LocalDateTime.now();
+        ARTTestResult artTestResult1 = new ARTTestResult(adminUser, false, current, current.toLocalDate().with(TemporalAdjusters.previous(DayOfWeek.MONDAY)));
+        ARTTestResult artTestResult2 = new ARTTestResult(basicUser, false, current, current.toLocalDate().with(TemporalAdjusters.previous(DayOfWeek.MONDAY)));
+
+        List<ARTTestResult> basicUserListART = new ArrayList<ARTTestResult>();
+
+        basicUserListART.add(artTestResult1);
+        basicUserListART.add(artTestResult2);
+
+        Long basicUserID = basicUser.getID();
+
+        when(artTestResultRepository.findByUser(basicUser)).thenReturn(basicUserListART);
+        when(userService.getUser(basicUserID)).thenReturn(basicUser);
+
+        // act
+        List<ARTTestResult> getARTbyUserIDResult = artTestResultService.getARTbyUserID(basicUserID);
+
+        // assert
+        assertEquals(basicUserListART, getARTbyUserIDResult);
+        verify(artTestResultRepository).findByUser(basicUser);
+        verify(userService).getUser(basicUserID);
     }
 }
