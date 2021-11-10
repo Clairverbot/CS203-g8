@@ -33,7 +33,8 @@ import org.mockito.junit.jupiter.MockitoExtension;
 @ExtendWith(MockitoExtension.class)
 public class ARTTestResultServiceTest {
     @Mock
-    private ARTTestResultRepository artResults;
+    private ARTTestResultRepository artTestResultRepository;
+
     @Mock
     private UserService userService;
 
@@ -41,6 +42,7 @@ public class ARTTestResultServiceTest {
     private ARTTestResultService artTestResultService;
 
     private static User adminUser;
+    
     private static User basicUser;
 
     private LocalDateTime defaultLocalDateTime = LocalDateTime.of(2021, 1, 1, 12, 0);
@@ -69,7 +71,7 @@ public class ARTTestResultServiceTest {
      */
     @AfterEach
     void tearDown() {
-        artResults.deleteAll();
+        artTestResultRepository.deleteAll();
     }
 
     @Test
@@ -84,14 +86,14 @@ public class ARTTestResultServiceTest {
         listART.add(artTestResult1);
         listART.add(artTestResult2);
 
-        when(artResults.findAll()).thenReturn(listART);
+        when(artTestResultRepository.findAll()).thenReturn(listART);
 
         // act
         List<ARTTestResult> allART = artTestResultService.getAllResult();
 
         // assert
         assertEquals(listART, allART);
-        verify(artResults).findAll();
+        verify(artTestResultRepository).findAll();
 
     }
 
@@ -105,7 +107,7 @@ public class ARTTestResultServiceTest {
             ARTTestResult newARTResult = new ARTTestResult(adminUser, false, current, current.toLocalDate().with(TemporalAdjusters.previous(DayOfWeek.MONDAY)));
 
             when(userService.loadUserByUsername(any(String.class))).thenReturn(new CustomUserDetails(adminUser));
-            when(artResults.save(any(ARTTestResult.class))).thenReturn(newARTResult);
+            when(artTestResultRepository.save(any(ARTTestResult.class))).thenReturn(newARTResult);
 
             // act
             ARTTestResult artTestResult = artTestResultService.addART(adminUser.getEmail(), false);
@@ -113,7 +115,7 @@ public class ARTTestResultServiceTest {
             // assert
             assertNotNull(artTestResult);
             verify(userService).loadUserByUsername(adminUser.getEmail());
-            verify(artResults).save(newARTResult);
+            verify(artTestResultRepository).save(newARTResult);
 
         }
     }
@@ -132,7 +134,7 @@ public class ARTTestResultServiceTest {
 
         Long basicUserID = basicUser.getID();
 
-        when(artResults.findByUser(basicUser)).thenReturn(basicUserListART);
+        when(artTestResultRepository.findByUser(basicUser)).thenReturn(basicUserListART);
         when(userService.getUser(basicUserID)).thenReturn(basicUser);
 
         // act
@@ -140,7 +142,7 @@ public class ARTTestResultServiceTest {
 
         // assert
         assertEquals(basicUserListART, getARTbyUserIDResult);
-        verify(artResults).findByUser(basicUser);
+        verify(artTestResultRepository).findByUser(basicUser);
         verify(userService).getUser(basicUserID);
     }
 }

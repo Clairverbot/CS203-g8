@@ -42,13 +42,13 @@ public class ARTTestResultIntegrationTest {
     private JwtTokenUtil jwtTokenUtil;
 
     @Autowired
-    private UserRepository users;
+    private UserRepository userRepository;
 
     @Autowired
     private UserService userService;
 
     @Autowired
-    private ARTTestResultRepository artResults;
+    private ARTTestResultRepository artTestResultRepository;
 
     @Autowired
     private BCryptPasswordEncoder passwordEncoder;
@@ -74,7 +74,7 @@ public class ARTTestResultIntegrationTest {
         testUser.setRole("ROLE_ADMIN");
         testUser.setFirstLogin(true);
 
-        testUser = users.save(testUser);
+        testUser = userRepository.save(testUser);
         
         final UserDetails userDetails = userService.loadUserByUsername(testUser.getEmail());
 
@@ -89,11 +89,11 @@ public class ARTTestResultIntegrationTest {
         ARTTestResult artTestResult2 = new ARTTestResult(testUser, true, current, current.toLocalDate().with(TemporalAdjusters.previous(DayOfWeek.MONDAY)));
 
         // Save dummy art results to artRepo
-        artTestResult1 = artResults.save(artTestResult1);
-        artTestResult2 = artResults.save(artTestResult2);
+        artTestResultRepository.save(artTestResult1);
+        artTestResultRepository.save(artTestResult2);
 
         // Get updated user from the db after saving new art test results
-        testUser = users.getById(testUser.getID());
+        testUser = userRepository.getById(testUser.getID());
 
         URI uri = new URI(baseUrl + port + baseEndpoint + "/");
 
@@ -102,7 +102,8 @@ public class ARTTestResultIntegrationTest {
             // Expected response
             .then().statusCode(200);
 
-        users.delete(testUser);
+        // Clean up database
+        userRepository.delete(testUser);
     }
 
     @Test
@@ -141,7 +142,7 @@ public class ARTTestResultIntegrationTest {
         testUser.setPassword(passwordEncoder.encode("password"));
         testUser.setRole("ROLE_ADMIN");
         testUser.setFirstLogin(true);
-        testUser = users.save(testUser);
+        testUser = userRepository.save(testUser);
         
         // Get user token
         final UserDetails userDetails = userService.loadUserByUsername(testUser.getEmail());
@@ -156,18 +157,19 @@ public class ARTTestResultIntegrationTest {
         ARTTestResult artTestResult2 = new ARTTestResult(testUser, true, current, current.toLocalDate().with(TemporalAdjusters.previous(DayOfWeek.MONDAY)));
 
         // Save dummy art results to artRepo
-        artResults.save(artTestResult1);
-        artResults.save(artTestResult2);
+        artTestResultRepository.save(artTestResult1);
+        artTestResultRepository.save(artTestResult2);
 
         // Get updated user from the db after saving new art test results
-        testUser = users.getById(testUser.getID());
+        testUser = userRepository.getById(testUser.getID());
 
         // Issue get request
         given().contentType("application/json").pathParam("userId", testUser.getID()).header("Authorization", "Bearer " + token).get(baseUrl + port + baseEndpoint + "/{userId}")
             // Expected response
             .then().statusCode(200);
 
-        users.delete(testUser);
+        // Clean up database
+        userRepository.delete(testUser);
     }
 
     @Test
@@ -180,7 +182,7 @@ public class ARTTestResultIntegrationTest {
         testUser.setPassword(passwordEncoder.encode("password"));
         testUser.setRole("ROLE_ADMIN");
         testUser.setFirstLogin(true);
-        users.save(testUser);
+        userRepository.save(testUser);
         
         // Get user token
         final UserDetails userDetails = userService.loadUserByUsername(testUser.getEmail());
@@ -195,18 +197,19 @@ public class ARTTestResultIntegrationTest {
         ARTTestResult artTestResult2 = new ARTTestResult(testUser, true, current, current.toLocalDate().with(TemporalAdjusters.previous(DayOfWeek.MONDAY)));
 
         // Save dummy art results to artResults
-        artResults.save(artTestResult1);
-        artResults.save(artTestResult2);
+        artTestResultRepository.save(artTestResult1);
+        artTestResultRepository.save(artTestResult2);
 
         // Get updated user from the db after saving new art test results
-        testUser = users.getById(testUser.getID());
+        testUser = userRepository.getById(testUser.getID());
 
         // Issue get request
         given().contentType("application/json").pathParam("userId", 0L).header("Authorization", "Bearer " + token).get(baseUrl + port + baseEndpoint + "/{userId}")
             // Expected response
             .then().statusCode(404);
 
-        users.delete(testUser);
+        // Clean up database
+        userRepository.delete(testUser);
     }
 
     @Test
@@ -219,7 +222,7 @@ public class ARTTestResultIntegrationTest {
         testUser.setPassword(passwordEncoder.encode("password"));
         testUser.setRole("ROLE_ADMIN");
         testUser.setFirstLogin(true);
-        testUser = users.save(testUser);
+        testUser = userRepository.save(testUser);
         
         // Get user token
         final UserDetails userDetails = userService.loadUserByUsername(testUser.getEmail());
@@ -231,9 +234,10 @@ public class ARTTestResultIntegrationTest {
             .then().statusCode(201);
 
         // Get updated user from the db after saving new art test result
-        testUser = users.getById(testUser.getID());
+        testUser = userRepository.getById(testUser.getID());
 
-        users.delete(testUser);
+        // Clean up database
+        userRepository.delete(testUser);
     }
 
     @Test
@@ -246,7 +250,7 @@ public class ARTTestResultIntegrationTest {
         testUser.setPassword(passwordEncoder.encode("password"));
         testUser.setRole("ROLE_ADMIN");
         testUser.setFirstLogin(true);
-        testUser = users.save(testUser);
+        testUser = userRepository.save(testUser);
         
         // Get user token
         final UserDetails userDetails = userService.loadUserByUsername(testUser.getEmail());
@@ -258,8 +262,10 @@ public class ARTTestResultIntegrationTest {
             .then().statusCode(400);
 
         // Get updated user from the db after saving new art test result
-        testUser = users.getById(testUser.getID());
-        users.delete(testUser);
+        testUser = userRepository.getById(testUser.getID());
+        
+        // Clean up database
+        userRepository.delete(testUser);
 
     }
 
@@ -283,7 +289,7 @@ public class ARTTestResultIntegrationTest {
         testUser.setPassword(passwordEncoder.encode("password"));
         testUser.setRole("ROLE_ADMIN");
         testUser.setFirstLogin(true);
-        testUser = users.save(testUser);
+        testUser = userRepository.save(testUser);
         
         // Get user token
         final UserDetails userDetails = userService.loadUserByUsername(testUser.getEmail());
@@ -295,8 +301,10 @@ public class ARTTestResultIntegrationTest {
             .then().statusCode(200);
 
         // Get updated user from the db after saving new art test result
-        testUser = users.getById(testUser.getID());
-        users.delete(testUser);
+        testUser = userRepository.getById(testUser.getID());
+        
+        // Clean up database
+        userRepository.delete(testUser);
     }
 
 }
