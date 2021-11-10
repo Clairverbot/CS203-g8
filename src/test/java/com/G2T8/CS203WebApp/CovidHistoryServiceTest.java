@@ -109,37 +109,37 @@ public class CovidHistoryServiceTest {
 
     }
 
-    // @Test
-    // public void addCovidHistory_NewCovidHistory_ReturnCovidHistory(){
-    //     try(MockedStatic<LocalDateTime> mocked = mockStatic(LocalDateTime.class, Mockito.CALLS_REAL_METHODS)){
-    //         //arrange
-    //         mocked.when(LocalDateTime::now).thenReturn(defaultLocalDateTime);
-    //         CovidHistory newcovidHistory1 = new CovidHistory();
-    //         LocalDateTime current = LocalDateTime.now();
-    //         newcovidHistory1.setContractedDate(current);
-    //         newcovidHistory1.setRecoverDate(current);
-    //         newcovidHistory1.setUser(adminUser);
+    @Test
+    public void addCovidHistory_NewCovidHistory_ReturnCovidHistory(){
+        try(MockedStatic<LocalDateTime> mocked = mockStatic(LocalDateTime.class, Mockito.CALLS_REAL_METHODS)){
+            //arrange
+            mocked.when(LocalDateTime::now).thenReturn(defaultLocalDateTime);
+            CovidHistory newcovidHistory1 = new CovidHistory();
+            LocalDateTime current = LocalDateTime.now();
+            newcovidHistory1.setContractedDate(current);
+            newcovidHistory1.setRecoverDate(current);
+            newcovidHistory1.setUser(adminUser);
 
-    //         when(userService.loadUserByUsername(any(String.class))).thenReturn(new CustomUserDetails(adminUser));
-    //         when(covidHistoryRepository.save(any(CovidHistory.class))).thenReturn(newcovidHistory1);
+            when(userService.loadUserByUsername(any(String.class))).thenReturn(new CustomUserDetails(adminUser));
+            when(covidHistoryRepository.save(any(CovidHistory.class))).thenReturn(newcovidHistory1);
 
-    //         // act
+            // act
             
-    //         try {
-    //             CovidHistory covidHistoryresult = covidHistoryService.addCovidHistory(newcovidHistory1);
-    //             // assert
-    //             assertNotNull(covidHistoryresult);
-    //             assertEquals(newcovidHistory1, covidHistoryresult);
-    //             verify(userService).loadUserByUsername(adminUser.getEmail());
-    //             verify(covidHistoryRepository).save(covidHistoryresult);
-    //         } catch (MessagingException | IOException e) {
-    //             // TODO Auto-generated catch block
-    //             e.printStackTrace();
-    //         }
+            try {
+                CovidHistory covidHistoryresult = covidHistoryService.addCovidHistory(newcovidHistory1);
+                // assert
+                assertNotNull(covidHistoryresult);
+                assertEquals(newcovidHistory1, covidHistoryresult);
+                verify(userService).loadUserByUsername(adminUser.getEmail());
+                verify(covidHistoryRepository).save(covidHistoryresult);
+            } catch (MessagingException | IOException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            }
 
             
 
-    //     }
-    // }
+        }
+    }
 
 }
