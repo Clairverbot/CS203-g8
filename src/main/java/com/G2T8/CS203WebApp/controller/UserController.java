@@ -6,31 +6,31 @@ import java.util.*;
 import javax.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-
-import org.springframework.web.server.ResponseStatusException;
-import java.lang.IllegalArgumentException;
+import com.G2T8.CS203WebApp.exception.InvalidPasswordResetTokenException;
 import com.G2T8.CS203WebApp.exception.UserNotFoundException;
 import com.G2T8.CS203WebApp.model.*;
 import com.G2T8.CS203WebApp.service.UserService;
-
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
-
+import org.springframework.validation.BindingResult;
+import org.springframework.validation.annotation.Validated;
 import java.security.Principal;
 
 @RestController
 @CrossOrigin
 @RequestMapping("/api/v1/users")
 public class UserController {
-    private UserService userService;
+    private final UserService userService;
 
     @Autowired
     public UserController(UserService userService) {
         this.userService = userService;
     }
 
-    // get all users
+    /**
+     * Find all users
+     * 
+     * @return list of all users registered in the database
+     */
     @GetMapping("/")
     public List<User> findAllUsers() {
         List<User> users = userService.getAllUsers();
@@ -40,7 +40,7 @@ public class UserController {
         return users;
     }
 
-    //get all contracted users
+    // get all contracted users
     @GetMapping("/contracted-users")
     public List<User> findContractedUsers() {
         List<User> users = userService.getContractedUsers();
@@ -50,7 +50,7 @@ public class UserController {
         return users;
     }
 
-    //get number of contracted users
+    // get number of contracted users
     @GetMapping("/number-of-contracted-users")
     public int findNumberOfContractedUsers() {
         List<User> users = userService.getContractedUsers();
@@ -58,13 +58,6 @@ public class UserController {
             throw new UserNotFoundException();
         }
         return users.size();
-    }
-
-    //get all user vaccination percentage
-    @GetMapping("/vaccination-percentage")
-    public int findUsersVaxxPercentage() {
-        int percentage = userService.getUsersVaxxPercentage();
-        return percentage;
     }
 
     // get user by Email ( necessary as we are logging in with email)
@@ -78,7 +71,12 @@ public class UserController {
         return user;
     }
 
-    // get user by ID
+    /**
+     * Get a specific user by ID
+     * 
+     * @param id user ID
+     * @return specific user associated with that ID
+     */
     @GetMapping(value = "/{id}")
     public User findUserByID(@PathVariable(value = "id") Long id) {
         User user = userService.getUser(id);
@@ -105,32 +103,82 @@ public class UserController {
         return userEntity;
     }
 
+    /**
+     * Get percentage of users vaccinated
+     * 
+     * @return percentage of users vaccinated in integer (0-100)
+     */
+    @GetMapping("/vaccination-percentage")
+    public int findUsersVaxxPercentage() {
+        return userService.getUsersVaxxPercentage();
+    }
+
+    /**
+     * Update a certain user's vaccination status
+     * 
+     * @param id                user ID
+     * @param vaccinationStatus new vaccination status to update
+     * @return updated user entity
+     */
     @PutMapping("/{id}/vaccination-status")
     public User updateVaccinationStatus(@PathVariable Long id, @RequestBody int vaccinationStatus) {
         return userService.updateUserVaccinationStatus(id, vaccinationStatus);
     }
 
+    /**
+     * Update a certain user's name
+     * 
+     * @param id   user ID
+     * @param name new user name
+     * @return updated user entity
+     */
     @PutMapping("/{id}/name")
     public User updateName(@PathVariable Long id, @RequestBody String name) {
         return userService.updateUserName(id, name);
     }
 
+    /**
+     * Update a certain user's role
+     * 
+     * @param id   user ID
+     * @param role new user role: either ROLE_BASIC or ROLE_ADMIN
+     * @return updated user entity
+     */
     @PutMapping(value = "/{id}/role")
     public User updateRole(@PathVariable Long id, @Valid @RequestBody String role) {
         return userService.updateRole(id, role);
     }
 
+    /**
+     * Update a certain user's manager
+     * 
+     * @param id        user ID
+     * @param managerId ID of manager user
+     * @return updated user entity
+     */
     @PutMapping(value = "/{id}/manager")
-    public User updateManagerId(@PathVariable Long id, @Valid @RequestBody Long managerId) {
+    public User updateManagerId(@PathVariable Long id, @RequestBody Long managerId) {
         return userService.updateManagerId(id, managerId);
+    }
+
+    /**
+     * Update a certain user's team
+     * 
+     * @param id     user ID
+     * @param teamId ID of team
+     */
+    @PutMapping("/{id}/team")
+    public void updateTeam(@PathVariable Long id, @RequestBody Long teamId) {
+        userService.updateUserTeam(id, teamId);
     }
 
     /**
      * Endpoint for generating a reset password token associated with an email
      * 
-     * @param email
-     * @return
-     * @throws Exception
+     * @param email email of user account
+     * @return HTTP status CREATED if succeeded
+     * @throws Exception mailing exception, UserNotFoundException if user is not
+     *                   found
      */
     @PostMapping("/reset-password/token")
     public ResponseEntity<?> getResetPasswordToken(@RequestBody String email) throws Exception {
@@ -147,46 +195,27 @@ public class UserController {
     /**
      * Endpoint for actually resetting the password
      * 
-     * @param passReset a map object ideally containing token and newPassword.
-     *                  TO-DO: Return an invalid reset password token exception if
-     *                  the fields are not all filled up
-     * @return
-     * @throws Exception
+     * @param passReset a map object containing token and newPassword.
+     * @return HTTP status OK if request goes through
+     * @throws Exception InvalidPasswordResetTokenException if invalid password
+     *                   reset token, UserNotFoundException if user is not found
      */
     @PutMapping("/reset-password")
-    public ResponseEntity<?> resetPassword(@RequestBody Map<String, Object> passReset) throws Exception {
-        Optional<User> user = userService.findUserByPasswordResetToken(passReset.get("token").toString());
-        String message = null;
+    public ResponseEntity<?> resetPassword(@RequestBody @Validated PasswordResetDTO passReset, BindingResult errors)
+            throws Exception {
+        Optional<User> user = userService.findUserByPasswordResetToken(passReset.getToken());
+        if (errors.hasFieldErrors("token")) {
+            throw new InvalidPasswordResetTokenException("Token from the request body is invalid.");
+        }
+        if (errors.hasFieldErrors("newPassword")) {
+            throw new InvalidPasswordResetTokenException("New password from the request body is invalid.");
+        }
         if (user.isPresent()) {
-            message = userService.resetPasswordForUser(user.get(), passReset.get("token").toString(),
-                    passReset.get("newPassword").toString());
+            userService.resetPasswordForUser(user.get(), passReset.getToken(), passReset.getNewPassword());
         } else {
             throw new UserNotFoundException();
         }
-
-        Map<String, String> responseBody = new HashMap<>();
-        responseBody.put("message", message);
-
-        if (message == null) {
-            return new ResponseEntity<>(null, HttpStatus.OK);
-        } else {
-            return new ResponseEntity<>(responseBody, HttpStatus.BAD_REQUEST);
-        }
-
-    }
-
-    @PutMapping("/{userId}/team")
-    public void updateTeam(@PathVariable Long userId, @RequestBody Long teamId) {
-        try {
-            userService.updateUserTeam(userId, teamId);
-        } catch (UserNotFoundException E) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "User doesn't exist");
-        } catch (IllegalArgumentException E) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Team doesn't exist");
-        } catch (Exception E) {
-            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR,
-                    "Unknown error occurs, please try again!");
-        }
+        return new ResponseEntity<>(null, HttpStatus.OK);
     }
 
 }

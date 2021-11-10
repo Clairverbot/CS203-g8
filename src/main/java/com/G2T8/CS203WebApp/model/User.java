@@ -1,16 +1,12 @@
 package com.G2T8.CS203WebApp.model;
 
 import java.util.*;
-
 import javax.persistence.*;
 import lombok.*;
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotEmpty;
-import javax.validation.constraints.Size;
-
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
-
 import java.io.Serializable;
 import com.fasterxml.jackson.annotation.*;
 
@@ -20,7 +16,7 @@ import com.fasterxml.jackson.annotation.*;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-@Table(name = "User")
+@Table(name = "user")
 public class User implements Serializable {
 
     // private static final long serialVersionUID = 1L;
@@ -47,7 +43,6 @@ public class User implements Serializable {
     private String role;
 
     @Column(name = "password", nullable = false)
-    // @Size(min = 8, max = 30)
     @NotEmpty
     @Getter(onMethod = @__(@JsonIgnore))
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
@@ -55,21 +50,20 @@ public class User implements Serializable {
 
     // Foreign key of Team class to identify which team the user is in;
     @ManyToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "teamID")
-    // @NonNull
+    @JoinColumn(name = "team_id")
     @JsonManagedReference
     private Team team;
 
     // Recursive key of User class to identify which user is managing a particular
     // user object;
 
-    @OneToMany(mappedBy = "ManagerUser", orphanRemoval = true)
+    @OneToMany(mappedBy = "managerUser")
     @Getter(onMethod = @__(@JsonIgnore))
     private List<User> employeeUsers;
 
     @ManyToOne
-    @JoinColumn(name = "ManagerUser_id")
-    private User ManagerUser;
+    @JoinColumn(name = "manager_user_id")
+    private User managerUser;
 
     // user id becomes a foreign key for CovidHistory class/table
     @JsonIgnore
@@ -92,27 +86,9 @@ public class User implements Serializable {
     @Column(name = "first_login", nullable = false, columnDefinition = "boolean default true")
     private Boolean firstLogin;
 
-    @OneToOne(mappedBy = "user")
+    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonIgnore
     private PasswordResetToken passwordResetToken;
-
-    // public void setChildrenOR(List<OfficeRequest> children) {
-    // this.officeRequests.addAll(children);
-    // for (OfficeRequest child : children)
-    // child.setUser(this);
-    // }
-
-    // public User(Long ID, String name, String email, int vaccination_status,
-    // String role, String password,
-    // Boolean first_login) {
-    // this.ID = ID;
-    // this.name = name;
-    // this.email = email;
-    // this.vaccinationStatus = vaccination_status;
-    // this.role = role;
-    // this.password = password;
-    // this.firstLogin = firstLogin;
-    // }
 
     public Boolean isVaccinated() {
         if (vaccinationStatus == 2) {

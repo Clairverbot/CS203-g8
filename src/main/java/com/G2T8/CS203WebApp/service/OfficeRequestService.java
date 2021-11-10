@@ -67,7 +67,7 @@ public class OfficeRequestService {
 
     public OfficeRequest addOfficeRequest(OfficeRequest officeRequest) {
         // check if there is an existing instance w same user id and startdatetime
-        Long ID = officeRequest.getID();
+        Long ID = officeRequest.getId();
         LocalDateTime startDateTime = officeRequest.getStartDateTimeOffice();
         Optional<OfficeRequest> b = officeRequestRepository.findByUserIdAndStartDateTime(ID, startDateTime);
         if (b.isPresent()) {

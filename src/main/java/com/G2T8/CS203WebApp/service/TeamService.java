@@ -13,7 +13,7 @@ public class TeamService {
     private TeamRepository teamRepository;
 
     @Autowired
-    public TeamService(TeamRepository teamRepository){
+    public TeamService(TeamRepository teamRepository) {
         this.teamRepository = teamRepository;
     }
 
@@ -23,10 +23,10 @@ public class TeamService {
 
     public Team getTeam(Long ID) {
         Optional<Team> t = teamRepository.findById(ID);
-        if(t.isPresent()){
+        if (t.isPresent()) {
             Team team = t.get();
             return team;
-        } else{
+        } else {
             throw new TeamNotFoundException(ID);
         }
     }
@@ -37,12 +37,12 @@ public class TeamService {
             Team team = b.get();
             team.setName(newName);
             return teamRepository.save(team);
-        } else{
+        } else {
             throw new TeamNotFoundException(ID);
         }
     }
 
-    public Team addNewTeam(Team team){
+    public Team addNewTeam(Team team) {
         return teamRepository.save(team);
     }
 }

@@ -8,15 +8,14 @@ import java.util.*;
 
 import javax.mail.MessagingException;
 
+import com.G2T8.CS203WebApp.exception.InvalidPasswordResetTokenException;
 import com.G2T8.CS203WebApp.exception.UserNotFoundException;
 import com.G2T8.CS203WebApp.model.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.security.access.prepost.PostAuthorize;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -26,101 +25,127 @@ import org.slf4j.*;
 @Service
 public class UserService implements UserDetailsService {
 
-    @Autowired
-    private UserRepository userRepository;
-
+    private final UserRepository userRepository;
+    private final PasswordResetRepository passwordResetRepository;
     private EmailService emailService;
-
-    @Autowired
-    private PasswordResetRepository passwordResetRepository;
-
-    @Autowired
     private TeamService teamService;
-
-    @Autowired
     private CovidHistoryService covidHistoryService;
 
     Logger logger = LoggerFactory.getLogger(UserService.class);
+
+    @Autowired
+    public UserService(UserRepository userRepository, PasswordResetRepository passwordResetRepository) {
+        this.userRepository = userRepository;
+        this.passwordResetRepository = passwordResetRepository;
+    }
+
+    @Autowired
+    public void setTeamService(TeamService teamService) {
+        this.teamService = teamService;
+    }
+
+    @Autowired
+    public void setCovidHistoryService(CovidHistoryService covidHistoryService) {
+        this.covidHistoryService = covidHistoryService;
+    }
 
     @Autowired
     public void setEmailService(EmailService emailService) {
         this.emailService = emailService;
     }
 
+    /**
+     * Retrieves all users from the repository
+     * 
+     * @return list of all users from the repository
+     */
     public List<User> getAllUsers() {
         return userRepository.findAll();
     }
 
-    public User getUser(Long ID) {
-
-        return userRepository.findById(ID).map(user -> {
+    /**
+     * Get a specific user by index
+     * 
+     * @param id user ID
+     * @return user entity associated with that id
+     */
+    public User getUser(Long id) {
+        return userRepository.findById(id).map(user -> {
             return user;
-        }).orElse(null);
-
+        }).orElseThrow(() -> {
+            throw new UserNotFoundException(id);
+        });
     }
 
-    public List<User> getContractedUsers(){
+    public List<User> getContractedUsers() {
         List<User> userList = userRepository.findAll();
         List<User> toReturn = new ArrayList<User>();
-        for(User u : userList){
+        for (User u : userList) {
             Long id = u.getID();
             boolean recovery = true;
             List<CovidHistory> history = covidHistoryService.getAllCovidHistoryFromOneUser(id);
-            for(CovidHistory c : history){
+            for (CovidHistory c : history) {
                 logger.info("covidHistory:" + c.getCovidHistoryid().toString() + "user" + u.getID().toString());
-                if(!c.recovered()){
+                if (!c.recovered()) {
                     recovery = false;
                     break;
                 }
             }
-            if(!recovery){
+            if (!recovery) {
                 toReturn.add(u);
             }
         }
         return toReturn;
     }
 
-    // should delete as we logging in w email not possible to change
+    // ----------------------------------------------
+    // UPDATE USER INFORMATION
+    // ----------------------------------------------
 
-    @Transactional
-    public User updateUserEmail(Long ID, String email) {
-        Optional<User> b = userRepository.findById(ID);
-        if (b.isPresent()) {
-            User user = b.get();
-            user.setEmail(email);
-            return userRepository.save(user);
-        } else
-            return null;
-
-    }
-
+    /**
+     * Updates vaccination status of user
+     * 
+     * @param id                user id
+     * @param vaccinationStatus new vaccination status of the user
+     * @return updated user entity
+     */
     @Transactional
     public User updateUserVaccinationStatus(Long id, int vaccinationStatus) {
         User user = getUser(id);
-        if (user == null) {
-            throw new UserNotFoundException(id);
+        boolean isValidStatus = vaccinationStatus == 0 || vaccinationStatus == 1 || vaccinationStatus == 2;
+        if (isValidStatus) {
+            user.setVaccinationStatus(vaccinationStatus);
+            return userRepository.save(user);
+        } else {
+            throw new IllegalArgumentException("Vaccination Status must be 0, 1, or 2");
         }
-        user.setVaccinationStatus(vaccinationStatus);
-        return userRepository.save(user);
 
     }
 
+    /**
+     * Update name of user
+     * 
+     * @param id   user id
+     * @param name new name of user
+     * @return updated user entity
+     */
     @Transactional
     public User updateUserName(Long id, String name) {
         User user = getUser(id);
-        if (user == null) {
-            throw new UserNotFoundException(id);
-        }
         user.setName(name);
         return userRepository.save(user);
     }
 
+    /**
+     * Update password of user
+     * 
+     * @param id       user id
+     * @param password new plain-text password
+     * @return updated user
+     */
     @Transactional
     public User updatePasswordInUserProfile(Long id, String password) {
         User user = getUser(id);
-        if (user == null) {
-            throw new UserNotFoundException(id);
-        }
         BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
         String encodedPassword = encoder.encode(password);
         user.setPassword(encodedPassword);
@@ -128,84 +153,69 @@ public class UserService implements UserDetailsService {
 
     }
 
+    /**
+     * Update role of user
+     * 
+     * @param id   user id
+     * @param role new role
+     * @return updated user entity
+     */
     @Transactional
     public User updateRole(Long id, String role) {
         User user = getUser(id);
-        if (user != null && (role.equals("ROLE_BASIC") || role.equals("ROLE_ADMIN"))) {
+        if (role.equals("ROLE_BASIC") || role.equals("ROLE_ADMIN")) {
             user.setRole(role);
             return userRepository.save(user);
+        } else {
+            throw new IllegalArgumentException("Role must be ROLE_BASIC or ROLE_ADMIN");
         }
-        throw new UserNotFoundException(id);
     }
 
+    /**
+     * Update manager of user
+     * 
+     * @param id        user id
+     * @param managerId user id of manager
+     * @return updated user entity
+     */
     @Transactional
     public User updateManagerId(Long id, Long managerId) {
-        User user = getUser(id);
-        if (user == null) {
-            throw new UserNotFoundException(id);
+        if (id.equals(managerId)) {
+            throw new IllegalArgumentException("Manager cannot have the same ID as user");
         }
-        User manager = getUser(managerId);
-        if (manager == null || !manager.getRole().equals("ROLE_ADMIN")) {
+        User user = getUser(id);
+        User manager = managerId == null ? null : getUser(managerId);
+        if (manager != null && !manager.getRole().equals("ROLE_ADMIN")) {
             throw new UserNotFoundException(managerId);
         }
         user.setManagerUser(manager);
         return userRepository.save(user);
     }
 
-    // public User updateUserTeamID(Long ID, Long TeamID) {
-    // Optional<User> b = userRepository.findById(ID);
-    // if (b.isPresent()) {
-    // User user = b.get();
-    // user.setteam(TeamID);
-    // return userRepository.save(user);
-    // } else
-    // return null;
-
-    // }
-
+    /**
+     * Update team of user
+     * 
+     * @param userId user id
+     * @param teamId team id
+     * @return updated user entity
+     */
+    @Transactional
     public User updateUserTeam(Long userId, Long teamId) {
         User user = getUser(userId);
-        if (user == null) {
-            throw new UserNotFoundException(userId);
-        }
         Team team = teamService.getTeam(teamId);
         user.setTeam(team);
         return userRepository.save(user);
     }
 
-    public int updateUserRole(Long ID, String role) {
+    // ---------------- End of update user info methods ----------------------
 
-        if (role.equals("ROLE_ADMIN") || role.equals("ROLE_BASIC")) {
-            Optional<User> b = userRepository.findById(ID);
-            if (b.isPresent()) {
-                User user = b.get();
-                user.setRole(role);
-                userRepository.save(user);
-                return 1; // done perfect
-            } else {
-                return 20; // user not found
-            }
-        }
-        return 10; // user input wrong role
-    }
-
-    public int updateUserManagerID(Long ID, Long managerID) {
-        Optional<User> b = userRepository.findById(ID);
-        Optional<User> managerop = userRepository.findById(managerID);
-        if (b.isPresent() && managerop.isPresent()) {
-            User user = b.get();
-            User manager = managerop.get();
-            if (manager.getRole().equals("ROLE_ADMIN")) {
-                user.setManagerUser(manager);
-                userRepository.save(user);
-                return 1;// done perfect
-            } else {
-                return 10; // bad request bc the supposed inputted manager isnt a manager
-            }
-        } else
-            return 20;// user or manager not found
-    }
-
+    /**
+     * Overrides loadUserByUsername method from Spring Security's UserDetails
+     * 
+     * @param email email of the user (username)
+     * @return CustomUserDetails (child of Spring Security's UserDetails with the
+     *         user entity wrapped inside it)
+     */
     @Override
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
         // In our case, username will be email
@@ -216,20 +226,16 @@ public class UserService implements UserDetailsService {
             throw new UsernameNotFoundException("User not found with email: " + email);
         }
 
-        // Add authorization -- currently only takes in one role as per the User entity
-        // specifications
-        // Collection<SimpleGrantedAuthority> authorities = new ArrayList<>();
-        // authorities.add(new SimpleGrantedAuthority(user.getRole()));
-
-        // Return the Spring Framework User object, not our custom one!
-        // return new
-        // org.springframework.security.core.userdetails.User(user.getEmail(),
-        // user.getPassword(), authorities);
         return new CustomUserDetails(user);
     }
 
+    /**
+     * Retrieves a user from database by email
+     * 
+     * @param email email of the user
+     * @return user object, else null
+     */
     public User findByEmail(String email) {
-        // logger.info(email);
         Optional<User> optional = userRepository.findByEmail(email);
 
         if (optional.isPresent()) {
@@ -239,18 +245,29 @@ public class UserService implements UserDetailsService {
         }
     }
 
-    public int getUsersVaxxPercentage(){
+    /**
+     * Get percentage of users vaccinated
+     * 
+     * @return percentage of users vaccinated in integer (e.g. 95% means it will
+     *         return 95)
+     */
+    public int getUsersVaxxPercentage() {
         List<User> userList = userRepository.findAll();
         int countUser = 0;
         int countVaxx = 0;
-        for(User u : userList){
-            if(u.isVaccinated()){
+        for (User u : userList) {
+            if (u.isVaccinated()) {
                 countVaxx++;
             }
             countUser++;
         }
-        return (int)((double)countVaxx/(double)countUser * 100);
+        return (int) ((double) countVaxx / (double) countUser * 100);
     }
+
+    // ----------------------------------------------
+    // SAVE USER INTO DATABASE
+    // ----------------------------------------------
+
     /**
      * Saves user details to database
      * 
@@ -320,29 +337,35 @@ public class UserService implements UserDetailsService {
 
     }
 
+    /**
+     * Utility method: creates a random alphanumeric string for default password
+     * 
+     * @param stringLength length of generated string
+     * @return random alphanumeric string
+     */
     private String createRandomPassword(int stringLength) {
-        int leftLimit = 48; // numeral '0'
-        int rightLimit = 122; // letter 'z'
+        int leftLimit = '0';
+        int rightLimit = 'z';
         Random random = new Random();
 
-        String generatedString = random.ints(leftLimit, rightLimit + 1)
-                .filter(i -> (i <= 57 || i >= 65) && (i <= 90 || i >= 97)).limit(stringLength)
-                .collect(StringBuilder::new, StringBuilder::appendCodePoint, StringBuilder::append).toString();
-
-        return generatedString;
+        return random.ints(leftLimit, rightLimit + 1).filter(i -> (i <= '9' || i >= 'A') && (i <= 'Z' || i >= 'a'))
+                .limit(stringLength).collect(StringBuilder::new, StringBuilder::appendCodePoint, StringBuilder::append)
+                .toString();
     }
+
+    // ------------ End of save user into database methods ------------
 
     // ----------------------------------------------
     // RESET PASSWORD FUNCTIONALITY
     // ----------------------------------------------
 
     /**
-     * Creates a password reset token for a particular user The token itself is a
+     * Creates a password reset token for a particular user. The token itself is a
      * UUID string, but the entity contains the user it corresponds to and an expiry
      * date
      * 
      * @param user user entity for whom to create a password reset token for
-     * @throws Exception
+     * @throws Exception fail to email
      */
     @Transactional(rollbackFor = { MessagingException.class, IOException.class })
     public void createPasswordResetTokenForUser(User user) throws Exception {
@@ -360,12 +383,12 @@ public class UserService implements UserDetailsService {
     }
 
     /**
-     * Utility function to generate password reset token Deletes all tokens
+     * Utility function to generate password reset token, Deletes all tokens
      * previously created for that user
      * 
-     * @param resetToken
-     * @param user
-     * @return
+     * @param resetToken password reset token string
+     * @param user       user to generate the token for
+     * @return PasswordResetToken object that got saved into DB
      */
     @Transactional
     private PasswordResetToken generatePasswordResetToken(String resetToken, User user) {
@@ -377,29 +400,26 @@ public class UserService implements UserDetailsService {
     /**
      * Actually resets the password for the user
      * 
-     * @param user
-     * @param token
-     * @param password
-     * @return
-     * @throws Exception
+     * @param user     the user entity to reset password for
+     * @param token    the password reset token
+     * @param password the new password
+     * @throws Exception InvalidPasswordResetToken exception propagated from
+     *                   validatePasswordResetToken method
      */
     @Transactional
-    public String resetPasswordForUser(User user, String token, String password) throws Exception {
-        String invalidityMessage = validatePasswordResetToken(token);
-        if (invalidityMessage == null) {
-            BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
-            user.setPassword(encoder.encode(password));
-            userRepository.save(user);
-            passwordResetRepository.deleteByToken(token);
-        }
-        return invalidityMessage;
+    public void resetPasswordForUser(User user, String token, String password) throws Exception {
+        validatePasswordResetToken(token);
+        BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
+        user.setPassword(encoder.encode(password));
+        userRepository.save(user);
+        passwordResetRepository.deleteByToken(token);
     }
 
     /**
      * Function to find user corresponding to a password reset token
      * 
-     * @param token
-     * @return
+     * @param token password reset token
+     * @return optional containing the user entity corresponding to that token
      */
     public Optional<User> findUserByPasswordResetToken(final String token) {
         Optional<PasswordResetToken> opt = passwordResetRepository.findByToken(token);
@@ -414,18 +434,21 @@ public class UserService implements UserDetailsService {
      * Validation of password reset token. Checks whether the token is present in
      * the database & whether it's expired or not
      * 
-     * @param token
-     * @return
+     * @param token password reset token
+     * @return true if token valid
      */
-    private String validatePasswordResetToken(String token) {
+    private boolean validatePasswordResetToken(String token) {
         Optional<PasswordResetToken> opt = passwordResetRepository.findByToken(token);
         if (opt.isPresent()) {
             PasswordResetToken passToken = opt.get();
-            logger.info(passToken.getToken());
             final Calendar cal = Calendar.getInstance();
-            return passToken.getExpiryDate().before(cal.getTime()) ? "Expired" : null;
+            if (passToken.getExpiryDate().before(cal.getTime())) {
+                throw new InvalidPasswordResetTokenException("Password reset token expired");
+            } else {
+                return true;
+            }
         } else {
-            return "Invalid Token";
+            throw new InvalidPasswordResetTokenException("Password reset token is invalid");
         }
 
     }
