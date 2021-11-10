@@ -5,6 +5,7 @@ import java.util.*;
 import com.G2T8.CS203WebApp.model.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
 import com.G2T8.CS203WebApp.exception.UserNotFoundException;
 
 import java.time.LocalDate;
@@ -47,9 +48,6 @@ public class TemperatureService {
         LocalDate nextDay = day.plusDays(1);
         LocalDateTime upperBound = nextDay.atStartOfDay();
 
-        if (lowerBound.isAfter(upperBound)) {
-            throw new IllegalArgumentException("Lower bound for date should be lower than upper bound");
-        }
         return temperatureRepository.findAllByUserAndDateBetween(user, lowerBound, upperBound);
     }
 
