@@ -11,7 +11,6 @@ import org.springframework.format.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
 import com.G2T8.CS203WebApp.exception.TemperatureInvalidException;
-import com.G2T8.CS203WebApp.exception.UserNotFoundException;
 
 import java.security.Principal;
 import java.time.LocalDate;
