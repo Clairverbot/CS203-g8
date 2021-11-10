@@ -322,7 +322,7 @@ public class UserService implements UserDetailsService {
      */
     @PreAuthorize("hasRole('ROLE_ADMIN')")
     @Transactional(rollbackFor = { MessagingException.class, IOException.class })
-    public void createEmployeeAccount(UserDTO userDetails, User manager) throws MessagingException, IOException {
+    public User createEmployeeAccount(UserDTO userDetails, User manager) throws MessagingException, IOException {
         userDetails.setPassword(createRandomPassword(10));
 
         Map<String, Object> templateModel = new HashMap<>();
@@ -338,6 +338,8 @@ public class UserService implements UserDetailsService {
         emailService.sendEmailWithTemplate(userDetails.getEmail(),
                 "[XXX Employee Management System] Your account has been created!", "new-employee-account.html",
                 templateModel);
+
+        return newEmployee;
 
     }
 
