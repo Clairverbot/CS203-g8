@@ -1,11 +1,8 @@
 package com.G2T8.CS203WebApp;
 
-
 import java.net.URI;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mock;
-import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
@@ -34,7 +31,7 @@ public class JWTAuthIntegrationTest {
     private final String baseEndpoint = "/api/v1/users";
 
     @Autowired
-    private UserRepository users;
+    private UserRepository userRepository;
 
     @Autowired
     private UserService userService;
@@ -74,7 +71,7 @@ public class JWTAuthIntegrationTest {
 
         // Clean up dummy user
         User user = userService.findByEmail("test420@cs203g2t8.com");
-        users.delete(user);
+        userRepository.delete(user);
 
     }
 
@@ -162,7 +159,7 @@ public class JWTAuthIntegrationTest {
         testUser.setRole("ROLE_ADMIN");
         testUser.setFirstLogin(true);
         // Save dummy user into database
-        users.save(testUser);
+        userRepository.save(testUser);
 
         // Create request body in JSON
         JSONObject requestBody = new JSONObject();
@@ -173,9 +170,9 @@ public class JWTAuthIntegrationTest {
         given().contentType("application/json").body(requestBody.toJSONString()).post(uri)
                 // Expected response
                 .then().statusCode(200);
-        
+
         // Clean up dummy user
         User user = userService.findByEmail("test420@cs203g2t8.com");
-        users.delete(user);
+        userRepository.delete(user);
     }
 }

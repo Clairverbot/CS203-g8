@@ -25,15 +25,15 @@ import org.mockito.junit.jupiter.MockitoExtension;
 @ExtendWith(MockitoExtension.class)
 public class UserServiceTest {
     @Mock
-    private UserRepository users;
+    private UserRepository userRepository;
     @Mock
-    private PasswordResetRepository passwordResetTokens;
+    private PasswordResetRepository passwordResetRepository;
     @InjectMocks
     private UserService userService;
 
     @AfterEach
     void tearDown() {
-        users.deleteAll();
+        userRepository.deleteAll();
     }
 
     @Test
@@ -50,7 +50,7 @@ public class UserServiceTest {
 
         Optional<User> opt = Optional.of(mockUser);
 
-        when(users.findById(inputId)).thenReturn(opt);
+        when(userRepository.findById(inputId)).thenReturn(opt);
 
         // act
         User user = userService.getUser(inputId);
@@ -74,7 +74,7 @@ public class UserServiceTest {
 
         Optional<User> optEmpty = Optional.empty();
 
-        when(users.findById(any(Long.class))).thenReturn(optEmpty);
+        when(userRepository.findById(any(Long.class))).thenReturn(optEmpty);
 
         // act & assert
         Exception expected = assertThrows(UserNotFoundException.class, () -> {
@@ -82,8 +82,8 @@ public class UserServiceTest {
         });
 
         assertEquals(expected.getMessage(), "Could not find user with id " + inputId);
-        verify(users, never()).findById(mockUser.getID());
-        verify(users).findById(inputId);
+        verify(userRepository, never()).findById(mockUser.getID());
+        verify(userRepository).findById(inputId);
     }
 
     @Test
@@ -111,15 +111,15 @@ public class UserServiceTest {
         mockUserUpdated.setFirstLogin(false);
         mockUserUpdated.setVaccinationStatus(vaccinationStatus);
 
-        when(users.findById(userId)).thenReturn(opt);
-        when(users.save(any(User.class))).thenReturn(mockUserUpdated);
+        when(userRepository.findById(userId)).thenReturn(opt);
+        when(userRepository.save(any(User.class))).thenReturn(mockUserUpdated);
 
         // act
         User user = userService.updateUserVaccinationStatus(userId, vaccinationStatus);
 
         // assert
         assertEquals(mockUserUpdated, user);
-        verify(users).save(user);
+        verify(userRepository).save(user);
     }
 
     @Test
@@ -136,7 +136,7 @@ public class UserServiceTest {
 
         Optional<User> opt = Optional.of(mockUser);
 
-        when(users.findById(userId)).thenReturn(opt);
+        when(userRepository.findById(userId)).thenReturn(opt);
 
         final int vaccinationStatus = 3;
 
@@ -147,7 +147,7 @@ public class UserServiceTest {
 
         mockUser.setVaccinationStatus(vaccinationStatus);
         assertEquals(expected.getMessage(), "Vaccination Status must be 0, 1, or 2");
-        verify(users, never()).save(mockUser);
+        verify(userRepository, never()).save(mockUser);
     }
 
     @Test
@@ -174,16 +174,16 @@ public class UserServiceTest {
 
         Optional<User> opt = Optional.of(mockUser);
 
-        when(users.findById(userId)).thenReturn(opt);
-        when(users.save(any(User.class))).thenReturn(mockUserUpdated);
+        when(userRepository.findById(userId)).thenReturn(opt);
+        when(userRepository.save(any(User.class))).thenReturn(mockUserUpdated);
 
         // act
         User user = userService.updateRole(userId, updatedRole);
 
         // assert
         assertEquals(mockUserUpdated, user);
-        verify(users).findById(userId);
-        verify(users).save(user);
+        verify(userRepository).findById(userId);
+        verify(userRepository).save(user);
 
     }
 
@@ -201,7 +201,7 @@ public class UserServiceTest {
 
         Optional<User> opt = Optional.of(mockUser);
 
-        when(users.findById(userId)).thenReturn(opt);
+        when(userRepository.findById(userId)).thenReturn(opt);
 
         final String invalidRole = "ROLE_DUMMY";
         // act & assert
@@ -211,7 +211,7 @@ public class UserServiceTest {
 
         mockUser.setRole(invalidRole);
         assertEquals(expected.getMessage(), "Role must be ROLE_BASIC or ROLE_ADMIN");
-        verify(users, never()).save(mockUser);
+        verify(userRepository, never()).save(mockUser);
     }
 
     @Test
@@ -232,7 +232,7 @@ public class UserServiceTest {
         });
 
         assertEquals(expected.getMessage(), "Manager cannot have the same ID as user");
-        verify(users, never()).save(mockUser);
+        verify(userRepository, never()).save(mockUser);
     }
 
     @Test
@@ -259,8 +259,8 @@ public class UserServiceTest {
         Optional<User> opt1 = Optional.of(mockUser1);
         Optional<User> opt2 = Optional.of(mockUser2);
 
-        when(users.findById(userId1)).thenReturn(opt1);
-        when(users.findById(userId2)).thenReturn(opt2);
+        when(userRepository.findById(userId1)).thenReturn(opt1);
+        when(userRepository.findById(userId2)).thenReturn(opt2);
 
         // act & assert
         Exception expected = assertThrows(UserNotFoundException.class, () -> {
@@ -268,6 +268,6 @@ public class UserServiceTest {
         });
         mockUser1.setManagerUser(mockUser2);
         assertEquals(expected.getMessage(), "Could not find user with id " + userId2);
-        verify(users, never()).save(mockUser1);
+        verify(userRepository, never()).save(mockUser1);
     }
 }

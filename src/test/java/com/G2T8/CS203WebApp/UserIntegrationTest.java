@@ -37,13 +37,13 @@ public class UserIntegrationTest {
     private final String baseEndpoint = "/api/v1/users";
 
     @Autowired
-    private UserRepository users;
+    private UserRepository userRepository;
 
     @Autowired
-    private TeamRepository teams;
+    private TeamRepository teamRepository;
 
     @Autowired
-    private PasswordResetRepository passwordResetTokens;
+    private PasswordResetRepository passwordResetRepository;
 
     @Autowired
     private UserService userService;
@@ -81,7 +81,7 @@ public class UserIntegrationTest {
         testUser.setFirstLogin(true);
 
         // Save dummy user into database
-        final User user = users.save(testUser);
+        final User user = userRepository.save(testUser);
 
         UserDetails userDetails = userService.loadUserByUsername(testUser.getEmail());
 
@@ -93,7 +93,7 @@ public class UserIntegrationTest {
                 .then().statusCode(200);
 
         // Clean up dummy user from DB
-        users.delete(user);
+        userRepository.delete(user);
     }
 
     @Test
@@ -108,7 +108,7 @@ public class UserIntegrationTest {
         testUser.setFirstLogin(true);
 
         // Save dummy user into database
-        final User user = users.save(testUser);
+        final User user = userRepository.save(testUser);
 
         UserDetails userDetails = userService.loadUserByUsername(testUser.getEmail());
 
@@ -122,7 +122,7 @@ public class UserIntegrationTest {
         assertEquals(user.getID(), Long.valueOf(userId));
 
         // Clean up dummy user from DB
-        users.delete(user);
+        userRepository.delete(user);
     }
 
     // --------------------------------------------------
@@ -140,7 +140,7 @@ public class UserIntegrationTest {
         testUser.setFirstLogin(true);
 
         // Save dummy user into database
-        final User user = users.save(testUser);
+        final User user = userRepository.save(testUser);
 
         UserDetails userDetails = userService.loadUserByUsername(testUser.getEmail());
 
@@ -157,7 +157,7 @@ public class UserIntegrationTest {
         assertEquals(newVaccinationStatus, vaccinationStatus);
 
         // Clean up dummy user from DB
-        users.delete(user);
+        userRepository.delete(user);
     }
 
     @Test
@@ -172,7 +172,7 @@ public class UserIntegrationTest {
         testUser.setFirstLogin(true);
 
         // Save dummy user into database
-        final User user = users.save(testUser);
+        final User user = userRepository.save(testUser);
 
         UserDetails userDetails = userService.loadUserByUsername(testUser.getEmail());
 
@@ -188,7 +188,7 @@ public class UserIntegrationTest {
         assertEquals(newName, name);
 
         // Clean up dummy user from DB
-        users.delete(user);
+        userRepository.delete(user);
     }
 
     @Test
@@ -203,7 +203,7 @@ public class UserIntegrationTest {
         testUser.setFirstLogin(true);
 
         // Save dummy user into database
-        final User user = users.save(testUser);
+        final User user = userRepository.save(testUser);
 
         UserDetails userDetails = userService.loadUserByUsername(testUser.getEmail());
 
@@ -219,7 +219,7 @@ public class UserIntegrationTest {
         assertEquals(newRole, role);
 
         // Clean up dummy user from DB
-        users.delete(user);
+        userRepository.delete(user);
     }
 
     @Test
@@ -241,8 +241,8 @@ public class UserIntegrationTest {
         testEmployee.setFirstLogin(true);
 
         // Save dummy user into database
-        User userManager = users.save(testManager);
-        User userEmployee = users.save(testEmployee);
+        User userManager = userRepository.save(testManager);
+        User userEmployee = userRepository.save(testEmployee);
 
         UserDetails userDetails = userService.loadUserByUsername(testManager.getEmail());
 
@@ -258,8 +258,8 @@ public class UserIntegrationTest {
         assertEquals(userEmployee.getManagerUser().getID(), userManager.getID());
 
         // Clean up dummy user from DB
-        users.delete(userEmployee);
-        users.delete(userManager);
+        userRepository.delete(userEmployee);
+        userRepository.delete(userManager);
     }
 
     @Test
@@ -277,8 +277,8 @@ public class UserIntegrationTest {
         testTeam.setName("Test Team");
 
         // Save dummy user into database
-        User user = users.save(testUser);
-        final Team team = teams.save(testTeam);
+        User user = userRepository.save(testUser);
+        final Team team = teamRepository.save(testTeam);
 
         UserDetails userDetails = userService.loadUserByUsername(testUser.getEmail());
 
@@ -293,8 +293,8 @@ public class UserIntegrationTest {
         assertEquals(user.getTeam().getTeamID(), team.getTeamID());
 
         // Clean up dummy user & team
-        users.delete(user);
-        teams.delete(team);
+        userRepository.delete(user);
+        teamRepository.delete(team);
     }
 
     // --------------------------------------------------
@@ -312,7 +312,7 @@ public class UserIntegrationTest {
         testUser.setFirstLogin(true);
 
         // Save dummy user into database
-        User user = users.save(testUser);
+        User user = userRepository.save(testUser);
 
         // Issue post request
         given().contentType("application/json").body(testUser.getEmail())
@@ -320,12 +320,12 @@ public class UserIntegrationTest {
                 // Expected response
                 .then().statusCode(201);
 
-        PasswordResetToken passResetToken = passwordResetTokens.findByUser(user);
+        PasswordResetToken passResetToken = passwordResetRepository.findByUser(user);
 
         assertNotNull(passResetToken);
 
         // Clean up dummy user
-        users.deleteById(user.getID());
+        userRepository.deleteById(user.getID());
     }
 
     @Test
@@ -340,13 +340,13 @@ public class UserIntegrationTest {
         testUser.setFirstLogin(true);
 
         // Save dummy user into database
-        User user = users.save(testUser);
+        User user = userRepository.save(testUser);
 
         // Create password reset token
         String token = "testing-token";
 
         PasswordResetToken passResetToken = new PasswordResetToken(token, user);
-        passwordResetTokens.save(passResetToken);
+        passwordResetRepository.save(passResetToken);
 
         // Create request body
         JSONObject requestBody = new JSONObject();
@@ -359,7 +359,7 @@ public class UserIntegrationTest {
                 .then().statusCode(200);
 
         // Clean up dummy user
-        users.deleteById(user.getID());
+        userRepository.deleteById(user.getID());
     }
 
     @Test
@@ -374,13 +374,13 @@ public class UserIntegrationTest {
         testUser.setFirstLogin(true);
 
         // Save dummy user into database
-        User user = users.save(testUser);
+        User user = userRepository.save(testUser);
 
         // Create password reset token
         String token = "testing-token";
 
         PasswordResetToken passResetToken = new PasswordResetToken(token, user);
-        passwordResetTokens.save(passResetToken);
+        passwordResetRepository.save(passResetToken);
 
         // Create request body
         JSONObject requestBody = new JSONObject();
@@ -393,6 +393,6 @@ public class UserIntegrationTest {
                 .then().statusCode(400);
 
         // Clean up dummy user
-        users.deleteById(user.getID());
+        userRepository.deleteById(user.getID());
     }
 }
