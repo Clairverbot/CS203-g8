@@ -40,14 +40,13 @@ public class ScheduleService {
         }
         return schedule;
     }
-
     public Schedule addSchedule(Long teamID, LocalDate startDate, LocalDate endDate, int mode) {
         Team team = findTeam(teamID);
-
-        if (checkScheduleConflict(null, teamID, mode, startDate, endDate)) {
+        
+        if (checkScheduleConflict(teamID, mode, startDate, endDate)) {
             throw new ScheduleClashException();
         }
-
+        
         Schedule schedule = new Schedule();
         schedule.setTeam(team);
         schedule.setStartDate(startDate);
@@ -63,7 +62,7 @@ public class ScheduleService {
         }
         Team team = findTeam(teamID);
 
-        if (checkScheduleConflict(scheduleId, teamID, mode, startDate, endDate)) {
+        if (checkScheduleConflict(teamID, mode, startDate, endDate)) {
             throw new ScheduleClashException();
         }
 
@@ -87,24 +86,15 @@ public class ScheduleService {
         return team;
     }
 
-    public boolean checkScheduleConflict(Long scheduleId, Long teamID, int mode, LocalDate startDate,
-            LocalDate endDate) {
+    public boolean checkScheduleConflict(Long teamID,int mode, LocalDate startDate, LocalDate endDate) {
         List<Schedule> conflicts;
         if (mode == 1) {
-            conflicts = scheduleRepository.findWfoConflicts(teamID, mode, startDate, endDate);
-        } else {
-            conflicts = scheduleRepository.findWfhConflicts(teamID, startDate, endDate);
+            conflicts = scheduleRepository.findAllByTeamIdOrModeAndStartDateBetweenOrEndDateBetween(teamID,mode, startDate, endDate);
+        }else{
+            conflicts = scheduleRepository.findAllByTeamIdAndStartDateBetweenOrEndDateBetween(teamID, startDate, endDate);
         }
 
         if (!conflicts.isEmpty()) {
-            if (scheduleId != null) {
-                for (Schedule s : conflicts) {
-                    if (!s.getID().equals(scheduleId)) {
-                        return true;
-                    }
-                }
-                return false;
-            }
             return true;
         } else {
             return false;

@@ -27,28 +27,62 @@ public class ScheduleController {
     // get all schedules
     @GetMapping("/")
     public List<Schedule> findAllSchedules() {
-        return scheduleService.getAllSchedules();
+        List<Schedule> schedules = scheduleService.getAllSchedules();
+        if (schedules == null) {
+            throw new ScheduleNotFoundException();
+        }
+        return schedules;
     }
 
     // get all schedules based on teamID
     @GetMapping("/{teamID}")
     public List<Schedule> findAllScheduleByTeamID(@PathVariable Long teamID) {
-        return scheduleService.getAllScheduleByTeamID(teamID);
-
+        List<Schedule> schedules;
+        try {
+            schedules = scheduleService.getAllScheduleByTeamID(teamID);
+        } catch (TeamNotFoundException E) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Could not find Team");
+        } catch (ScheduleNotFoundException E) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Could not find Schedule");
+        } catch (Exception E) {
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Unknown error occured");
+        }
+        return schedules;
     }
 
     // get schedule based on teamID and startDate
     @GetMapping("/{teamID}/{startDate}")
     public Schedule findScheduleByTeamIDAndStartDate(@PathVariable Long teamID, @PathVariable LocalDate startDate) {
-        return scheduleService.getScheduleByTeamIDAndStartDate(teamID, startDate);
-
+        Schedule schedule;
+        try {
+            schedule = scheduleService.getScheduleByTeamIDAndStartDate(teamID, startDate);
+        } catch (TeamNotFoundException E) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Could not find Team");
+        } catch (ScheduleNotFoundException E) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Could not find Schedule");
+        } catch (Exception E) {
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Unknown error occured");
+        }
+        return schedule;
     }
 
     @PutMapping("/")
-    public Schedule updateSchedule(@RequestBody ScheduleDTO scheduleDTO) {
-        return scheduleService.updateSchedule(scheduleDTO.getScheduleId(), scheduleDTO.getTeamId(),
-                scheduleDTO.getStartDate(), scheduleDTO.getEndDate(), scheduleDTO.getMode());
+    public ResponseEntity<?> updateSchedule(@RequestBody ScheduleDTO scheduleDTO) {
+        Schedule schedule;
+        try {
+            schedule = scheduleService.updateSchedule(scheduleDTO.getScheduleId(), scheduleDTO.getTeamId(),
+                    scheduleDTO.getStartDate(), scheduleDTO.getEndDate(), scheduleDTO.getMode());
+        } catch (TeamNotFoundException e) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Could not find Team");
+        } catch (ScheduleNotFoundException e) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Could not find Schedule");
+        } catch (ScheduleClashException e) {
+            throw new ResponseStatusException(HttpStatus.CONFLICT, "Schedule conflict");
 
+        } catch (Exception E) {
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Unknown error occured");
+        }
+        return new ResponseEntity<Schedule>(schedule, HttpStatus.OK);
     }
     // // update mode
     // @PutMapping("/{teamID}/{startDate}/{newMode}")
@@ -108,10 +142,22 @@ public class ScheduleController {
 
     // add schedule
     @PostMapping("/")
-    public Schedule addSchedule(@RequestBody ScheduleDTO scheduleDTO) {
-        return scheduleService.addSchedule(scheduleDTO.getTeamId(), scheduleDTO.getStartDate(),
-                scheduleDTO.getEndDate(), scheduleDTO.getMode());
+    public ResponseEntity<?> addSchedule(@RequestBody ScheduleDTO scheduleDTO) {
+        Schedule schedule;
+        try {
+            schedule = scheduleService.addSchedule(scheduleDTO.getTeamId(), scheduleDTO.getStartDate(),
+                    scheduleDTO.getEndDate(), scheduleDTO.getMode());
+        } catch (TeamNotFoundException E) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Could not find Team");
+        } catch (ScheduleNotFoundException E) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Could not find Schedule");
+        } catch (ScheduleClashException e) {
+            throw new ResponseStatusException(HttpStatus.CONFLICT, "Schedule conflict");
 
+        } catch (Exception E) {
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Unknown error occured");
+        }
+        return new ResponseEntity<Schedule>(schedule, HttpStatus.CREATED);
     }
 
     @DeleteMapping("/{scheduleId}")
