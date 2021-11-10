@@ -71,11 +71,6 @@ public class User implements Serializable {
     @JoinColumn(name = "ManagerUser_id")
     private User ManagerUser;
 
-    // user id becomes a foreign key for class/table schedule
-    @JsonIgnore
-    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = false)
-    private List<Schedule> schedules;
-
     // user id becomes a foreign key for CovidHistory class/table
     @JsonIgnore
     @OneToMany(mappedBy = "user", orphanRemoval = false)
@@ -118,9 +113,9 @@ public class User implements Serializable {
     // this.password = password;
     // this.firstLogin = firstLogin;
     // }
-    
-    public Boolean isVaccinated(){
-        if(vaccinationStatus == 2){
+
+    public Boolean isVaccinated() {
+        if (vaccinationStatus == 2) {
             return true;
         }
         return false;
