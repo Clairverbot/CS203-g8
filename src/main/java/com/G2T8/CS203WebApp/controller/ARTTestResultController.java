@@ -48,7 +48,7 @@ public class ARTTestResultController {
      * @param userId of User of which we want to return all ART Test Results of
      * @return List of ARTTestResults belonging to the user with User ID userId
      */
-    @GetMapping("")
+    @GetMapping
     public List<ARTTestResult> findARTByUserId(@RequestParam Long userId) {
         return artService.getARTbyUserID(userId);
     }
@@ -64,7 +64,7 @@ public class ARTTestResultController {
     public ResponseEntity<?> addResult(@RequestBody Boolean artResult, Principal principal) {
         try {
             ARTTestResult artTestResults = artService.addART(principal.getName(), artResult);
-            if (artTestResults.getArtResult() == true) {
+            if (artTestResults.getArtResult()!= null &&artTestResults.getArtResult()) {
                 CovidHistory toAdd = new CovidHistory(artTestResults.getUser(), artTestResults.getDate(), null);
                 covidHistoryService.addCovidHistory(toAdd);
             } else {

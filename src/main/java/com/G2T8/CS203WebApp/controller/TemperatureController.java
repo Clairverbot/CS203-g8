@@ -33,8 +33,8 @@ public class TemperatureController {
      * @param userId
      * @return List of temperature by user
      */
-    @GetMapping("/{userId}")
-    public List<Temperature> findTempByUserId(@PathVariable Long userId) {
+    @GetMapping
+    public List<Temperature> findTempByUserId(@RequestParam Long userId) {
         return tempService.getAllTempbyUserID(userId);
     }
 
