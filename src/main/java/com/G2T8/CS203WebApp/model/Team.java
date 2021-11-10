@@ -2,9 +2,8 @@ package com.G2T8.CS203WebApp.model;
 
 import javax.persistence.*;
 
-import com.fasterxml.jackson.annotation.*;
-
-import org.springframework.beans.factory.annotation.Autowired;
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import lombok.*;
 import java.util.*;
@@ -31,5 +30,9 @@ public class Team {
     @OneToMany(mappedBy = "team")
     @JsonBackReference
     private List<User> users;
+
+    @OneToMany(mappedBy = "team", cascade = CascadeType.ALL, orphanRemoval = false)
+    @JsonIgnore
+    private List<Schedule> schedules;
 
 }

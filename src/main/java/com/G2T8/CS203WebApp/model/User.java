@@ -65,20 +65,15 @@ public class User implements Serializable {
 
     @OneToMany(mappedBy = "ManagerUser", orphanRemoval = true)
     @Getter(onMethod = @__(@JsonIgnore))
-    private List<User> EmployeeUsers;
+    private List<User> employeeUsers;
 
     @ManyToOne
     @JoinColumn(name = "ManagerUser_id")
     private User ManagerUser;
 
-    // user id becomes a foreign key for class/table schedule
-    @JsonIgnore
-    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = false)
-    private List<Schedule> schedules;
-
     // user id becomes a foreign key for CovidHistory class/table
     @JsonIgnore
-    @OneToMany(mappedBy = "user", orphanRemoval = false)
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<CovidHistory> covidHistories;
 
     // user id becomes a foreign key for Officerequest
@@ -88,7 +83,7 @@ public class User implements Serializable {
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonManagedReference
-    private List<ARTTestResults> artTestResult;
+    private List<ARTTestResult> artTestResult;
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonManagedReference
@@ -118,9 +113,9 @@ public class User implements Serializable {
     // this.password = password;
     // this.firstLogin = firstLogin;
     // }
-    
-    public Boolean isVaccinated(){
-        if(vaccinationStatus == 2){
+
+    public Boolean isVaccinated() {
+        if (vaccinationStatus == 2) {
             return true;
         }
         return false;

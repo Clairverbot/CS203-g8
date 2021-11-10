@@ -1,8 +1,8 @@
 ###
 
-GET http://localhost:8080/api/v1/CovidHistory/findAll
+GET http://localhost:8080/api/v1/covid-history/find-all
 Accept: application/json
-Authorization: Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJ0ZXN0QGdtYWlsLmNvbSIsInJvbGVzIjpbeyJhdXRob3JpdHkiOiJST0xFX0FETUlOIn1dLCJleHAiOjE2MzYyODMyODYsImlhdCI6MTYzNjI2NTI4Nn0.Lo_dNIQANVK1hGJA430D7FcVpQUlPHcJMvIvYIjKa2ShdDKdqi_KgAMOrndB5FaJySGG5_1U4oyYnzvpQteGwQ
+Authorization: Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJqZWlzdG9yeTFAZ21haWwuY29tIiwicm9sZXMiOlt7ImF1dGhvcml0eSI6IlJPTEVfQURNSU4ifV0sImV4cCI6MTYzNjU1NTI4NSwiaWF0IjoxNjM2NTM3Mjg1fQ.ihWOxm-4Jii0_3gh8J0bZFEShgWA7WC0PRJ05u9s3gc80Qp8_GfPwTX3dOk8rTok0Y5lJwbS4qmHcKvZ92a4jw
 
 ###
 GET http://localhost:8080/api/v1/CovidHistory/findAllHistoryFromOneUser/1
@@ -15,15 +15,15 @@ Accept: application/json
 Authorization: Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJ0ZXN0QGdtYWlsLmNvbSIsInJvbGVzIjpbeyJhdXRob3JpdHkiOiJST0xFX0FETUlOIn1dLCJleHAiOjE2MzYyODMyODYsImlhdCI6MTYzNjI2NTI4Nn0.Lo_dNIQANVK1hGJA430D7FcVpQUlPHcJMvIvYIjKa2ShdDKdqi_KgAMOrndB5FaJySGG5_1U4oyYnzvpQteGwQ
 
 ###
-POST http://localhost:8080/api/v1/CovidHistory/createCovidHistory
+POST http://localhost:8080/api/v1/covid-history/
 Accept:application/json
 Content-Type: application/json
-Authorization: Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJ0ZXN0QGdtYWlsLmNvbSIsInJvbGVzIjpbeyJhdXRob3JpdHkiOiJST0xFX0FETUlOIn1dLCJleHAiOjE2MzYyODMyODYsImlhdCI6MTYzNjI2NTI4Nn0.Lo_dNIQANVK1hGJA430D7FcVpQUlPHcJMvIvYIjKa2ShdDKdqi_KgAMOrndB5FaJySGG5_1U4oyYnzvpQteGwQ
+Authorization: Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJqZWlzdG9yeTFAZ21haWwuY29tIiwicm9sZXMiOlt7ImF1dGhvcml0eSI6IlJPTEVfQURNSU4ifV0sImV4cCI6MTYzNjU1Mzc0NSwiaWF0IjoxNjM2NTM1NzQ1fQ.VjsDiQqPk5CMYfDYD_jMGpZmLrEL1gsBhEZraa9lV2-fsshrq7A5lInQq-LBZv0atbV4y3i0kMi3g5cLywZ9qg
 
 {
     "user": {
-    "name": "Test User",
-    "email": "test@gmail.com",
+    "name": "Test",
+    "email": "jeistory1@gmail.com",
     "vaccinationStatus": 0,
     "role": "ROLE_ADMIN",
     "team": null,
@@ -32,7 +32,7 @@ Authorization: Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJ0ZXN0QGdtYWlsLmNvbSIsInJvb
     "firstLogin": true,
     "id": 1,
     "managerUser": null,
-    "employeeUsers": []
+    "vaccinated": false
     },
     "contractedDate": [
     2008,
@@ -42,7 +42,6 @@ Authorization: Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJ0ZXN0QGdtYWlsLmNvbSIsInJvb
     12,
     13
     ],
-    "covidHistoryid": 1,
     "recoverDate": [
     2027,
     1,
@@ -54,40 +53,13 @@ Authorization: Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJ0ZXN0QGdtYWlsLmNvbSIsInJvb
 }
 
 ###
-POST http://localhost:8080/api/v1/CovidHistory/updateRecoveryDate
+PUT http://localhost:8080/api/v1/covid-history/recovery-date
 Accept:application/json
 Content-Type: application/json
-Authorization: Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJ0ZXN0QGdtYWlsLmNvbSIsInJvbGVzIjpbeyJhdXRob3JpdHkiOiJST0xFX0FETUlOIn1dLCJleHAiOjE2MzYyODMyODYsImlhdCI6MTYzNjI2NTI4Nn0.Lo_dNIQANVK1hGJA430D7FcVpQUlPHcJMvIvYIjKa2ShdDKdqi_KgAMOrndB5FaJySGG5_1U4oyYnzvpQteGwQ
+Authorization: Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJqZWlzdG9yeTFAZ21haWwuY29tIiwicm9sZXMiOlt7ImF1dGhvcml0eSI6IlJPTEVfQURNSU4ifV0sImV4cCI6MTYzNjU1NTI4NSwiaWF0IjoxNjM2NTM3Mjg1fQ.ihWOxm-4Jii0_3gh8J0bZFEShgWA7WC0PRJ05u9s3gc80Qp8_GfPwTX3dOk8rTok0Y5lJwbS4qmHcKvZ92a4jw
 
 {
-    "user": {
-    "name": "Test User",
-    "email": "test@gmail.com",
-    "vaccinationStatus": 0,
-    "role": "ROLE_ADMIN",
-    "team": null,
-    "artTestResult": [],
-    "temperature": [],
-    "firstLogin": true,
-    "id": 1,
-    "managerUser": null,
-    "employeeUsers": []
-    },
-    "contractedDate": [
-    2008,
-    1,
-    25,
-    11,
-    12,
-    13
-    ],
-    "covidHistoryid": 1,
-    "recoverDate": [
-    2037,
-    1,
-    10,
-    20,
-    13,
-    13
-    ]
+    "userId": 1,
+    "contractedDate": "2021-10-28T14:03:58",
+    "recoverDate": "2037-01-25T11:12:13"
 }
