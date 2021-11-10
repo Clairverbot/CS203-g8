@@ -77,6 +77,11 @@ public class UserService implements UserDetailsService {
         });
     }
 
+    /**
+     * Get list of users who currently have Covid
+     * 
+     * @return list of users who currently have covid
+     */
     public List<User> getContractedUsers() {
         List<User> userList = userRepository.findAll();
         List<User> toReturn = new ArrayList<User>();
@@ -85,7 +90,6 @@ public class UserService implements UserDetailsService {
             boolean recovery = true;
             List<CovidHistory> history = covidHistoryService.getAllCovidHistoryFromOneUser(id);
             for (CovidHistory c : history) {
-                logger.info("covidHistory:" + c.getCovidHistoryid().toString() + "user" + u.getID().toString());
                 if (!c.recovered()) {
                     recovery = false;
                     break;

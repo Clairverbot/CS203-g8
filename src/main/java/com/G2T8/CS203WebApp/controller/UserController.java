@@ -40,7 +40,11 @@ public class UserController {
         return users;
     }
 
-    // get all contracted users
+    /**
+     * Get list of users who have contracted Covid
+     * 
+     * @return list of users who have Covid
+     */
     @GetMapping("/contracted-users")
     public List<User> findContractedUsers() {
         List<User> users = userService.getContractedUsers();
@@ -50,7 +54,11 @@ public class UserController {
         return users;
     }
 
-    // get number of contracted users
+    /**
+     * Get number of users who contracted Covid
+     * 
+     * @return number of users who have contracted Covid
+     */
     @GetMapping("/number-of-contracted-users")
     public int findNumberOfContractedUsers() {
         List<User> users = userService.getContractedUsers();
@@ -58,17 +66,6 @@ public class UserController {
             throw new UserNotFoundException();
         }
         return users.size();
-    }
-
-    // get user by Email ( necessary as we are logging in with email)
-    @GetMapping(value = "/email/{email}")
-    public User findUserByEmail(@RequestParam String email) {
-        User user = userService.findByEmail(email);
-        if (user == null) {
-            throw new UserNotFoundException(email);
-
-        }
-        return user;
     }
 
     /**
