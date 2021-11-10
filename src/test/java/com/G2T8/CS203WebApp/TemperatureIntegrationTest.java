@@ -78,11 +78,9 @@ public class TemperatureIntegrationTest {
     final String token = jwtTokenUtil.generateToken(userDetails);
 
     URI uri = new URI(baseUrl + port + baseEndpoint + "/" + testUser.getID());
-    // Issue get request
     given().contentType("application/json").header("Authorization", "Bearer " + token).get(uri).then().statusCode(200);
 
     testUser = userRepository.getById(testUser.getID());
-    // Clean up database
     userRepository.delete(testUser);
   }
 
@@ -102,11 +100,9 @@ public class TemperatureIntegrationTest {
     final String token = jwtTokenUtil.generateToken(userDetails);
 
     URI uri = new URI(baseUrl + port + baseEndpoint + "/-1");
-    // Issue get request
     given().contentType("application/json").header("Authorization", "Bearer " + token).get(uri).then().statusCode(404);
 
     testUser = userRepository.getById(testUser.getID());
-    // Clean up database
     userRepository.delete(testUser);
   }
 
@@ -126,11 +122,9 @@ public class TemperatureIntegrationTest {
     final String token = jwtTokenUtil.generateToken(userDetails);
 
     URI uri = new URI(baseUrl + port + baseEndpoint + "/current/count?date=2021-11-11");
-    // Issue get request
     given().contentType("application/json").header("Authorization", "Bearer " + token).get(uri).then().statusCode(200);
 
     testUser = userRepository.getById(testUser.getID());
-    // Clean up database
     userRepository.delete(testUser);
 
   }
@@ -151,11 +145,9 @@ public class TemperatureIntegrationTest {
     final String token = jwtTokenUtil.generateToken(userDetails);
 
     URI uri = new URI(baseUrl + port + baseEndpoint + "/current/count?date=2021-11-111");
-    // Issue get request
     given().contentType("application/json").header("Authorization", "Bearer " + token).get(uri).then().statusCode(400);
 
     testUser = userRepository.getById(testUser.getID());
-    // Clean up database
     userRepository.delete(testUser);
 
   }
@@ -182,7 +174,6 @@ public class TemperatureIntegrationTest {
         .then().statusCode(201);
 
     testUser = userRepository.getById(testUser.getID());
-    // Clean up database
     userRepository.delete(testUser);
 
   }
@@ -204,12 +195,10 @@ public class TemperatureIntegrationTest {
 
     URI uri = new URI(baseUrl + port + baseEndpoint + "/");
     double temperature = 32;
-    // Issue get request
     given().contentType("application/json").header("Authorization", "Bearer " + token).body(temperature).post(uri)
         .then().statusCode(400);
 
     testUser = userRepository.getById(testUser.getID());
-    // Clean up database
     userRepository.delete(testUser);
 
   }
@@ -231,12 +220,10 @@ public class TemperatureIntegrationTest {
 
     URI uri = new URI(baseUrl + port + baseEndpoint + "/");
     double temperature = 44;
-    // Issue get request
     given().contentType("application/json").header("Authorization", "Bearer " + token).body(temperature).post(uri)
         .then().statusCode(400);
 
     testUser = userRepository.getById(testUser.getID());
-    // Clean up database
     userRepository.delete(testUser);
   }
 

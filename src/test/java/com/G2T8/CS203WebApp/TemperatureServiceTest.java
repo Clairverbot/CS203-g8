@@ -103,10 +103,8 @@ public class TemperatureServiceTest {
         when(temperatureRepository.findByUser(basicUser)).thenReturn(basicUserListTemp);
         when(userService.getUser(basicUserID)).thenReturn(basicUser);
 
-        // act
         List<Temperature> getTemperaturebyUserIDResult = temperatureService.getAllTempbyUserID(basicUserID);
 
-        // assert
         assertEquals(basicUserListTemp, getTemperaturebyUserIDResult);
         verify(temperatureRepository).findByUser(basicUser);
         verify(userService).getUser(basicUserID);
