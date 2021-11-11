@@ -50,7 +50,8 @@ jobs:
       - uses: actions/checkout@v2
 
       - name: Verify MySQL connection
-        run: mysql --version
+        run: 
+          mysql --version
           sudo apt-get install -y mysql-client
           mysql --host 127.0.0.1 --port ${{ job.services.mysql.ports['3306'] }} -uroot -p${{ secrets.DB_PASSWORD }} -e "SHOW DATABASES"
 
@@ -61,15 +62,14 @@ jobs:
           SPRING_DATASOURCE_URL: jdbc:mysql://127.0.0.1:${{ job.services.mysql.ports['3306'] }}/cs203g2t8?autoReconnect=true
           SPRING_DATASOURCE_USERNAME: root
           SPRING_DATASOURCE_PASSWORD: ${{ secrets.DB_PASSWORD }}
-          spring.mail.host: smtp.gmail.com
-          spring.mail.port: 587
-          spring.mail.username: noreply.cs203g2t8.smu@gmail.com
-          spring.mail.password: welovepjtan203
-          spring.mail.properties.mail.smtp.auth: "true"
-          spring.mail.properties.mail.smtp.starttls.enable: "true"
-          spring.mail.templates.path: mail-templates
+          SPRING_MAIL_HOST: smtp.gmail.com
+          SPRING_MAIL_PORT: 587
+          SPRING_MAIL_USERNAME: noreply.cs203g2t8.smu@gmail.com
+          SPRING_MAIL_PASSWORD: welovepjtan203
+          SPRING_MAIL_PROPERTIES_MAIL_SMTP_AUTH: "true"
+          SPRING_MAIL_PROPERTIES_MAIL_SMTP_STARTTLS_ENABLE: "true"
+          SPRING_MAIL_TEMPLATES_PATH: mail-templates
           react_origin: http://localhost:3000
-
 #       - uses: actions/checkout@v2
 
 #       # Runs a single command using the runners shell
