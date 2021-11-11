@@ -50,8 +50,7 @@ jobs:
       - uses: actions/checkout@v2
 
       - name: Verify MySQL connection
-        run: 
-          mysql --version
+        run: mysql --version
           sudo apt-get install -y mysql-client
           mysql --host 127.0.0.1 --port ${{ job.services.mysql.ports['3306'] }} -uroot -p${{ secrets.DB_PASSWORD }} -e "SHOW DATABASES"
 
@@ -70,6 +69,8 @@ jobs:
           SPRING_MAIL_PROPERTIES_MAIL_SMTP_STARTTLS_ENABLE: "true"
           SPRING_MAIL_TEMPLATES_PATH: mail-templates
           react_origin: http://localhost:3000
+          AWS_ACCESS_KEY: AKIA2UXIW7DGMDC4E76N
+          AWS_SECRET_KEY: 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
 #       - uses: actions/checkout@v2
 
 #       # Runs a single command using the runners shell
