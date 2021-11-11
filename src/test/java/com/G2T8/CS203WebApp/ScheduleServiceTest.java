@@ -116,7 +116,7 @@ public class ScheduleServiceTest {
         newSchedule.setTeam(team);
 
         when(teamService.getTeam(any(Long.class))).thenReturn(team);
-        when(scheduleRepository.findAllByTeamIdAndStartDateBetweenOrEndDateBetween(team.getTeamID(),
+        when(scheduleRepository.findWfhConflicts(team.getTeamID(),
                 LocalDate.of(2021, 11, 1), LocalDate.of(2021, 11, 5))).thenReturn(new ArrayList<Schedule>());
         when(scheduleRepository.save(any(Schedule.class))).thenReturn(newSchedule);
 
@@ -127,7 +127,7 @@ public class ScheduleServiceTest {
         // assert
         assertNotNull(returnedSchedule);
         verify(teamService).getTeam(team.getTeamID());
-        verify(scheduleRepository).findAllByTeamIdAndStartDateBetweenOrEndDateBetween(team.getTeamID(),
+        verify(scheduleRepository).findWfhConflicts(team.getTeamID(),
                 LocalDate.of(2021, 11, 1), LocalDate.of(2021, 11, 5));
         verify(scheduleRepository).save(newSchedule);
     }
