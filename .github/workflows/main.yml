@@ -46,6 +46,10 @@ jobs:
       # Runs a single command using the runners shell
       - name: Run build
         run: mvn test
+        env:
+          SPRING_DATASOURCE_URL: jdbc:mysql://localhost:3306/cs203g2t8?autoReconnect=true&useSSL=false
+          SPRING_DATASOURCE_USERNAME: admin
+          SPRING_DATASOURCE_PASSWORD: password
 #       - uses: actions/checkout@v2
 
 #       # Runs a single command using the runners shell
