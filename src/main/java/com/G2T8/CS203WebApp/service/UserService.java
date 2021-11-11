@@ -336,7 +336,7 @@ public class UserService implements UserDetailsService {
         templateModel.put("passtoken", passToken.getToken());
 
         emailService.sendEmailWithTemplate(userDetails.getEmail(),
-                "[XXX Employee Management System] Your account has been created!", "new-employee-account.html",
+                "[GR8 Employee Management System] Your account has been created!", "new-employee-account.html",
                 templateModel);
 
         return newEmployee;
@@ -383,7 +383,7 @@ public class UserService implements UserDetailsService {
         templateModel.put("token", token.getToken());
         templateModel.put("expiry", token.getExpiryDate());
 
-        emailService.sendEmailWithTemplate(user.getEmail(), "[XXX Employee Management System] Reset your password",
+        emailService.sendEmailWithTemplate(user.getEmail(), "[GR8 Employee Management System] Reset your password",
                 "reset-password.html", templateModel);
 
     }

@@ -72,7 +72,7 @@ public class CovidHistoryService {
         Map<String, Object> templateModel = new HashMap<>();
         templateModel.put("recipientName", user.getName());
         emailService.sendEmailWithTemplate(user.getEmail(),
-                "[XXX Employee Management System] Instructions To Covid Employee!", "covid-notification.html",
+                "[GR8 Employee Management System] Instructions To Covid Employee!", "covid-notification.html",
                 templateModel);
 
         return covidHistoryRepository.save(covidHistory);

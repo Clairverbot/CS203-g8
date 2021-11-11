@@ -6,11 +6,11 @@
   <body>
     <p>Dear <span th:text="${recipientName}">recipientName,</span></p>
     <br />
-    <p>You have been invited to XXX Employee Management Platform</p>
+    <p>You have been invited to GR8 Employee Management Platform</p>
     <br />
     <b>Use the following credentials:</b>
     <p>Email: <span th:text="${email}">email</span></p>
     <p>Password token: <span th:text="${passtoken}">password</span></p>
-    <a th:href="@{http://localhost:3000/reset-password(resettoken=${passtoken})}">Click here to access the platform!</a>
+    <a th:href="@{http://cs203g2t8-81d7165e-99a0-4380-9f76-c2ba8b01bc35.s3-website-us-east-1.amazonaws.com/reset-password(resettoken=${passtoken})}">Click here to access the platform!</a>
   </body>
 </html>
