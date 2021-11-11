@@ -21,14 +21,15 @@ jobs:
     runs-on: ubuntu-latest
 
     services:
-      image: mysql:latest
-      env:
-        MYSQL_DATABASE: cs203g2t8
-        MYSQL_HOST: 127.0.0.1
-        MYSQL_ROOT_PASSWORD: ${{ secrets.DB_PASSWORD }}
-      ports:
-        - 3306:3306
-      options: --health-cmd="mysqladmin ping" --health-interval=10s
+      mysql:
+        image: mysql:latest
+        env:
+          MYSQL_DATABASE: cs203g2t8
+          MYSQL_HOST: 127.0.0.1
+          MYSQL_ROOT_PASSWORD: ${{ secrets.DB_PASSWORD }}
+        ports:
+          - 3306:3306
+        options: --health-cmd="mysqladmin ping" --health-interval=10s
 
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
