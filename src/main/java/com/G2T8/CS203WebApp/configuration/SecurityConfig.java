@@ -75,6 +75,13 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers(HttpMethod.POST, "/api/v1/schedule/").hasRole("ADMIN")
                 .antMatchers(HttpMethod.PUT, "/api/v1/schedule/").hasRole("ADMIN")
                 .antMatchers(HttpMethod.DELETE, "/api/v1/schedule/*").hasRole("ADMIN")
+                .antMatchers(HttpMethod.PUT, "/api/v1/teams/*").hasRole("ADMIN")
+                .antMatchers(HttpMethod.POST, "/api/v1/teams/").hasRole("ADMIN")
+                .antMatchers(HttpMethod.GET, "/api/v1/users/").hasRole("ADMIN")
+                .antMatchers(HttpMethod.GET, "/api/v1/users/contracted-users").hasRole("ADMIN")
+                .antMatchers(HttpMethod.PUT, "/api/v1/users/*/role").hasRole("ADMIN")
+                .antMatchers(HttpMethod.PUT, "/api/v1/users/*/manager").hasRole("ADMIN")
+                .antMatchers(HttpMethod.PUT, "/api/v1/users/*/team").hasRole("ADMIN")
                 // all other requests need to be authenticated
                 .anyRequest().authenticated().and().
                 // make sure we use stateless session; session won't be used to
@@ -84,16 +91,5 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
         // Add a filter to validate the tokens with every request
         httpSecurity.addFilterBefore(jwtRequestFilter, UsernamePasswordAuthenticationFilter.class);
-
-        /*
-         * httpSecurity.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.
-         * STATELESS).and()
-         * .exceptionHandling().authenticationEntryPoint(jwtAuthenticationEntryPoint)
-         * .authorizeRequests((request)->request.antMatchers("/h2-console/**").
-         * antMatchers(HttpMethod.OPTIONS,
-         * "/**").permitAll().anyRequest().authenticated())
-         * .addFilterBefore(jwtRequestFilter,
-         * UsernamePasswordAuthenticationFilter.class)
-         */
     }
 }
