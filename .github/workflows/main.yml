@@ -20,13 +20,18 @@ jobs:
     # The type of runner that the job will run on
     runs-on: ubuntu-latest
 
+    mysql:
+      image: mysql:latest
+      env:
+        MYSQL_DATABASE: cs203g2t8
+        MYSQL_HOST: 127.0.0.1
+        MYSQL_ROOT_PASSWORD: ${{ secrets.DB_PASSWORD }}
+      ports:
+        - 3306:3306
+      options: --health-cmd="mysqladmin ping" --health-interval=10s
+
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
-      - name: Set up MySQL
-        uses: mirromutth/mysql-action@v1.1
-        with:
-          mysql database: "cs203g2t8"
-          mysql root password: ${{ secrets.DB_PASSWORD }}
       - name: Set up JDK
         uses: actions/setup-java@v1
         with:
@@ -42,11 +47,17 @@ jobs:
 
       - uses: actions/checkout@v2
 
+      - name: Verify MySQL connection
+        run: 
+          mysql --version
+          sudo apt-get install -y mysql-client
+          mysql --host 127.0.0.1 --port ${{ job.services.mysql.ports['3306'] }} -uroot -ppassword -e "SHOW DATABASES"
+
       # Runs a single command using the runners shell
       - name: Run build
         run: mvn test
         env:
-          SPRING_DATASOURCE_URL: jdbc:mysql://127.0.0.1:3306/cs203g2t8?autoReconnect=true&useSSL=false
+          SPRING_DATASOURCE_URL: jdbc:mysql://localhost:3306/cs203g2t8?autoReconnect=true&useSSL=false
           SPRING_DATASOURCE_USERNAME: root
           SPRING_DATASOURCE_PASSWORD: ${{ secrets.DB_PASSWORD }}
 #       - uses: actions/checkout@v2
