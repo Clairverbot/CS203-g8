@@ -61,6 +61,8 @@ jobs:
           SPRING_DATASOURCE_URL: jdbc:mysql://127.0.0.1:${{ job.services.mysql.ports['3306'] }}/cs203g2t8?autoReconnect=true
           SPRING_DATASOURCE_USERNAME: root
           SPRING_DATASOURCE_PASSWORD: ${{ secrets.DB_PASSWORD }}
+          SPRING_JPA_HIBERNATE_DDL-AUTO: update
+          SPRING_JPA_PROPERTIES_HIBERNATE_DIALECT: org.hibernate.dialect.MySQL5InnoDBDialect
           SPRING_MAIL_HOST: smtp.gmail.com
           SPRING_MAIL_PORT: 587
           SPRING_MAIL_USERNAME: noreply.cs203g2t8.smu@gmail.com
@@ -71,6 +73,7 @@ jobs:
           react_origin: http://localhost:3000
           AWS_ACCESS_KEY: AKIA2UXIW7DGMDC4E76N
           AWS_SECRET_KEY: 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
+          JWT_SECRET: cs203g2t8
 #       - uses: actions/checkout@v2
 
 #       # Runs a single command using the runners shell
