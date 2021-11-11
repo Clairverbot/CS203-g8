@@ -61,6 +61,15 @@ jobs:
           SPRING_DATASOURCE_URL: jdbc:mysql://127.0.0.1:${{ job.services.mysql.ports['3306'] }}/cs203g2t8?autoReconnect=true
           SPRING_DATASOURCE_USERNAME: root
           SPRING_DATASOURCE_PASSWORD: ${{ secrets.DB_PASSWORD }}
+          spring.mail.host: smtp.gmail.com
+          spring.mail.port: 587
+          spring.mail.username: noreply.cs203g2t8.smu@gmail.com
+          spring.mail.password: welovepjtan203
+          spring.mail.properties.mail.smtp.auth: "true"
+          spring.mail.properties.mail.smtp.starttls.enable: "true"
+          spring.mail.templates.path: mail-templates
+          react_origin: http://localhost:3000
+
 #       - uses: actions/checkout@v2
 
 #       # Runs a single command using the runners shell
