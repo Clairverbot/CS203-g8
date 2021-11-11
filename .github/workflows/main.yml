@@ -37,6 +37,7 @@ jobs:
         uses: actions/setup-java@v1
         with:
           java-version: "11"
+
       #Set up Maven cache
       - name: Cache Maven packages
         #This action allows caching dependencies and build outputs to improve workflow execution time.
@@ -51,13 +52,13 @@ jobs:
       - name: Verify MySQL connection
         run: mysql --version
           sudo apt-get install -y mysql-client
-          mysql --host 127.0.0.1 --port ${{ job.services.mysql.ports['3306'] }} -uroot -ppassword -e "SHOW DATABASES"
+          mysql --host 127.0.0.1 --port ${{ job.services.mysql.ports['3306'] }} -uroot -p${{ secrets.DB_PASSWORD }} -e "SHOW DATABASES"
 
       # Runs a single command using the runners shell
       - name: Run build
         run: mvn test
         env:
-          SPRING_DATASOURCE_URL: jdbc:mysql://localhost:3306/cs203g2t8?autoReconnect=true&useSSL=false
+          SPRING_DATASOURCE_URL: jdbc:mysql://127.0.0.1:${{ job.services.mysql.ports['3306'] }}/cs203g2t8?autoReconnect=true
           SPRING_DATASOURCE_USERNAME: root
           SPRING_DATASOURCE_PASSWORD: ${{ secrets.DB_PASSWORD }}
 #       - uses: actions/checkout@v2
