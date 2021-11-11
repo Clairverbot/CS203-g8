@@ -25,8 +25,8 @@ jobs:
       - name: Set up MySQL
         uses: mirromutth/mysql-action@v1.1
         with:
-          mysql database: "G2T8CS203"
-          mysql root password: ${{ secrets.DB_PASSWORD }}
+          mysql database: '${{ secrets.DB_URL }}'
+          mysql admin password: ${{ secrets.DB_PASSWORD }}
       - name: Set up JDK
         uses: actions/setup-java@v1
         with:
@@ -44,7 +44,8 @@ jobs:
 
       # Runs a single command using the runners shell
       - name: Run build
-        run: mvn package
+        run: mvn test
+
 #       - uses: actions/checkout@v2
 
 #       # Runs a single command using the runners shell
