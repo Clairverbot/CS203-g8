@@ -26,8 +26,7 @@ jobs:
         uses: mirromutth/mysql-action@v1.1
         with:
           mysql database: "cs203g2t8"
-          mysql user: "admin"
-          mysql password: ${{ secrets.DB_PASSWORD }}
+          mysql root password: ${{ secrets.DB_PASSWORD }}
       - name: Set up JDK
         uses: actions/setup-java@v1
         with:
@@ -47,8 +46,8 @@ jobs:
       - name: Run build
         run: mvn test
         env:
-          SPRING_DATASOURCE_URL: jdbc:mysql://localhost:3306/cs203g2t8?autoReconnect=true&useSSL=false
-          SPRING_DATASOURCE_USERNAME: admin
+          SPRING_DATASOURCE_URL: jdbc:mysql://127.0.0.1:3306/cs203g2t8?autoReconnect=true&useSSL=false
+          SPRING_DATASOURCE_USERNAME: root
           SPRING_DATASOURCE_PASSWORD: ${{ secrets.DB_PASSWORD }}
 #       - uses: actions/checkout@v2
 
