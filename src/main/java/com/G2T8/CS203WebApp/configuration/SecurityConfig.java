@@ -58,7 +58,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     @Override
     public void configure(final WebSecurity webSecurity) {
         webSecurity.ignoring().antMatchers("/v1/api-docs/**", "/swagger-ui/**", "/swagger-resources/**", "/webjars/**",
-                "/swagger-ui.html", "/h2-console/**");
+                "/swagger-ui.html");
     }
 
     @Override
@@ -70,7 +70,11 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                         "/api/v1/users/reset-password", "/api/v1/users/reset-password/token")
                 .permitAll().
                 // needs to be authorized
-                antMatchers(HttpMethod.GET, "/api/v1/users/dummy").hasRole("ADMIN")
+                antMatchers(HttpMethod.GET, "/api/v1/art/").hasRole("ADMIN")
+                .antMatchers(HttpMethod.POST, "/api/v1/users/employee").hasRole("ADMIN")
+                .antMatchers(HttpMethod.POST, "/api/v1/schedule/").hasRole("ADMIN")
+                .antMatchers(HttpMethod.PUT, "/api/v1/schedule/").hasRole("ADMIN")
+                .antMatchers(HttpMethod.DELETE, "/api/v1/schedule/*").hasRole("ADMIN")
                 // all other requests need to be authenticated
                 .anyRequest().authenticated().and().
                 // make sure we use stateless session; session won't be used to
