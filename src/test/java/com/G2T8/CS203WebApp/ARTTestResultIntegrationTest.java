@@ -70,7 +70,7 @@ public class ARTTestResultIntegrationTest {
 
                 // Create dummy user
                 User testUser = new User();
-                testUser.setEmail("testUser@cs203g8.com");
+                testUser.setEmail("noreply.cs203g2t8.smu@gmail.com");
                 testUser.setName("Test User");
                 testUser.setPassword(passwordEncoder.encode("password"));
                 testUser.setRole("ROLE_ADMIN");
@@ -141,7 +141,7 @@ public class ARTTestResultIntegrationTest {
 
                 // Create dummy user
                 User testUser = new User();
-                testUser.setEmail("testUser@cs203g8.com");
+                testUser.setEmail("noreply.cs203g2t8.smu@gmail.com");
                 testUser.setName("Test User");
                 testUser.setPassword(passwordEncoder.encode("password"));
                 testUser.setRole("ROLE_ADMIN");
@@ -184,7 +184,7 @@ public class ARTTestResultIntegrationTest {
 
                 // Create dummy user
                 User testUser = new User();
-                testUser.setEmail("testUser@cs203g8.com");
+                testUser.setEmail("noreply.cs203g2t8.smu@gmail.com");
                 testUser.setName("Test User");
                 testUser.setPassword(passwordEncoder.encode("password"));
                 testUser.setRole("ROLE_ADMIN");
@@ -227,7 +227,7 @@ public class ARTTestResultIntegrationTest {
 
                 // Create dummy user
                 User testUser = new User();
-                testUser.setEmail("testUser@cs203g8.com");
+                testUser.setEmail("noreply.cs203g2t8.smu@gmail.com");
                 testUser.setName("Test User");
                 testUser.setPassword(passwordEncoder.encode("password"));
                 testUser.setRole("ROLE_ADMIN");
@@ -256,7 +256,7 @@ public class ARTTestResultIntegrationTest {
 
                 // Create dummy user
                 User testUser = new User();
-                testUser.setEmail("testUser@cs203g8.com");
+                testUser.setEmail("noreply.cs203g2t8.smu@gmail.com");
                 testUser.setName("Test User");
                 testUser.setPassword(passwordEncoder.encode("password"));
                 testUser.setRole("ROLE_ADMIN");
@@ -296,7 +296,7 @@ public class ARTTestResultIntegrationTest {
 
                 // Create dummy user
                 User testUser = new User();
-                testUser.setEmail("testUser@cs203g8.com");
+                testUser.setEmail("noreply.cs203g2t8.smu@gmail.com");
                 testUser.setName("Test User");
                 testUser.setPassword(passwordEncoder.encode("password"));
                 testUser.setRole("ROLE_ADMIN");

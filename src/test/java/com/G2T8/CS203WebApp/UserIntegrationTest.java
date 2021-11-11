@@ -305,7 +305,7 @@ public class UserIntegrationTest {
         // Arrange
         // Create dummy user entity
         User testUser = new User();
-        testUser.setEmail("test420@cs203g2t8.com");
+        testUser.setEmail("noreply.cs203g2t8.smu@gmail.com");
         testUser.setName("Test");
         testUser.setPassword(passwordEncoder.encode("password"));
         testUser.setRole("ROLE_ADMIN");
