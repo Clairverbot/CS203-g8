@@ -10,7 +10,7 @@ import com.fasterxml.jackson.annotation.JsonFormat;
       // @Setter on all non-final fields, and @RequiredArgsConstructor(generate
       // constructor with args annotated with @NonNull)
 @Entity
-@Table(name = "Schedule")
+@Table(name = "schedule")
 public class Schedule {
 
     @Id

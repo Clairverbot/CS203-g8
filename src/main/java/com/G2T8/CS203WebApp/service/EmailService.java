@@ -1,6 +1,8 @@
 package com.G2T8.CS203WebApp.service;
 
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -11,6 +13,17 @@ import java.util.Map;
 
 import javax.mail.MessagingException;
 import javax.mail.internet.MimeMessage;
+
+import com.amazonaws.regions.Regions;
+import com.amazonaws.services.simpleemail.AmazonSimpleEmailService;
+import com.amazonaws.services.simpleemail.AmazonSimpleEmailServiceClientBuilder;
+import com.amazonaws.services.simpleemail.model.Body;
+import com.amazonaws.services.simpleemail.model.Content;
+import com.amazonaws.services.simpleemail.model.Destination;
+import com.amazonaws.services.simpleemail.model.Message;
+import com.amazonaws.services.simpleemail.model.RawMessage;
+import com.amazonaws.services.simpleemail.model.SendEmailRequest;
+import com.amazonaws.services.simpleemail.model.SendRawEmailRequest;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -25,13 +38,15 @@ public class EmailService {
     private JavaMailSender emailSender;
     private SpringTemplateEngine templateEngine;
     private final String from;
+    public AmazonSimpleEmailService amazonSimpleEmailService;
 
     @Autowired
     public EmailService(JavaMailSender emailSender, SpringTemplateEngine templateEngine,
-            @Value("${spring.mail.username}") String from) {
+            @Value("${spring.mail.username}") String from, AmazonSimpleEmailService amazonSimpleEmailService) {
         this.emailSender = emailSender;
         this.templateEngine = templateEngine;
         this.from = from;
+        this.amazonSimpleEmailService = amazonSimpleEmailService;
     }
 
     /**
@@ -63,7 +78,7 @@ public class EmailService {
      * @param htmlBody HTML template
      * @throws MessagingException
      */
-    private void sendHtmlMessage(String to, String subject, String htmlBody) throws MessagingException {
+    private void sendHtmlMessage(String to, String subject, String htmlBody) throws MessagingException, IOException {
 
         MimeMessage message = emailSender.createMimeMessage();
         MimeMessageHelper helper = new MimeMessageHelper(message, true, "UTF-8");
@@ -71,6 +86,15 @@ public class EmailService {
         helper.setTo(to);
         helper.setSubject(subject);
         helper.setText(htmlBody, true);
-        emailSender.send(message);
+
+        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+        message.writeTo(outputStream);
+        RawMessage rawMessage = new RawMessage(ByteBuffer.wrap(outputStream.toByteArray()));
+
+        SendRawEmailRequest rawEmailRequest = new SendRawEmailRequest(rawMessage);
+        amazonSimpleEmailService.sendRawEmail(rawEmailRequest);
+
+        // emailSender.send(message);
+
     }
 }

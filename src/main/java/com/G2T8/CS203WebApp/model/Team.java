@@ -13,7 +13,7 @@ import java.util.*;
       // constructor with args annotated with @NonNull)
 @Entity
 @NoArgsConstructor
-@Table(name = "Team")
+@Table(name = "team")
 public class Team {
 
     // @Autowired
