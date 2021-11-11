@@ -155,7 +155,7 @@ public class ARTTestResultService {
                     Map<String, Object> templateModel = new HashMap<>();
                     templateModel.put("recipientName", user.getName());
                     emailService.sendEmailWithTemplate(user.getEmail(),
-                            "[XXX Employee Management System] Submit your ART result!", "art-notification.html",
+                            "[GR8 Employee Management System] Submit your ART result!", "art-notification.html",
                             templateModel);
                 } catch (Exception e) {
                     logger.error("Email failed to be sent", e);
