@@ -61,7 +61,7 @@ jobs:
           SPRING_DATASOURCE_URL: jdbc:mysql://127.0.0.1:${{ job.services.mysql.ports['3306'] }}/cs203g2t8?autoReconnect=true
           SPRING_DATASOURCE_USERNAME: root
           SPRING_DATASOURCE_PASSWORD: ${{ secrets.DB_PASSWORD }}
-          SPRING_JPA_HIBERNATE_DDL-AUTO: create-drop
+          SPRING_JPA_HIBERNATE_DDL_AUTO: create-drop
           SPRING_JPA_PROPERTIES_HIBERNATE_DIALECT: org.hibernate.dialect.MySQL5InnoDBDialect
           SPRING_MAIL_HOST: smtp.gmail.com
           SPRING_MAIL_PORT: 587
