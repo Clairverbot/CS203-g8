@@ -12,6 +12,7 @@
 	<groupId>com.G2T8</groupId>
 	<artifactId>CS203WebApp</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
+	<packaging>war</packaging> 
 	<name>CS203WebApp</name>
 	<description>Demo project for Spring Boot</description>
 	<properties>
@@ -40,6 +41,11 @@
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-web</artifactId>
 		</dependency>
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-tomcat</artifactId>
+			<scope>provided</scope>
+	</dependency>
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-security</artifactId>
