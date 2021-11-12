@@ -44,6 +44,13 @@ public class JwtAuthController {
         this.userDetailsService = userDetailsService;
     }
 
+    /**
+     * Endpoint for users to login and create a JWT authentication token
+     * 
+     * @param authenticationRequest JwtRequest object containing user credentials
+     * @return JwtResponse containing JWT token
+     * @throws Exception
+     */
     @PostMapping("/login")
     public ResponseEntity<?> createAuthenticationToken(@RequestBody JwtRequest authenticationRequest) throws Exception {
 
@@ -58,21 +65,42 @@ public class JwtAuthController {
         return ResponseEntity.ok(new JwtResponse(token, firstLogin));
     }
 
+    /**
+     * Endpoint to register for a new admin account
+     * 
+     * @param user UserDTO object containing user details
+     * @return HTTP status 201 if successful
+     * @throws Exception
+     */
     @PostMapping("/register")
     public ResponseEntity<?> saveUser(@RequestBody @Validated UserDTO user) throws Exception {
         userDetailsService.addUser(user);
         return new ResponseEntity<>(null, HttpStatus.CREATED);
     }
 
+    /**
+     * Endpoint to create a new employee account
+     * 
+     * @param user           UserDTO object containing user details
+     * @param adminPrincipal current logged-in administrator
+     * @return HTTP status 201 if successful
+     * @throws Exception
+     */
     @PostMapping("/employee")
-    public User addEmployee(@RequestBody @Validated UserDTO user, Principal adminPrincipal)
-            throws Exception {
+    public User addEmployee(@RequestBody @Validated UserDTO user, Principal adminPrincipal) throws Exception {
         CustomUserDetails userObj = (CustomUserDetails) userDetailsService.loadUserByUsername(adminPrincipal.getName());
         User manager = userObj.getUser();
 
         return userDetailsService.createEmployeeAccount(user, manager);
     }
 
+    /**
+     * Utility method to check validity of credentials
+     * 
+     * @param username username of user
+     * @param password password of user
+     * @throws Exception
+     */
     private void authenticate(String username, String password) throws Exception {
         try {
             authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(username, password));

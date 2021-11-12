@@ -27,33 +27,66 @@ public class JwtTokenUtil implements Serializable {
         this.secret = secret;
     }
 
-    // retrieve username from jwt token
+    /**
+     * Retrieve username from JWT token
+     * 
+     * @param token JWT token
+     * @return username
+     */
     public String getUsernameFromToken(String token) {
         return getClaimFromToken(token, Claims::getSubject);
     }
 
-    // retrieve expiration date from jwt token
+    /**
+     * Retrieve expiration date from JWT token
+     * 
+     * @param token JWT token
+     * @return expiration date
+     */
     public Date getExpirationDateFromToken(String token) {
         return getClaimFromToken(token, Claims::getExpiration);
     }
 
+    /**
+     * Method to get a specific claim from a token
+     * 
+     * @param <T>            claim
+     * @param token          JWT token
+     * @param claimsResolver function to retrieve the claim
+     * @return
+     */
     public <T> T getClaimFromToken(String token, Function<Claims, T> claimsResolver) {
         final Claims claims = getAllClaimsFromToken(token);
         return claimsResolver.apply(claims);
     }
 
-    // for retrieveing any information from token we will need the secret key
+    /**
+     * Utility method to retrieve claims from token using JWT secret
+     * 
+     * @param token JWT token
+     * @return claims
+     */
     private Claims getAllClaimsFromToken(String token) {
         return Jwts.parser().setSigningKey(secret).parseClaimsJws(token).getBody();
     }
 
-    // check if the token has expired
+    /**
+     * Check if a JWT token is expired
+     * 
+     * @param token JWT token to check
+     * @return true if expired, false if not
+     */
     private Boolean isTokenExpired(String token) {
         final Date expiration = getExpirationDateFromToken(token);
         return expiration.before(new Date());
     }
 
-    // generate token for user
+    /**
+     * Generates JWT token for user
+     * 
+     * @param userDetails Spring user details
+     * @return JWT token
+     */
     public String generateToken(UserDetails userDetails) {
         Map<String, Object> claims = new HashMap<>();
         // Put roles as the claim
@@ -74,7 +107,13 @@ public class JwtTokenUtil implements Serializable {
                 .signWith(SignatureAlgorithm.HS512, secret).compact();
     }
 
-    // validate token
+    /**
+     * Validates JWT token (if username matches & token not expired)
+     * 
+     * @param token       JWT token
+     * @param userDetails Spring user details
+     * @return true if valid, false if not
+     */
     public Boolean validateToken(String token, UserDetails userDetails) {
         final String username = getUsernameFromToken(token);
         return (username.equals(userDetails.getUsername()) && !isTokenExpired(token));
