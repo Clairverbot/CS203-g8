@@ -24,7 +24,11 @@ public class ScheduleController {
         this.scheduleService = scheduleService;
     }
 
-    // get all schedules
+    /**
+     * Find all schedules
+     * 
+     * @return list of all schedules
+     */
     @GetMapping("/")
     public List<Schedule> findAllSchedules() {
         List<Schedule> schedules = scheduleService.getAllSchedules();
@@ -34,7 +38,12 @@ public class ScheduleController {
         return schedules;
     }
 
-    // get all schedules based on teamID
+    /**
+     * Get list of all schedules of a certain team (by team ID)
+     * 
+     * @param teamID id of team you want to query the schedules for
+     * @return list of schedules associated with the team
+     */
     @GetMapping("/{teamID}")
     public List<Schedule> findAllScheduleByTeamID(@PathVariable Long teamID) {
         List<Schedule> schedules;
@@ -50,7 +59,13 @@ public class ScheduleController {
         return schedules;
     }
 
-    // get schedule based on teamID and startDate
+    /**
+     * Get a specific schedule based on team ID and start date
+     * 
+     * @param teamID    id of team
+     * @param startDate start date
+     * @return specific schedule
+     */
     @GetMapping("/{teamID}/{startDate}")
     public Schedule findScheduleByTeamIDAndStartDate(@PathVariable Long teamID, @PathVariable LocalDate startDate) {
         Schedule schedule;
@@ -66,6 +81,12 @@ public class ScheduleController {
         return schedule;
     }
 
+    /**
+     * Updates a schedule's information
+     * 
+     * @param scheduleDTO schedule DTO object to pass in information about schedule
+     * @return updated schedule, HTTP status 200 if success
+     */
     @PutMapping("/")
     public ResponseEntity<?> updateSchedule(@RequestBody ScheduleDTO scheduleDTO) {
         Schedule schedule;
@@ -84,63 +105,13 @@ public class ScheduleController {
         }
         return new ResponseEntity<Schedule>(schedule, HttpStatus.OK);
     }
-    // // update mode
-    // @PutMapping("/{teamID}/{startDate}/{newMode}")
-    // public void updateMode(@PathVariable Long teamID, @PathVariable LocalDate
-    // startDate, @PathVariable int newMode) {
-    // try {
-    // scheduleService.updateScheduleMode(teamID, startDate, newMode);
-    // } catch (TeamNotFoundException E) {
-    // throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Could not find
-    // Team");
-    // } catch (ScheduleNotFoundException E) {
-    // throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Could not find
-    // Schedule");
-    // } catch (Exception E) {
-    // throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Unknown
-    // error occured");
-    // }
-    // }
 
-    // // update startDate
-    // @PutMapping("/{teamID}/{startDate}/{newStartDate}")
-    // public void updateStartDate(@PathVariable Long teamID, @PathVariable
-    // LocalDate startDate,
-    // @PathVariable LocalDate newStartDate) {
-    // try {
-    // scheduleService.updateScheduleStartDate(teamID, startDate, newStartDate);
-    // } catch (TeamNotFoundException E) {
-    // throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Could not find
-    // Team");
-    // } catch (ScheduleNotFoundException E) {
-    // throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Could not find
-    // Schedule");
-    // } catch (Exception E) {
-    // throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Unknown
-    // error occured");
-    // }
-    // }
-
-    // // update endDate
-    // @PutMapping("/{teamID}/{startDate}/{newEndDate}")
-    // public void updateEndDate(@PathVariable Long teamID, @PathVariable LocalDate
-    // startDate,
-    // @PathVariable LocalDate newEndDate) {
-    // try {
-    // scheduleService.updateScheduleEndDate(teamID, startDate, newEndDate);
-    // } catch (TeamNotFoundException E) {
-    // throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Could not find
-    // Team");
-    // } catch (ScheduleNotFoundException E) {
-    // throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Could not find
-    // Schedule");
-    // } catch (Exception E) {
-    // throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Unknown
-    // error occured");
-    // }
-    // }
-
-    // add schedule
+    /**
+     * Creates a new schedule
+     * 
+     * @param scheduleDTO schedule DTO object to pass in information about schedule
+     * @return added schedule, HTTP status of 201 if success
+     */
     @PostMapping("/")
     public ResponseEntity<?> addSchedule(@RequestBody ScheduleDTO scheduleDTO) {
         Schedule schedule;
@@ -160,6 +131,12 @@ public class ScheduleController {
         return new ResponseEntity<Schedule>(schedule, HttpStatus.CREATED);
     }
 
+    /**
+     * Deletes a schedule by specified ID
+     * 
+     * @param scheduleId id of schedule
+     * @return HTTP status code 200 if success
+     */
     @DeleteMapping("/{scheduleId}")
     public ResponseEntity<?> deleteSchedule(@PathVariable Long scheduleId) {
         try {

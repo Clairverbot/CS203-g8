@@ -59,13 +59,24 @@ public class TeamController {
         return team.getUsers();
     }
 
-    // Update team name based on id
+    /**
+     * Updates the name of a team
+     * 
+     * @param id   id of the team to update
+     * @param name new name
+     * @return updated team object
+     */
     @PutMapping("/{id}")
     public Team updateName(@PathVariable Long id, @RequestBody String name) {
         return teamService.updateTeamName(id, name);
     }
 
-    // Add team
+    /**
+     * Creates a new team
+     * 
+     * @param requestBody key-value pair containing {name: name of team}
+     * @return created team, HTTP status code 201 if success
+     */
     @PostMapping("/")
     public ResponseEntity<?> addTeam(@RequestBody Map<String, Object> requestBody) {
         Team team = new Team();
