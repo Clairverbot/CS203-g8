@@ -42,7 +42,7 @@ public class TemperatureService {
      * @return list of temperature logs
      */
     public List<Temperature> getUserTempOnDayByUserEmail(String email, LocalDate day) {
-        User user = userService.findByEmail(email);
+        User user = validateUserEmail(email);
 
         LocalDateTime lowerBound = day.atStartOfDay();
         LocalDate nextDay = day.plusDays(1);
@@ -59,7 +59,7 @@ public class TemperatureService {
      * @return added temperature log
      */
     public Temperature addTemperature(String email, double temperature) {
-        User userEntity = userService.findByEmail(email);
+        User userEntity = validateUserEmail(email);
 
         Temperature newTemperature = new Temperature();
 
@@ -70,4 +70,19 @@ public class TemperatureService {
         return temperatureRepository.save(newTemperature);
     }
 
+    /**
+     * Utility method to validate that a user with the email exists
+     * 
+     * @param email
+     * @return
+     */
+    private User validateUserEmail(String email) {
+        CustomUserDetails userObj = (CustomUserDetails) userService.loadUserByUsername(email);
+        User userEntity = userObj.getUser();
+
+        if (userEntity == null) {
+            throw new UserNotFoundException(email);
+        }
+        return userEntity;
+    }
 }
