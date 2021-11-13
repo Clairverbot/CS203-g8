@@ -245,7 +245,7 @@ public class UserService implements UserDetailsService {
         if (optional.isPresent()) {
             return optional.get();
         } else {
-            return null;
+            throw new UserNotFoundException(email);
         }
     }
 

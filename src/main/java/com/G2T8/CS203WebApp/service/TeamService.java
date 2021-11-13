@@ -17,10 +17,21 @@ public class TeamService {
         this.teamRepository = teamRepository;
     }
 
+    /**
+     * Get list of all teams
+     * 
+     * @return list of all teams
+     */
     public List<Team> getAllTeams() {
         return teamRepository.findAll();
     }
 
+    /**
+     * Get team by ID
+     * 
+     * @param ID team ID
+     * @return specific team
+     */
     public Team getTeam(Long ID) {
         Optional<Team> t = teamRepository.findById(ID);
         if (t.isPresent()) {
@@ -31,6 +42,13 @@ public class TeamService {
         }
     }
 
+    /**
+     * Update team name
+     * 
+     * @param ID      team ID
+     * @param newName updated team name
+     * @return specific team
+     */
     public Team updateTeamName(Long ID, String newName) {
         Optional<Team> b = teamRepository.findById(ID);
         if (b.isPresent()) {
@@ -42,6 +60,12 @@ public class TeamService {
         }
     }
 
+    /**
+     * Add a new team
+     * 
+     * @param team team entity to add
+     * @return added team
+     */
     public Team addNewTeam(Team team) {
         return teamRepository.save(team);
     }

@@ -29,7 +29,11 @@ public class TeamController {
         this.teamService = teamService;
     }
 
-    // Get all teams
+    /**
+     * Get all teams
+     * 
+     * @return list of all teams
+     */
     @GetMapping("/")
     public List<Team> findAllTeams() {
         try {
@@ -41,7 +45,12 @@ public class TeamController {
 
     }
 
-    // Get team based on id
+    /**
+     * Get team based on ID
+     * 
+     * @param id team ID
+     * @return specific team
+     */
     @GetMapping("/{id}")
     public Team findTeamById(@PathVariable Long id) {
         return teamService.getTeam(id);

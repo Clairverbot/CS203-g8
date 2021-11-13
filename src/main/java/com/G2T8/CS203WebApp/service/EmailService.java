@@ -94,7 +94,5 @@ public class EmailService {
         SendRawEmailRequest rawEmailRequest = new SendRawEmailRequest(rawMessage);
         amazonSimpleEmailService.sendRawEmail(rawEmailRequest);
 
-        // emailSender.send(message);
-
     }
 }

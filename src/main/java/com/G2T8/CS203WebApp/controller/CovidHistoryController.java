@@ -28,9 +28,12 @@ public class CovidHistoryController {
         this.covidHistoryService = covidHistoryService;
     }
 
-    // get all CovidHistory
-
-    @GetMapping("/find-all")
+    /**
+     * Get all covid history
+     * 
+     * @return list of all covid histories
+     */
+    @GetMapping("/")
     public List<CovidHistory> findAllCovidHistory() {
         if (covidHistoryService.getAllCovidHistories() != null) {
             return covidHistoryService.getAllCovidHistories();
@@ -40,6 +43,12 @@ public class CovidHistoryController {
 
     }
 
+    /**
+     * Find all covid history of one user
+     * 
+     * @param id user ID
+     * @return list of covid histories associated to one user
+     */
     @GetMapping("/find-all-history-from-one-user/{id}")
     public List<CovidHistory> findAllCovidHistoryFromOneUser(@PathVariable Long id) {
         if (covidHistoryService.getAllCovidHistoryFromOneUser(id) != null) {
@@ -50,6 +59,13 @@ public class CovidHistoryController {
 
     }
 
+    /**
+     * Find a certain covid history of a certain user by contracted date
+     * 
+     * @param id             user ID
+     * @param contracteddate contracted date
+     * @return the specific covid history
+     */
     @GetMapping("/find-one-covid-history-from-one-user/{id}/{contracteddate}")
     public CovidHistory findOneCovidHistoryFromOneUser(@PathVariable(value = "id") Long id,
             @PathVariable(value = "contracteddate") String contracteddate) {
@@ -62,6 +78,12 @@ public class CovidHistoryController {
         throw new CovidHistoryNotFoundException(id);
     }
 
+    /**
+     * Create a covid history entry
+     * 
+     * @param covidHistory covid history details
+     * @return covid history created
+     */
     @ResponseStatus(HttpStatus.CREATED)
     @RequestMapping(value = "/", method = RequestMethod.POST)
     public CovidHistory createCovidHistory(@RequestBody CovidHistory covidHistory) {
@@ -76,6 +98,12 @@ public class CovidHistoryController {
         }
     }
 
+    /**
+     * Update covid history recovery date
+     * 
+     * @param covidHistoryLatest CovidHistoryDTO with updated recovery date
+     * @return updated covid history entry
+     */
     @PutMapping("/recovery-date")
     public CovidHistory addsRecoveryDate(@Valid @RequestBody CovidHistoryDTO covidHistoryLatest) {
         if (covidHistoryLatest == null || covidHistoryLatest.getUserId() == null

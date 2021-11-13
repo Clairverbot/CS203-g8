@@ -26,23 +26,23 @@ public class TemperatureService {
     /**
      * Get all temperature logs of a user with a specific ID
      * 
-     * @param userId
-     * @return
+     * @param userId ID of user
+     * @return list of temperatures associated with user
      */
     public List<Temperature> getAllTempbyUserID(Long userId) {
-        User user = validateUser(userId);
+        User user = userService.getUser(userId);
         return temperatureRepository.findByUser(user);
     }
 
     /**
      * Get all user temperature logs by a certain day using email
      * 
-     * @param email
-     * @param day
-     * @return
+     * @param email email of user
+     * @param day   date of day to search
+     * @return list of temperature logs
      */
     public List<Temperature> getUserTempOnDayByUserEmail(String email, LocalDate day) {
-        User user = validateUserEmail(email);
+        User user = userService.findByEmail(email);
 
         LocalDateTime lowerBound = day.atStartOfDay();
         LocalDate nextDay = day.plusDays(1);
@@ -54,12 +54,12 @@ public class TemperatureService {
     /**
      * Method to add temperature log
      * 
-     * @param email
-     * @param temperature
-     * @return
+     * @param email       email of user
+     * @param temperature temperature value
+     * @return added temperature log
      */
     public Temperature addTemperature(String email, double temperature) {
-        User userEntity = validateUserEmail(email);
+        User userEntity = userService.findByEmail(email);
 
         Temperature newTemperature = new Temperature();
 
@@ -70,33 +70,4 @@ public class TemperatureService {
         return temperatureRepository.save(newTemperature);
     }
 
-    /**
-     * Utility method to validate that a user with the user ID exists
-     * 
-     * @param userId
-     * @return
-     */
-    private User validateUser(Long userId) {
-        User user = userService.getUser(userId);
-        if (user == null) {
-            throw new UserNotFoundException(userId);
-        }
-        return user;
-    }
-
-    /**
-     * Utility method to validate that a user with the email exists
-     * 
-     * @param email
-     * @return
-     */
-    private User validateUserEmail(String email) {
-        CustomUserDetails userObj = (CustomUserDetails) userService.loadUserByUsername(email);
-        User userEntity = userObj.getUser();
-
-        if (userEntity == null) {
-            throw new UserNotFoundException(email);
-        }
-        return userEntity;
-    }
 }
